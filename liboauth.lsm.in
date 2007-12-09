@@ -4,6 +4,8 @@ Version:	@VERSION@
 Entered-date:	@ISODATE@
 Description:	oAuth - secure authentication for web applications
 		@configure_input@
+		liboauth implements request signing and url escape functions
+		according to the oAuth standard. see http://oauth.net/
 Keywords:	oAuth
 Author: 	robin@mediamatic.net (Robin Gareus)
 Maintained-by:	robin@mediamatic.net (Robin Gareus)
