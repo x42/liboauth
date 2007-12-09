@@ -65,8 +65,6 @@ install: build
 
 	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 
-	dh_movefiles
-
 
 # Build architecture-independent files here.
 binary-indep: build install

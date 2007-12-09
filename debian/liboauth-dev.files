@@ -1,4 +1,0 @@
-usr/include/*
-usr/include/*.a
-usr/lib/pkgconfig/*
-usr/share/man/man3/oauth.3
