@@ -1,8 +1,8 @@
 AC_INIT
-AC_CONFIG_SRCDIR([oauth.c])
+AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CANONICAL_TARGET([])
 AM_INIT_AUTOMAKE(liboauth, 0.1.0)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)
 ISODATE=`date +%Y-%m-%d`
