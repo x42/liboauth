@@ -3,24 +3,32 @@
 
 /**
  * Test and Example Code.
+ * 
+ * compile:
+ *  gcc -lssl -loauth -o oauthtest
  */
 int main (int argc, char **argv) {
   const char *url      = "http://base.url/&just=append?post=or_get_parameters"
                          "&arguments=will_be_formatted_automatically?&dont_care"
 			 "=about_separators";
+			 //< the url to sign
   const char *c_key    = "1234567890abcdef1234567890abcdef123456789";
+  			//< consumer key
   const char *c_secret = "01230123012301230123012301230123";
+  			//< consumer secret
   const char *t_key    = "0987654321fedcba0987654321fedcba098765432";
+  			//< token key
   const char *t_secret = "66666666666666666666666666666666";
+  			//< token secret
 
-#if 0
+#if 0 // example sign GET request
   char *geturl = NULL;
   geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
   printf("GET: URL:%s\n\n", geturl);
   if(geturl) free(geturl);
 #endif
 
-#if 0
+#if 0 // POST example
   char *postargs = NULL, *post = NULL;
   post = oauth_sign_url(url, &postargs, OA_HMAC, c_key, c_secret, t_key, t_secret);
   printf("POST: URL:%s\n      PARAM:%s\n\n", post, postargs);
@@ -28,7 +36,7 @@ int main (int argc, char **argv) {
   if(postargs) free(postargs);
 #endif
 
-#if 1
+#if 1 // HMAC-SHA1 selftest.
   // see http://oauth.net/core/1.0/#anchor25 
   char *b64d;
   char *testurl = "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3D"
