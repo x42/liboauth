@@ -17,6 +17,7 @@
  <ul> 
   <li>Verify oAuth edge cases: eg. parameter names starting with "%", keys with special characters or encodings.
   <li>Integrate it with curl or some http lib to implement a full oAuth server or consumer.</li>
+  <li>consolidate doxygen documentation in *.c and *.h</li>
  </ul>
 
 @section bug Bugs

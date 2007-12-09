@@ -27,10 +27,6 @@
  */
 /* vi: sts=2 sw=2 ts=2 */
 
-/** \def ADD_TO_ARGV 
- * append string 'oarg' to array 'argv'.
- */
-
 /** \enum OAuthMethod
  * signature method to used for signing the request.
  */ 

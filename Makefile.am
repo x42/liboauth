@@ -1,6 +1,6 @@
 SUBDIRS = @subdirs@
 
-EXTRA_DIST=liboauth.lsm.in liboauth.spec.in oauth.pc.in Doxyfile.in
+EXTRA_DIST=liboauth.lsm.in oauth.pc.in Doxyfile.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = oauth.pc

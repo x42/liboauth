@@ -3,8 +3,6 @@
 
 /**
  * Test and Example Code.
- *
- * compile with -DMAIN to enable
  */
 int main (int argc, char **argv) {
   const char *url      = "http://base.url/&just=append?post=or_get_parameters"
