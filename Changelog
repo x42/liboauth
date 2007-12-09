@@ -1,0 +1,6 @@
+version 0.0.2
+ added a bit more documentation.
+
+version 0.0.1
+ first public release
+ oAuth parameter escape and URL request signing functions.

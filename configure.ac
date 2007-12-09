@@ -1,0 +1,70 @@
+AC_INIT
+AC_CONFIG_SRCDIR([oauth.c])
+AC_CANONICAL_TARGET([])
+AM_INIT_AUTOMAKE(liboauth, 0.1.0)
+AM_CONFIG_HEADER(config.h)
+
+AC_SUBST(VERSION)
+ISODATE=`date +%Y-%m-%d`
+AC_SUBST(ISODATE)
+
+AC_CANONICAL_HOST
+
+AC_PROG_INSTALL
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h time.h string.h alloca.h stdio.h stdarg.h math.h openssl/hmac.h)
+
+AC_HEADER_MAJOR
+AC_FUNC_ALLOCA
+AC_STRUCT_TM
+AC_STRUCT_ST_BLOCKS
+AC_FUNC_CLOSEDIR_VOID
+
+dnl *** doxygen ***
+AC_ARG_VAR(DOXYGEN, Doxygen)
+AC_PATH_PROG(DOXYGEN, doxygen, no)
+
+dnl *** graphviz ***
+dnl (needed for Doxyfile.in)
+AC_ARG_VAR(DOT, The \"dot\" program from graphviz)
+AC_PATH_PROG(DOT, dot, no)
+if test "$DOT" != "no"; then
+  HAVEDOT=YES
+  DOTPATH=$( dirname "$DOT" )
+else
+  HAVEDOT=NO
+fi
+AC_SUBST(HAVEDOT)
+AC_SUBST(DOTPATH)
+
+
+dnl *** perl ***
+dnl (needed for Doxyfile.in)
+AC_ARG_VAR(PERL, Perl)
+AC_PATH_PROG(PERL, perl, no)
+if test "$PERL" == "no"; then
+  AC_MSG_WARN([dude, where's your perl? doxygen will not like this!)])
+fi
+
+subdirs="src doc tests"
+AC_SUBST(subdirs)
+
+AC_OUTPUT(Makefile src/Makefile doc/Makefile tests/Makefile liboauth.lsm liboauth.spec oauth.pc Doxyfile)
+
+AC_MSG_NOTICE([
+
+ liboauth configured:
+ -----------------------
+
+  doxygen:             $DOXYGEN
+  installation prefix: $prefix
+
+ type "make" followed my "make install" as root.
+ run "make dox" to generate API html reference: doc/html/index.html
+])
