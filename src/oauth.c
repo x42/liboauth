@@ -39,6 +39,7 @@
 #include <math.h>
 #include <openssl/hmac.h>
 
+#include "xmalloc.h"
 #include "oauth.h"
 
 /**
@@ -89,8 +90,7 @@ char *oauth_encode_base64(int size, unsigned char *src) {
 
   if(!src) return NULL;
   if(!size) size= strlen((char *)src);
-  out= (char*) calloc(sizeof(char), size*4/3+4);
-  if(!out) return NULL;
+  out= (char*) xcalloc(sizeof(char), size*4/3+4);
   p= out;
 
   for(i=0; i<size; i+=3) {
@@ -130,8 +130,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
   if(src && *src) {
     unsigned char *p= dest;
     int k, l= strlen(src)+1;
-    unsigned char *buf= (unsigned char*) calloc(sizeof(unsigned char), l);
-    if(!buf) return 0;
+    unsigned char *buf= (unsigned char*) xcalloc(sizeof(unsigned char), l);
 
     /* Ignore non base64 chars as per the POSIX standard */
     for(k=0, l=0; src[k]; k++) {
@@ -182,8 +181,7 @@ char *url_escape(const char *string) {
   int strindex=0;
   size_t length;
 
-  ns = (char*) malloc(alloc);
-  if(!ns) return NULL;
+  ns = (char*) xmalloc(alloc);
 
   length = alloc-1;
   while(length--) {
@@ -209,14 +207,8 @@ char *url_escape(const char *string) {
       newlen += 2; /* this'll become a %XX */
       if(newlen > alloc) {
         alloc *= 2;
-        testing_ptr = (char*) realloc(ns, alloc);
-        if(!testing_ptr) {
-          free(ns);
-          return NULL;
-        }
-        else {
-          ns = testing_ptr;
-        }
+        testing_ptr = (char*) xrealloc(ns, alloc);
+        ns = testing_ptr;
       }
       snprintf(&ns[strindex], 4, "%%%02X", in);
       strindex+=3;
@@ -260,7 +252,7 @@ char *oauth_sign_hmac_sha1 (char *m, char *k) {
  * @return signature string
  */
 char *oauth_sign_plaintext (char *m, char *k) {
-  return(strdup(k));
+  return(xstrdup(k));
 }
 
 /**
@@ -300,7 +292,7 @@ char *oauth_sign_rsa_sha1 (char *m, char *k) {
 }
 #else 
   char *oauth_sign_rsa_sha1 (char *m, char *k) {
-   return strdup("RSA-is-not-implemented.");
+   return xstrdup("RSA-is-not-implemented.");
   }
 #endif
 
@@ -319,7 +311,8 @@ char *oauth_sign_rsa_sha1 (char *m, char *k) {
  */
 char *catenc(int len, ...) {
   va_list va;
-  char *rv = (char*) malloc(sizeof(char)); *rv='\0';
+  char *rv = (char*) xmalloc(sizeof(char));
+  *rv='\0';
   va_start(va, len);
   int i;
   for(i=0;i<len;i++) {
@@ -330,8 +323,7 @@ char *catenc(int len, ...) {
     if(!enc) break;
     len = strlen(enc) + 1 + ((i>0)?1:0);
     if(rv) len+=strlen(rv);
-    rv=(char*) realloc(rv,len*sizeof(char));
-    if(!rv) return NULL;
+    rv=(char*) xrealloc(rv,len*sizeof(char));
 
     if(i>0) strcat(rv, "&");
     strcat(rv, enc);
@@ -359,8 +351,7 @@ char *nounce() {
   if(rndinit) {srand(time(NULL)); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
 
   len=15+floor(rand()*16.0/(double)RAND_MAX);
-  nc = malloc(len*sizeof(char));
-  // FIXME; check for out of memory error.
+  nc = xmalloc(len*sizeof(char));
   for(i=0;i<len; i++) {
     nc[i] = chars[ rand() % max ];
   }
@@ -419,12 +410,11 @@ char *oauth_sign_url (const char *url, char **postargs,
   char **argv = NULL;
   char *token, *tmp, *t1;
 
-  t1=tmp=strdup(url);
+  t1=tmp=xstrdup(url);
   while((token=strtok(tmp,"&?"))) {
     if(!strncasecmp("oauth_signature",token,15)) continue;
-    argv=(char**) realloc(argv,sizeof(char*)*(argc+1));
-    if(!argv) return NULL;
-    argv[argc]=strdup(token);
+    argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1));
+    argv[argc]=xstrdup(token);
     tmp=NULL;
     argc++;
   }
@@ -432,9 +422,8 @@ char *oauth_sign_url (const char *url, char **postargs,
 
 
 #define ADD_TO_ARGV \
-  argv=(char**) realloc(argv,sizeof(char*)*(argc+1)); \
-  if(!argv) return NULL; \
-  argv[argc++]=strdup(oarg); 
+  argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
+  argv[argc++]=xstrdup(oarg); 
 
   // add oAuth specific arguments
   char oarg[1024];
@@ -467,28 +456,28 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   // serialize URL
   int i;
-  char *query = (char*) malloc(sizeof(char)); *query='\0';
+  char *query = (char*) xmalloc(sizeof(char)); 
+  *query='\0';
   for(i=1; i< argc; i++) {
     int len = 0;
     if(query) len+=strlen(query);
     // see http://oauth.net/core/1.0/#encoding_parameters
     // escape parameter names and arguments but not the '='
     if(!(t1=strchr(argv[i], '='))) {
-      tmp=strdup(argv[i]);
+      tmp=xstrdup(argv[i]);
       len+=strlen(argv[i])+2;
     } else {
       *t1=0;
       tmp = url_escape(argv[i]);
       *t1='=';
       t1 = url_escape((t1+1));
-      tmp=(char*) realloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
+      tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
       strcat(tmp,"=");
       strcat(tmp,t1);
       free(t1);
       len+=strlen(tmp)+2;
     }
-    query=(char*) realloc(query,len*sizeof(char));
-    if(!query) return NULL;
+    query=(char*) xrealloc(query,len*sizeof(char));
     strcat(query, (i==1?"":"&"));
     strcat(query, tmp);
     free(tmp);
@@ -513,7 +502,9 @@ char *oauth_sign_url (const char *url, char **postargs,
       sign = oauth_sign_hmac_sha1(odat,okey);
   }
   senc = url_escape(sign);
-  free(odat); free(okey); free(sign);
+  free(odat); 
+  free(okey);
+  free(sign);
 
   // append signature to query args.
   snprintf(oarg, 1024, "oauth_signature=%s",senc);
@@ -521,13 +512,13 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(senc);
 
   // build URL params
-  char *result = (char*) malloc(sizeof(char)); *result='\0';
+  char *result = (char*) xmalloc(sizeof(char)); 
+  *result='\0';
   for(i=(postargs?1:0); i< argc; i++) {
     int len = 0;
     if(result) len+=strlen(result);
     len+=strlen(argv[i])+3;
-    result= (char *)realloc(result,len*sizeof(char));
-    if(!query) return NULL;
+    result= (char *)xrealloc(result,len*sizeof(char));
     strcat(result, ((i==0||(postargs&&i==1))?"":((!postargs&&i==1)?"?":"&")));
     strcat(result, argv[i]);
     free(argv[i]);
@@ -535,7 +526,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   if(postargs) { 
     *postargs = result;
-    result = strdup(argv[0]);
+    result = xstrdup(argv[0]);
     free(argv[0]);
   }
   if(argv) free(argv);
