@@ -30,6 +30,10 @@ dnl *** doxygen ***
 AC_ARG_VAR(DOXYGEN, Doxygen)
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 
+if test "$DOXYGEN" != "no"; then
+  DOXMAKE='run "make dox" to generate API html reference: doc/html/index.html'
+fi
+
 dnl *** graphviz ***
 dnl (needed for Doxyfile.in)
 AC_ARG_VAR(DOT, The \"dot\" program from graphviz)
@@ -66,5 +70,5 @@ AC_MSG_NOTICE([
   installation prefix: $prefix
 
  type "make" followed my "make install" as root.
- run "make dox" to generate API html reference: doc/html/index.html
+ $DOXMAKE
 ])

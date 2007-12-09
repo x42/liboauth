@@ -52,8 +52,6 @@ void free ();
 # define _(Text) Text
 #endif
 
-#include <error.h>
-
 /* Prototypes for functions defined here.  */
 #if defined (__STDC__) && __STDC__
 static VOID *fixup_null_alloc (size_t n);
