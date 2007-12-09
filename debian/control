@@ -1,6 +1,6 @@
 Source: liboauth
 Priority: extra
-Maintainer: Robin Gareus <robin@mediamatic.net>
+Maintainer: Robin Gareus <robin@mediamatic.nl>
 Build-Depends: debhelper (>= 5), autotools-dev
 Standards-Version: 3.7.2
 Section: libs
