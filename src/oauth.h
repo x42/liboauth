@@ -146,14 +146,6 @@ char *catenc(int len, ...);
 char *nounce();
 
 /**
- * string compare function.
- *
- * used with qsort. needed to normalize request parameters:
- * http://oauth.googlecode.com/svn/spec/branches/1.0/drafts/7/spec.html#anchor14
- */
-static int cmpstringp(const void *p1, const void *p2);
-
-/**
  * sign an oAuth request URL.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 
