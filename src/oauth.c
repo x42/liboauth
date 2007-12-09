@@ -39,18 +39,7 @@
 #include <math.h>
 #include <openssl/hmac.h>
 
-/** \def ADD_TO_ARGV 
- * append string 'oarg' to array 'argv'.
- */
-
-/** \enum OAuthMethod
- * signature method to used for signing the request.
- */ 
-typedef enum { 
-	OA_HMAC=0, ///< use HMAC-SHA1 request signing method
-	OA_RSA, ///< use RSA signature (not implemented)
-	OA_PLAINTEXT ///< use plain text signature (for testing only)
-	} OAuthMethod;
+#include "oauth.h"
 
 /**
  * Base64 encode one byte
