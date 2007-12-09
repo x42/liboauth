@@ -13,6 +13,6 @@ CLEANFILES = stamp-doxygen stamp-doc
 
 dox: stamp-doxygen
 
-stamp-doxygen: src/framerate.h src/framerate.c doc/mainpage.dox
+stamp-doxygen: src/oauth.h doc/mainpage.dox
 	$(DOXYGEN) Doxyfile
 	touch stamp-doxygen
