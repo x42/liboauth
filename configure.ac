@@ -59,7 +59,7 @@ fi
 subdirs="src doc tests"
 AC_SUBST(subdirs)
 
-AC_OUTPUT(Makefile src/Makefile doc/Makefile tests/Makefile liboauth.lsm liboauth.spec oauth.pc Doxyfile)
+AC_OUTPUT(Makefile src/Makefile doc/Makefile tests/Makefile liboauth.lsm oauth.pc Doxyfile)
 
 AC_MSG_NOTICE([
 
