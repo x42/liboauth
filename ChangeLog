@@ -1,3 +1,6 @@
+version 0.1.1
+ don't touch stamp-doxygen if doxygen failed.
+
 version 0.1.0
  added xmalloc - removed NULL checks after [re|m|c]alloc.
  libtoolized and prepared packaging.
