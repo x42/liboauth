@@ -1,6 +1,7 @@
 Robin Gareus <robin@mediamatic.net> has written and is maintaining liboauth.
 
-the base64 code is from Jan-Henrik Haukeland <hauk@tildeslash.com>.
+The base64 code is used with permission from Jan-Henrik 
+Haukeland <hauk@tildeslash.com>.
 
 escape_url() contains code from curl by Daniel Stenberg <daniel@haxx.se>
 
