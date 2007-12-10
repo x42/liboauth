@@ -201,13 +201,8 @@ char *url_escape(const char *string) {
       if(newlen > alloc) {
         alloc *= 2;
         testing_ptr = (char*) realloc(ns, alloc);
-        if(!testing_ptr) {
-          free(ns);
-          return NULL;
-        }
-        else {
-          ns = testing_ptr;
-        }
+	testing_ptr = (char*) xrealloc(ns, alloc);
+	ns = testing_ptr;
       }
       snprintf(&ns[strindex], 4, "%%%02X", in);
       strindex+=3;
