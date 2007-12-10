@@ -333,7 +333,7 @@ char *catenc(int len, ...) {
  *
  * @return zero terminated random string.
  */
-char *nounce() {
+char *gen_nonce() {
   char *nc;
   static int rndinit = 1;
   const char *chars = "abcdefghijklmnopqrstuvwxyz"
@@ -344,7 +344,7 @@ char *nounce() {
   if(rndinit) {srand(time(NULL)); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
 
   len=15+floor(rand()*16.0/(double)RAND_MAX);
-  nc = xmalloc(len*sizeof(char));
+  nc = xmalloc((len+1)*sizeof(char));
   for(i=0;i<len; i++) {
     nc[i] = chars[ rand() % max ];
   }
@@ -420,7 +420,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   // add oAuth specific arguments
   char oarg[1024];
-  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=nounce()));
+  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=gen_nonce()));
   ADD_TO_ARGV;
   free(tmp);
 

@@ -143,7 +143,7 @@ char *catenc(int len, ...);
  *
  * @return zero terminated random string.
  */
-char *nounce();
+char *gen_nonce();
 
 /**
  * sign an oAuth request URL.

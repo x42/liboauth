@@ -1,6 +1,7 @@
 version 0.1.0
  added xmalloc - removed NULL checks after [re|m|c]alloc.
  libtoolized and prepared packaging.
+ fixed a couple of typos
  added a some more documentation.
 
 version 0.0.1
