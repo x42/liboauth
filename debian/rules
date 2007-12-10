@@ -28,12 +28,12 @@ major=2
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
+	aclocal 
+	autoheader 
+	libtoolize --copy 
+	autoconf 
+	automake --gnu --add-missing --copy
+	
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 
 
@@ -41,7 +41,6 @@ build: build-stamp
 build-stamp:  config.status
 	dh_testdir
 
-	# Add here commands to compile the package.
 	$(MAKE)
 
 	touch $@
@@ -51,11 +50,10 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
-	# Add here commands to clean up after the build process.
-	$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f config.sub config.guess
 
-	dh_clean 
+	dh_clean -a
 
 install: build
 	dh_testdir
