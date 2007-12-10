@@ -200,7 +200,6 @@ char *url_escape(const char *string) {
       newlen += 2; /* this'll become a %XX */
       if(newlen > alloc) {
         alloc *= 2;
-        testing_ptr = (char*) realloc(ns, alloc);
 	testing_ptr = (char*) xrealloc(ns, alloc);
 	ns = testing_ptr;
       }
