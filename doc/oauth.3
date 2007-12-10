@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "9 Dec 2007" "Version 0.1.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "10 Dec 2007" "Version 0.1.0" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -58,7 +58,7 @@ src/oauth.h \-
 .br
 .RI "\fIencode strings and concatenate with '&' separator. \fP"
 .ti -1c
-.RI "char * \fBnounce\fP ()"
+.RI "char * \fBgen_nonce\fP ()"
 .br
 .RI "\fIgenerate a random string between 15 and 32 chars length and return a pointer to it. \fP"
 .ti -1c
@@ -84,7 +84,7 @@ use RSA signature (not implemented)
 \fB\fIOA_PLAINTEXT \fP\fP
 use plain text signature (for testing only) 
 .PP
-Definition at line 37 of file oauth.h.
+Definition at line 33 of file oauth.h.
 .SH "Function Documentation"
 .PP 
 .SS "char* catenc (int len,  ...)"
@@ -106,7 +106,7 @@ pointer to memory holding the concatenated strings - needs to be free(d) by the 
 .RE
 .PP
 
-.SS "char* nounce ()"
+.SS "char* gen_nonce ()"
 .PP
 generate a random string between 15 and 32 chars length and return a pointer to it. 
 .PP
@@ -187,6 +187,10 @@ signature string.
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
 .SS "char* oauth_sign_plaintext (char * m, char * k)"
 .PP
 returns plaintext signature for the given key. 
@@ -260,6 +264,10 @@ the signed url or NULL if an error occurred.
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
 .SS "char* url_escape (const char * string)"
 .PP
 Escape 'string' according to RFC3986 and http://oauth.googlecode.com/svn/spec/branches/1.0/drafts/7/spec.html#encoding_parameters. 
