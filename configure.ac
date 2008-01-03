@@ -26,6 +26,12 @@ AC_STRUCT_TM
 AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
+AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
+
+PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL) HAVE_CURL=1 ], [ NULL=0] )
+#CURL_LIBS="-lcurl"
+AC_SUBST(CURL_LIBS)
+
 dnl *** doxygen ***
 AC_ARG_VAR(DOXYGEN, Doxygen)
 AC_PATH_PROG(DOXYGEN, doxygen, no)
@@ -66,6 +72,7 @@ AC_MSG_NOTICE([
  liboauth configured:
  -----------------------
 
+  libcurl:             $HAVE_CURL
   doxygen:             $DOXYGEN
   installation prefix: $prefix
 

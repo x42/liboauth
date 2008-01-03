@@ -23,6 +23,9 @@
  *
  */
 /* vi: sts=2 sw=2 ts=2 */
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -167,6 +170,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
  * The caller must free the returned string.
  */
 char *url_escape(const char *string) {
+  if (!string) return strdup(""); // doc-check
   size_t alloc = strlen(string)+1;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
@@ -426,11 +430,12 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
   ADD_TO_ARGV;
-
-  tmp = url_escape(t_key); // FIXME: check if we need to escape this here
-  snprintf(oarg, 1024, "oauth_token=%s", tmp);
-  ADD_TO_ARGV;
-  if(tmp) free(tmp);
+  if (t_key && strlen(t_key) >0) {
+    tmp = url_escape(t_key); // FIXME: check if we need to escape this here
+    snprintf(oarg, 1024, "oauth_token=%s", tmp);
+    ADD_TO_ARGV;
+    if(tmp) free(tmp);
+  }
 
   tmp = url_escape(c_key); // FIXME: check if we need to escape this here
   snprintf(oarg, 1024, "oauth_consumer_key=%s", tmp);

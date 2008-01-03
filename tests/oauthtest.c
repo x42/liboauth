@@ -21,6 +21,32 @@ int main (int argc, char **argv) {
   const char *t_secret = "66666666666666666666666666666666";
   			//< token secret
 
+#if 1 // example request-token request
+  const char *request_token_uri  = "http://localhost/mm/trunk/www/module/OAuth/request_token";
+  const char *access_token_uri   = "http://localhost/mm/trunk/www/module/OAuth/access_token";
+  const char *req_c_key    = "58d602f54c9168cbb070dc0bd47deef40477c0a6e";
+  			//< consumer key
+  const char *req_c_secret = "58b2eae9e4a5029a5b7a4beffaae40f0";
+  			//< consumer secret
+  char *res_t_key    = ""; //< token key
+  char *res_t_secret = ""; //< token secret
+  /// see ./OAuth.mod.php -> httpRequest_consumer_connect()
+  /// http://localhost/mm/trunk/www/module/OAuth/consumer/connect?consumer_key=58d602f54c9168cbb070dc0bd47deef40477c0a6e
+  char *req_url = NULL;
+  char *postarg = NULL;
+
+  req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
+  printf("request URL:%s\n\n", req_url);
+  char *rv = oauth_http_post(req_url,postarg);
+  printf("%s\n", rv);
+  if(req_url) free(req_url);
+  if(postarg) free(postarg);
+  if(rv) free(rv);
+
+  //example reply: 
+  //"oauth_token=2a71d1c73d2771b00f13ca0acb9836a10477d3c56&oauth_token_secret=a1b5c00c1f3e23fb314a0aa22e990266"
+#endif
+
 #if 0 // example sign GET request
   char *geturl = NULL;
   geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
@@ -36,7 +62,7 @@ int main (int argc, char **argv) {
   if(postargs) free(postargs);
 #endif
 
-#if 1 // HMAC-SHA1 selftest.
+#if 0 // HMAC-SHA1 selftest.
   // see http://oauth.net/core/1.0/#anchor25 
   char *b64d;
   char *testurl = "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3D"
