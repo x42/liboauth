@@ -37,11 +37,26 @@ int main (int argc, char **argv) {
 
   req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
   printf("request URL:%s\n\n", req_url);
-  char *rv = oauth_http_post(req_url,postarg);
-  printf("%s\n", rv);
+  char *reply = oauth_http_post(req_url,postarg);
+  printf("reply: %s\n", reply);
+  int rc;
+  char **rv = NULL;
+  rc = split_url_parameters(reply, &rv);
+  // TODO: sort parameters. 
+  if( rc==2 
+      && !strncmp(rv[0],"oauth_token=",11)
+      && !strncmp(rv[1],"oauth_token_secret=",18) ){
+        res_t_key=xstrdup(&(rv[0][12]));
+        res_t_secret=xstrdup(&(rv[1][19]));
+        printf("token-key:    '%s'\ntoken-secret: '%s'\n",res_t_key, res_t_secret);
+  }
+
   if(req_url) free(req_url);
   if(postarg) free(postarg);
+  if(reply) free(reply);
   if(rv) free(rv);
+  if(res_t_key) free(res_t_key);
+  if(res_t_secret) free(res_t_secret);
 
   //example reply: 
   //"oauth_token=2a71d1c73d2771b00f13ca0acb9836a10477d3c56&oauth_token_secret=a1b5c00c1f3e23fb314a0aa22e990266"

@@ -331,6 +331,62 @@ char *catenc(int len, ...) {
 }
 
 /**
+ *
+ */
+int split_url_parameters(const char *url, char ***argv)
+{
+  int argc=0;
+  char *token, *tmp, *t1;
+  //(*argv) = NULL; //safety?! or free first?!
+
+  t1=tmp=xstrdup(url);
+  while((token=strtok(tmp,"&?"))) {
+    if(!strncasecmp("oauth_signature",token,15)) continue;
+    (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
+    (*argv)[argc]=xstrdup(token);
+    tmp=NULL;
+    argc++;
+  }
+  free(t1);
+  return argc;
+}
+
+/**
+ *
+ */
+char *serialize_url_parameters (int argc, char **argv) {
+  char *token, *tmp, *t1;
+  int i;
+  char *query = (char*) xmalloc(sizeof(char)); 
+  *query='\0';
+  for(i=1; i< argc; i++) {
+    int len = 0;
+    if(query) len+=strlen(query);
+    // see http://oauth.net/core/1.0/#encoding_parameters
+    // escape parameter names and arguments but not the '='
+    if(!(t1=strchr(argv[i], '='))) {
+      tmp=xstrdup(argv[i]);
+      len+=strlen(argv[i])+2;
+    } else {
+      *t1=0;
+      tmp = url_escape(argv[i]);
+      *t1='=';
+      t1 = url_escape((t1+1));
+      tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
+      strcat(tmp,"=");
+      strcat(tmp,t1);
+      free(t1);
+      len+=strlen(tmp)+2;
+    }
+    query=(char*) xrealloc(query,len*sizeof(char));
+    strcat(query, (i==1?"":"&"));
+    strcat(query, tmp);
+    free(tmp);
+  }
+  return (query);
+}
+
+/**
  * generate a random string between 15 and 32 chars length
  * and return a pointer to it. The value needs to be freed by the
  * caller
@@ -403,20 +459,10 @@ char *oauth_sign_url (const char *url, char **postargs,
   ) {
 
   // split url arguments
-  int  argc = 0;
+  int  argc;
   char **argv = NULL;
-  char *token, *tmp, *t1;
-
-  t1=tmp=xstrdup(url);
-  while((token=strtok(tmp,"&?"))) {
-    if(!strncasecmp("oauth_signature",token,15)) continue;
-    argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1));
-    argv[argc]=xstrdup(token);
-    tmp=NULL;
-    argc++;
-  }
-  free(t1);
-
+  char *tmp;
+  argc = split_url_parameters(url, &argv);
 
 #define ADD_TO_ARGV \
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
@@ -453,33 +499,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   qsort(&argv[1], argc-1, sizeof(char *), cmpstringp);
 
   // serialize URL
-  int i;
-  char *query = (char*) xmalloc(sizeof(char)); 
-  *query='\0';
-  for(i=1; i< argc; i++) {
-    int len = 0;
-    if(query) len+=strlen(query);
-    // see http://oauth.net/core/1.0/#encoding_parameters
-    // escape parameter names and arguments but not the '='
-    if(!(t1=strchr(argv[i], '='))) {
-      tmp=xstrdup(argv[i]);
-      len+=strlen(argv[i])+2;
-    } else {
-      *t1=0;
-      tmp = url_escape(argv[i]);
-      *t1='=';
-      t1 = url_escape((t1+1));
-      tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
-      strcat(tmp,"=");
-      strcat(tmp,t1);
-      free(t1);
-      len+=strlen(tmp)+2;
-    }
-    query=(char*) xrealloc(query,len*sizeof(char));
-    strcat(query, (i==1?"":"&"));
-    strcat(query, tmp);
-    free(tmp);
-  }
+  char *query= serialize_url_parameters(argc, argv);
 
   // generate signature
   char *okey, *odat, *sign, *senc;
@@ -510,6 +530,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(senc);
 
   // build URL params
+  int i;
   char *result = (char*) xmalloc(sizeof(char)); 
   *result='\0';
   for(i=(postargs?1:0); i< argc; i++) {
