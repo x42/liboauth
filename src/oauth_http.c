@@ -86,10 +86,50 @@ char *oauth_curl_post (char *u, char *p) {
   curl_easy_cleanup(curl);
   return (chunk.data);
 }
+
+/**
+ *
+ */
+char *oauth_curl_get (char *u, char *p) {
+  ;
+}
 #endif // no cURL.
+
+#define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
+//#define _OAUTH_DEF_HTTPCMD "curl -A 'liboauth-agent/0.1' -d '%p' '%u' "
+#define _OAUTH_DEF_HTTPCMD "curl -A 'liboauth-agent/0.1' -d '%s' '%s' "
+
+#include <stdio.h>
+
+char *oauth_exec_post (char *u, char *p) {
+  char cmd[1024];
+  char *cmdtpl = getenv(_OAUTH_ENV_HTTPCMD);
+  if (!cmdtpl) cmdtpl = strdup (_OAUTH_DEF_HTTPCMD);
+  // add URL and post param - error if no '%p' or '%u' present in definition
+  // TODO shell-escape cmd
+  snprintf(cmd, 1024, cmdtpl, p, u);
+  printf("DEBUG: executing: %s\n",cmd);
+  FILE *in = popen (cmd, "r");
+  size_t len = 0;
+  size_t alloc = 0;
+  char *data = NULL;
+  int rcv = 1;
+  while (in && rcv > 0 && !feof(in)) {
+    alloc +=1024;
+    data = realloc(data, alloc * sizeof(char));
+    rcv = fread(data, sizeof(char), 1024, in);
+    len += rcv;
+  }
+  pclose(in);
+  if (data) printf("DEBUG: return: %s\n",data);
+  else printf("DEBUG: NULL data\n");
+  return (data);
+}
 
 
 char *oauth_http_post (char *u, char *p) {
+  return oauth_exec_post(u,p);
+
 #ifdef HAVE_CURL
   return oauth_curl_post(u,p);
 #else // no cURL.

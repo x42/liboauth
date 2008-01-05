@@ -28,8 +28,8 @@ int main (int argc, char **argv) {
   			//< consumer key
   const char *req_c_secret = "58b2eae9e4a5029a5b7a4beffaae40f0";
   			//< consumer secret
-  char *res_t_key    = ""; //< token key
-  char *res_t_secret = ""; //< token secret
+  char *res_t_key    = NULL; //< token key
+  char *res_t_secret = NULL; //< token secret
   /// see ./OAuth.mod.php -> httpRequest_consumer_connect()
   /// http://localhost/mm/trunk/www/module/OAuth/consumer/connect?consumer_key=58d602f54c9168cbb070dc0bd47deef40477c0a6e
   char *req_url = NULL;
@@ -54,7 +54,7 @@ int main (int argc, char **argv) {
   if(req_url) free(req_url);
   if(postarg) free(postarg);
   if(reply) free(reply);
-  if(rv) free(rv);
+  //if(rv) free(rv);
   if(res_t_key) free(res_t_key);
   if(res_t_secret) free(res_t_secret);
 
