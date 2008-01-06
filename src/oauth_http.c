@@ -96,8 +96,7 @@ char *oauth_curl_get (char *u, char *p) {
 #endif // no cURL.
 
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
-//#define _OAUTH_DEF_HTTPCMD "curl -A 'liboauth-agent/0.1' -d '%p' '%u' "
-#define _OAUTH_DEF_HTTPCMD "curl -A 'liboauth-agent/0.1' -d '%s' '%s' "
+#define _OAUTH_DEF_HTTPCMD "curl -sA 'liboauth-agent/0.1' -d '%p' '%u' "
 
 #include <stdio.h>
 
@@ -105,9 +104,20 @@ char *oauth_exec_post (char *u, char *p) {
   char cmd[1024];
   char *cmdtpl = getenv(_OAUTH_ENV_HTTPCMD);
   if (!cmdtpl) cmdtpl = strdup (_OAUTH_DEF_HTTPCMD);
+  else cmdtpl = strdup (cmdtpl); // clone getenv() string.
   // add URL and post param - error if no '%p' or '%u' present in definition
-  // TODO shell-escape cmd
-  snprintf(cmd, 1024, cmdtpl, p, u);
+  char *t1,*t2, *tmp;
+  t1=strstr(cmdtpl, "%p");
+  t2=strstr(cmdtpl, "%u");
+  if (!t1 || !t2) {
+	printf("invalid template\n");
+	return(NULL); // FIXME
+  }
+  *(++t1)= 's'; *(++t2)= 's';
+  // TODO: check if there are only two '%' in cmdtpl
+  if (t1 > t2) { t1=u; t2=p; } else { t1=p; t2=u; }
+  snprintf(cmd, 1024, cmdtpl, t1, t2);
+  // FIXME shell-escape cmd
   printf("DEBUG: executing: %s\n",cmd);
   FILE *in = popen (cmd, "r");
   size_t len = 0;
@@ -121,6 +131,7 @@ char *oauth_exec_post (char *u, char *p) {
     len += rcv;
   }
   pclose(in);
+  free(cmdtpl);
   if (data) printf("DEBUG: return: %s\n",data);
   else printf("DEBUG: NULL data\n");
   return (data);
