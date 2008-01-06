@@ -132,6 +132,8 @@ char *oauth_exec_post (char *u, char *p) {
   }
   pclose(in);
   free(cmdtpl);
+  printf("DEBUG: read %i bytes\n",len);
+  data[len]=0;
   if (data) printf("DEBUG: return: %s\n",data);
   else printf("DEBUG: NULL data\n");
   return (data);
