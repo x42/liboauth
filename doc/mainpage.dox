@@ -3,9 +3,12 @@
 
 @section intro Introduction
 
- oauth-c is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> API. It is structured into lowlevel functions (mainly to escape or encode strings) and a few high-level functions to sign URL requests and exchange a consumer key for an access token. 
-
- oauth-c depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. The source includes some example usage and selftest code.
+ oauth-c is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> API. 
+ liboauth provides basic functions to escape and encode stings according to oauth specs and offers high-level functions built on top to sign requests or verify signatures.
+ 
+ oauth-c depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
+ 
+ The source includes example code and a selftest based on http://wiki.oauth.net/TestCases (<tt>make check</tt>).
 
  The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using QT4.3.2 QHttp C++ code on win32 (mingw), gnu/Linux and OSX-10.5. 
 
@@ -16,15 +19,8 @@
 
 @section download Download
 
-  Download Source: <a href="http://mir.dnsalias.com/_media/oss/oauth/liboauth-0.1.0.tar.gz">liboauth-0.1.0.tar.gz</a>
+  Download Source: <a href="http://mir.dnsalias.com/_media/oss/oauth/liboauth-0.1.1.tar.gz">liboauth-0.1.1.tar.gz</a>
 
-
-@section todo ToDo
- <ul> 
-  <li>Verify oAuth edge cases: eg. parameter names starting with "%", keys with special characters or encodings.
-  <li>Integrate it with curl or some http lib to implement a full oAuth server or consumer.</li>
-  <li>consolidate doxygen documentation in *.c and *.h</li>
- </ul>
 
 @section bug Bugs
  send bug reports, patches or suggestions to robin @ mediamatic . net.

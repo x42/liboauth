@@ -17,13 +17,6 @@
  *  License along with this package; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  *
- * compile:
- *   gcc -o oauth-c oauth.c -lssl -lm -DMAIN
- * this compiles the example main() function which runs a signature self-test.
- *
- * using oauth_sign_url(..) in C or C++ is straight forward. see main() for an
- * examples of signing POST and GET requests.
- *
  */
 /* vi: sts=2 sw=2 ts=2 */
 
@@ -75,7 +68,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src);
 
 /**
  * Escape 'string' according to RFC3986 and
- * http://oauth.googlecode.com/svn/spec/branches/1.0/drafts/7/spec.html#encoding_parameters
+ * http://oauth.net/core/1.0/#encoding_parameters
  *
  * @param string The data to be encoded
  * @return encoded string otherwise NULL
@@ -137,6 +130,44 @@ char *oauth_sign_rsa_sha1 (char *m, char *k);
 char *catenc(int len, ...);
 
 /**
+ * splits the given url into a parameter array. 
+ * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ *
+ * @param url the url or query-string to parse. 
+ * @param argv pointer to a (char *) array where the results are stored.
+ *  The array is re-allocated to match the number of parameters and each 
+ *  parameter-string is allocated with strdup. - The memory needs to be freed
+ *  by the caller.
+ * 
+ * @return number of parameter(s) in array.
+ */
+int split_url_parameters(const char *url, char ***argv);
+
+/**
+ * build a url query sting from an array.
+ *
+ * @param argc the total number of elements in the array
+ * @param start element in the array at which to start concatenating.
+ * @param argv parameter-array to concatenate.
+ * @return url string needs to be freed by the caller.
+ *
+ */
+char *serialize_url (int argc, int start, char **argv);
+
+/**
+ * build a query parameter string from an array.
+ *
+ * This function is a shortcut for \ref serialize_url (argc, 1, argv). 
+ * It strips the leading host/path, which is usually the first 
+ * element when using split_url_parameters on an URL.
+ *
+ * @param argc the total number of elements in the array
+ * @param argv parameter-array to concatenate.
+ * @return url string needs to be freed by the caller.
+ */
+char *serialize_url_parameters (int argc, char **argv);
+ 
+/**
  * generate a random string between 15 and 32 chars length
  * and return a pointer to it. The value needs to be freed by the
  * caller
@@ -144,6 +175,14 @@ char *catenc(int len, ...);
  * @return zero terminated random string.
  */
 char *gen_nonce();
+
+/**
+ * string compare function for oauth parameters.
+ *
+ * used with qsort. needed to normalize request parameters.
+ * see http://oauth.net/core/1.0/#anchor14
+ */
+int oauth_cmpstringp(const void *p1, const void *p2);
 
 /**
  * sign an oAuth request URL.
@@ -181,11 +220,29 @@ char *oauth_sign_url (const char *url, char **postargs,
   const char *t_secret //< token secret - used as 2st part of secret-key
   );
 
+
 /**
- * string compare function for oauth parameters.
+ * do a HTTP POST request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl or a command-line HTTP client)
  *
- * used with qsort. needed to normalize request parameters:
- * http://oauth.net/core/1.0/#anchor14
+ * If compiled <b>without</b> libcurl this function calls
+ * a command-line executable defined in the environment variable
+ * OAUTH_HTTP_CMD - it defaults to 
+ * <tt>curl -sA 'liboauth-agent/0.1' -d '%p' '%u'</tt>
+ * where %p is replaced with the postargs and %u is replaced with 
+ * the URL. 
+ *
+ * bash & wget example:
+ * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "</tt>
+ *
+ * WARNING: this is a tentative function. it's convenient and handy for testing
+ * or developing oAuth code. But don't rely on this function
+ * to become a stable part of this API. It does not do 
+ * much error checking or handing for one thing..
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @return replied content from HTTP server. needs to be freed by caller.
  */
-int oauth_cmpstringp(const void *p1, const void *p2);
- 
+char *oauth_http_post (char *u, char *p);

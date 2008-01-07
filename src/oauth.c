@@ -163,14 +163,14 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
 
 /**
  * Escape 'string' according to RFC3986 and
- * http://oauth.googlecode.com/svn/spec/branches/1.0/drafts/7/spec.html#encoding_parameters
+ * http://oauth.net/core/1.0/#encoding_parameters
  *
  * @param string The data to be encoded
  * @return encoded string otherwise NULL
  * The caller must free the returned string.
  */
 char *url_escape(const char *string) {
-  if (!string) return strdup(""); // doc-check
+  if (!string) return strdup("");
   size_t alloc = strlen(string)+1;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
@@ -332,7 +332,7 @@ char *catenc(int len, ...) {
 
 /**
  * splits the given url into a parameter array. 
- * (see serialize_url and serialize_url_parameters for the reverse)
+ * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -342,8 +342,7 @@ char *catenc(int len, ...) {
  * 
  * @return number of parameter(s) in array.
  */
-int split_url_parameters(const char *url, char ***argv)
-{
+int split_url_parameters(const char *url, char ***argv) {
   int argc=0;
   char *token, *tmp, *t1;
   if (!argv) return 0;
@@ -382,7 +381,7 @@ char *serialize_url (int argc, int start, char **argv) {
   for(i=start; i< argc; i++) {
     int len = 0;
     if(query) len+=strlen(query);
-    // see http://oauth.net/core/1.0/#encoding_parameters
+    // see http://oauth.net/core/1.0/#anchor14
     // escape parameter names and arguments but not the '='
     if(!(t1=strchr(argv[i], '='))) {
       tmp=xstrdup(argv[i]);
@@ -411,7 +410,7 @@ char *serialize_url (int argc, int start, char **argv) {
 /**
  * build a query parameter string from an array.
  *
- * This function is a shortcut to serialize_url(argc, 1, argv);
+ * This function is a shortcut for \ref serialize_url (argc, 1, argv). 
  * It strips the leading host/path, which is usually the first 
  * element when using split_url_parameters on an URL.
  *
@@ -452,8 +451,8 @@ char *gen_nonce() {
 /**
  * string compare function for oauth parameters.
  *
- * used with qsort. needed to normalize request parameters:
- * http://oauth.net/core/1.0/#anchor14
+ * used with qsort. needed to normalize request parameters.
+ * see http://oauth.net/core/1.0/#anchor14
  */
 int oauth_cmpstringp(const void *p1, const void *p2) {
   char *v1,*v2;

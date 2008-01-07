@@ -1,3 +1,8 @@
+version 0.1.1
+ fixed parameter normalization and sorting for some edge cases.
+ added Test Cases from http://wiki.oauth.net/TestCases
+ added simple HTTP POST using libcurl or a command-line HTTP client.
+
 version 0.1.0
  added xmalloc - removed NULL checks after [re|m|c]alloc.
  libtoolized and prepared packaging.

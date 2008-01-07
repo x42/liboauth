@@ -44,7 +44,7 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)data;
 
-  mem->data = (char *)realloc(mem->data, mem->size + realsize + 1);
+  mem->data = (char *)xrealloc(mem->data, mem->size + realsize + 1);
   if (mem->data) {
     memcpy(&(mem->data[mem->size]), ptr, realsize);
     mem->size += realsize;
@@ -97,11 +97,12 @@ char *oauth_curl_get (char *u, char *p) {
 
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
 #define _OAUTH_DEF_HTTPCMD "curl -sA 'liboauth-agent/0.1' -d '%p' '%u' "
+// alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
 
 #include <stdio.h>
 
 /**
- *
+ * send POST via a command line HTTP client.
  */
 char *oauth_exec_post (char *u, char *p) {
   char cmd[1024];
@@ -130,7 +131,7 @@ char *oauth_exec_post (char *u, char *p) {
   int rcv = 1;
   while (in && rcv > 0 && !feof(in)) {
     alloc +=1024;
-    data = realloc(data, alloc * sizeof(char));
+    data = xrealloc(data, alloc * sizeof(char));
     rcv = fread(data, sizeof(char), 1024, in);
     len += rcv;
   }
@@ -143,6 +144,15 @@ char *oauth_exec_post (char *u, char *p) {
   return (data);
 }
 
+/**
+ * do a HTTP POST request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl or a command-line HTTP client)
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @return replied content from HTTP server. needs to be freed by caller.
+ */
 char *oauth_http_post (char *u, char *p) {
 #ifdef HAVE_CURL
   return oauth_curl_post(u,p);
