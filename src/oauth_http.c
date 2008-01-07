@@ -100,25 +100,29 @@ char *oauth_curl_get (char *u, char *p) {
 
 #include <stdio.h>
 
+/**
+ *
+ */
 char *oauth_exec_post (char *u, char *p) {
   char cmd[1024];
   char *cmdtpl = getenv(_OAUTH_ENV_HTTPCMD);
   if (!cmdtpl) cmdtpl = strdup (_OAUTH_DEF_HTTPCMD);
   else cmdtpl = strdup (cmdtpl); // clone getenv() string.
+
   // add URL and post param - error if no '%p' or '%u' present in definition
   char *t1,*t2, *tmp;
   t1=strstr(cmdtpl, "%p");
   t2=strstr(cmdtpl, "%u");
   if (!t1 || !t2) {
-	printf("invalid template\n");
+	printf("invalid HTTP command. set the '%s' environement variable.\n",_OAUTH_ENV_HTTPCMD);
 	return(NULL); // FIXME
   }
   *(++t1)= 's'; *(++t2)= 's';
-  // TODO: check if there are only two '%' in cmdtpl
+  // TODO: check if there are exactly two '%' in cmdtpl
   if (t1 > t2) { t1=u; t2=p; } else { t1=p; t2=u; }
   snprintf(cmd, 1024, cmdtpl, t1, t2);
-  // FIXME shell-escape cmd
-  printf("DEBUG: executing: %s\n",cmd);
+  // FIXME shell-escape cmd ?!
+  //printf("DEBUG: executing: %s\n",cmd);
   FILE *in = popen (cmd, "r");
   size_t len = 0;
   size_t alloc = 0;
@@ -132,20 +136,17 @@ char *oauth_exec_post (char *u, char *p) {
   }
   pclose(in);
   free(cmdtpl);
-  printf("DEBUG: read %i bytes\n",len);
+  //printf("DEBUG: read %i bytes\n",len);
   data[len]=0;
-  if (data) printf("DEBUG: return: %s\n",data);
-  else printf("DEBUG: NULL data\n");
+  //if (data) printf("DEBUG: return: %s\n",data);
+  //else printf("DEBUG: NULL data\n");
   return (data);
 }
 
-
 char *oauth_http_post (char *u, char *p) {
-  return oauth_exec_post(u,p);
-
 #ifdef HAVE_CURL
   return oauth_curl_post(u,p);
 #else // no cURL.
-  return NULL;
+  return oauth_exec_post(u,p);
 #endif
 }

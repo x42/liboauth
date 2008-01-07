@@ -331,42 +331,64 @@ char *catenc(int len, ...) {
 }
 
 /**
+ * splits the given url into a parameter array. 
+ * (see serialize_url and serialize_url_parameters for the reverse)
  *
+ * @param url the url or query-string to parse. 
+ * @param argv pointer to a (char *) array where the results are stored.
+ *  The array is re-allocated to match the number of parameters and each 
+ *  parameter-string is allocated with strdup. - The memory needs to be freed
+ *  by the caller.
+ * 
+ * @return number of parameter(s) in array.
  */
 int split_url_parameters(const char *url, char ***argv)
 {
   int argc=0;
   char *token, *tmp, *t1;
-  //(*argv) = NULL; //safety?! or free first?!
+  if (!argv) return 0;
+  t1=xstrdup(url);
 
-  t1=tmp=xstrdup(url);
+  // '+' represents a space, in a URL query string
+  while ((tmp=strchr(t1,'+'))) *tmp=' ';
+
+  tmp=t1;
   while((token=strtok(tmp,"&?"))) {
-    if(!strncasecmp("oauth_signature",token,15)) continue;
+    if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     (*argv)[argc]=xstrdup(token);
     tmp=NULL;
     argc++;
   }
+
   free(t1);
   return argc;
 }
 
 /**
+ * build a url query sting from an array.
+ *
+ * @param argc the total number of elements in the array
+ * @param start element in the array at which to start concatenating.
+ * @param argv parameter-array to concatenate.
+ * @return url string needs to be freed by the caller.
  *
  */
-char *serialize_url_parameters (int argc, char **argv) {
+char *serialize_url (int argc, int start, char **argv) {
   char *token, *tmp, *t1;
   int i;
   char *query = (char*) xmalloc(sizeof(char)); 
   *query='\0';
-  for(i=1; i< argc; i++) {
+  for(i=start; i< argc; i++) {
     int len = 0;
     if(query) len+=strlen(query);
     // see http://oauth.net/core/1.0/#encoding_parameters
     // escape parameter names and arguments but not the '='
     if(!(t1=strchr(argv[i], '='))) {
       tmp=xstrdup(argv[i]);
-      len+=strlen(argv[i])+2;
+      tmp=(char*) xrealloc(tmp,(strlen(tmp)+2)*sizeof(char));
+      strcat(tmp,"=");
+      len+=strlen(tmp)+2;
     } else {
       *t1=0;
       tmp = url_escape(argv[i]);
@@ -379,11 +401,26 @@ char *serialize_url_parameters (int argc, char **argv) {
       len+=strlen(tmp)+2;
     }
     query=(char*) xrealloc(query,len*sizeof(char));
-    strcat(query, (i==1?"":"&"));
+    strcat(query, (i==start?"":"&"));
     strcat(query, tmp);
     free(tmp);
   }
   return (query);
+}
+
+/**
+ * build a query parameter string from an array.
+ *
+ * This function is a shortcut to serialize_url(argc, 1, argv);
+ * It strips the leading host/path, which is usually the first 
+ * element when using split_url_parameters on an URL.
+ *
+ * @param argc the total number of elements in the array
+ * @param argv parameter-array to concatenate.
+ * @return url string needs to be freed by the caller.
+ */
+char *serialize_url_parameters (int argc, char **argv) {
+  return serialize_url(argc, 1, argv);
 }
 
 /**
@@ -413,13 +450,43 @@ char *gen_nonce() {
 }
 
 /**
- * string compare function.
+ * string compare function for oauth parameters.
  *
  * used with qsort. needed to normalize request parameters:
- * http://oauth.googlecode.com/svn/spec/branches/1.0/drafts/7/spec.html#anchor14
+ * http://oauth.net/core/1.0/#anchor14
  */
-static int cmpstringp(const void *p1, const void *p2) {
-   return strcmp(* (char * const *)p1, * (char * const *)p2);
+int oauth_cmpstringp(const void *p1, const void *p2) {
+  char *v1,*v2;
+  char *t1,*t2;
+  int rv;
+  // TODO: this is not fast - we should escape the 
+  // array elements (once) before sorting.
+  v1=url_escape(* (char * const *)p1);
+  v2=url_escape(* (char * const *)p2);
+  char *tmp;
+  // '=' signs are not "%3D" !
+  if ((t1=strstr(v1,"%3D"))) {
+    t1[0]='\0'; t1[1]='='; t1[2]='=';
+  }
+  if ((t2=strstr(v2,"%3D"))) {
+    t2[0]='\0'; t2[1]='='; t2[2]='=';
+  }
+
+  // compare parameter names
+  rv=strcmp(v1,v2);
+  if (rv!=0) {
+    if (v1) free(v1);
+    if (v2) free(v2);
+    return rv;
+  }
+
+  // if parameter names are equal, sort by value.
+  if (t1) t1[0]='='; 
+  if (t2) t2[0]='='; 
+  rv=strcmp(t1,t2);
+  if (v1) free(v1);
+  if (v2) free(v2);
+  return rv;
 }
 
 /**
@@ -496,7 +563,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   ADD_TO_ARGV;
 
   // sort parameters
-  qsort(&argv[1], argc-1, sizeof(char *), cmpstringp);
+  qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
 
   // serialize URL
   char *query= serialize_url_parameters(argc, argv);

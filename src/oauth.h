@@ -181,3 +181,11 @@ char *oauth_sign_url (const char *url, char **postargs,
   const char *t_secret //< token secret - used as 2st part of secret-key
   );
 
+/**
+ * string compare function for oauth parameters.
+ *
+ * used with qsort. needed to normalize request parameters:
+ * http://oauth.net/core/1.0/#anchor14
+ */
+int oauth_cmpstringp(const void *p1, const void *p2);
+ 

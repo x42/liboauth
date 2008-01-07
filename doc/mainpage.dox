@@ -7,7 +7,12 @@
 
  oauth-c depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. The source includes some example usage and selftest code.
 
- The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using QT4.3.2 QHttp C++ code on win32 (mingw), gnu/Linux and OSX-10.5.
+ The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using QT4.3.2 QHttp C++ code on win32 (mingw), gnu/Linux and OSX-10.5. 
+
+@section download Usage
+ You can use this code as library and dynamically or statically link your program against liboauth. 
+ Alternatively you could include and compile oauth.c with your sources. 
+ If you want to include oauth.c into C++ projects, use a <tt>extern "C"</tt> declaration.
 
 @section download Download
 
