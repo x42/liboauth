@@ -229,12 +229,12 @@ char *oauth_sign_url (const char *url, char **postargs,
  * If compiled <b>without</b> libcurl this function calls
  * a command-line executable defined in the environment variable
  * OAUTH_HTTP_CMD - it defaults to 
- * <tt>curl -sA 'liboauth-agent/0.1' -d '%p' '%u'</tt>
- * where %p is replaced with the postargs and %u is replaced with 
+ * <tt>curl -sA 'liboauth-agent/0.1' -d '%%p' '%%u'</tt>
+ * where %%p is replaced with the postargs and %%u is replaced with 
  * the URL. 
  *
  * bash & wget example:
- * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "</tt>
+ * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%%p' '%%u' "</tt>
  *
  * WARNING: this is a tentative function. it's convenient and handy for testing
  * or developing oAuth code. But don't rely on this function
