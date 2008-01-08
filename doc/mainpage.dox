@@ -13,15 +13,16 @@
 @section installation Installation
  The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install liboauth and liboauth-dev package.
 
- liboauth uses autotools and libtools. It is built with <tt>./autogen.sh</tt>, <tt>./configure</tt> and <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
+ liboauth uses autotools and libtools. You first need to generate the build environement with something alike:
+ <tt>aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy</tt>. run <tt>./configure</tt> and build it with <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
 
- If doxygen is available, the documentation can be built with from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code are run with <tt>make check</tt>.
+ If doxygen is available, the documentation can be rendered from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code can be run with <tt>make check</tt>.
 
 @section usage Usage
  See the tests/oauthtest.c file for an example usage and consult this documentation for a more detailed reference of available functions.
  The reference is also available as unix manual page: <tt>man 3 oauth</tt>
 
- If you simply want to calculate the oAuth-signiature, all you need is call \ref oauth_sign_url.
+ If you simply want to calculate the oAuth-signiature, all you need is \ref oauth_sign_url.
 
  Future releases might include more elaborate usage information: Feel free to ask questions.
 
