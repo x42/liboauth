@@ -80,7 +80,7 @@ src/oauth.h \-
 .ti -1c
 .RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
-.RI "\fIsign an oAuth request URL. \fP"
+.RI "\fIcalculate oAuth-signature for a given request URL, parameters and oauth-tokens. \fP"
 .ti -1c
 .RI "char * \fBoauth_http_post\fP (char *u, char *p)"
 .br
@@ -297,7 +297,7 @@ signature string.
 
 .SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
-sign an oAuth request URL. 
+calculate oAuth-signature for a given request URL, parameters and oauth-tokens. 
 .PP
 if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
 .PP
