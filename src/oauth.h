@@ -185,7 +185,7 @@ char *gen_nonce();
 int oauth_cmpstringp(const void *p1, const void *p2);
 
 /**
- * sign an oAuth request URL.
+ * calculate oAuth-signature for a given request URL, parameters and oauth-tokens.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 
  * signed URL is returned. Else this fn will modify 'postargs' 
