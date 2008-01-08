@@ -6,21 +6,28 @@
  oauth-c is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> API. 
  liboauth provides basic functions to escape and encode stings according to oauth specs and offers high-level functions built on top to sign requests or verify signatures.
  
- oauth-c depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
+ liboauth depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
  
- The source includes example code and a selftest based on http://wiki.oauth.net/TestCases (<tt>make check</tt>).
+ The source includes example code and a selftest based on http://wiki.oauth.net/TestCases. The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and OSX-10.5.
 
- The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using QT4.3.2 QHttp C++ code on win32 (mingw), gnu/Linux and OSX-10.5. 
+@section installation Installation
+ The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install liboauth and liboauth-dev package.
 
-@section download Usage
- You can use this code as library and dynamically or statically link your program against liboauth. 
- Alternatively you could include and compile oauth.c with your sources. 
- If you want to include oauth.c into C++ projects, use a <tt>extern "C"</tt> declaration.
+ liboauth uses autotools and libtools. It is built with <tt>./autogen.sh</tt>, <tt>./configure</tt> and <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
+
+ If doxygen is available, the documentation can be built with from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code are run with <tt>make check</tt>.
+
+@section usage Usage
+ See the tests/oauthtest.c file for an example usage and consult this documentation for a more detailed reference of available functions.
+ The reference is also available as unix manual page: <tt>man 3 oauth</tt>
+
+ If you simply want to calculate the oAuth-signiature, all you need is call \ref oauth_sign_url.
+
+ Future releases might include more elaborate usage information: Feel free to ask questions.
 
 @section download Download
 
   Download Source: <a href="http://mir.dnsalias.com/_media/oss/oauth/liboauth-0.1.1.tar.gz">liboauth-0.1.1.tar.gz</a>
-
 
 @section bug Bugs
  send bug reports, patches or suggestions to robin @ mediamatic . net.
