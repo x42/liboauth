@@ -274,13 +274,11 @@ char *oauth_sign_rsa_sha1 (char *m, char *k) {
   unsigned int len;
   RSA *rsa = RSA_new();
   //TODO read RSA secret key (from file? - k?)
-  //
-  //NOTE:
-  // oAuth requires PKCS #1 v2.1 [RFC 3447].
-  // openssl-0.9.8g supports PKCS #1 v2.0 [RFC 2437] - see
-  // `man 3 rsa` - maybe just the manpage is out of date?!
-  // they refer to the 3447 RFC in the source doc.
-  //
+  // `man 3 rsa` 
+  char test[4096];
+  printf("len: %i\n",oauth_decode_base64(test, k);
+
+  RSA_check_key(rsa);
   if (!RSA_sign(NID_sha, (unsigned char *)m, strlen(m), sig, &len, rsa)) {
     printf("rsa signing failed\n");
   }

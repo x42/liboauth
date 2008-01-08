@@ -25,7 +25,7 @@ int test_encoding(char *param, char *expected) {
     printf("parameter encoding test for '%s' failed.\n"
            " got: '%s' expected: '%s'\n", param, testcase, expected);
   } 
-  else if (loglevel) printf("parameter encoding ok. ('%s')\n",param);
+  else if (loglevel) printf("parameter encoding ok. ('%s')\n", testcase);
   if (testcase) free(testcase);
   return (rv);
 }
@@ -71,7 +71,7 @@ int test_normalize(char *param, char *expected) {
     printf("parameter normalization test failed for: '%s'.\n"
            " got: '%s' expected: '%s'\n", param, testcase, expected);
   }
-  else if (loglevel) printf("parameter normalization ok. ('%s')\n",param);
+  else if (loglevel) printf("parameter normalization ok. ('%s')\n", testcase);
   for (i=0;i<argc;i++) free(argv[i]);
   if (argv) free(argv);
   if (testcase) free(testcase);
@@ -208,6 +208,10 @@ int main (int argc, char **argv) {
       "&oauth_signature=ignored&oauth_signature_method=HMAC-SHA1",
       "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal");
 
+  fail|=test_sha1("cs","","bs","egQqG5AJep5sJ7anhXju1unge2I=");
+  fail|=test_sha1("cs","ts","bs","VZVjXceV7JgPq/dOTnNmEfO0Fv8=");
+  fail|=test_sha1("kd94hf93k423kf44","pfkkdhi9sl3r4s00","GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal","tR3+Ty81lMeYAr/Fid0kMTYa/WM=");
+
   if (fail) {
     printf("One or more tests from http://wiki.oauth.net/TestCases failed.\n");
   } else {
@@ -232,13 +236,16 @@ int main (int argc, char **argv) {
   } else 
     printf("HMAC-SHA1 signature selftest successful.\n");
   free(b64d);
-
-  fail|=test_sha1("cs","","bs","egQqG5AJep5sJ7anhXju1unge2I=");
-  fail|=test_sha1("cs","ts","bs","VZVjXceV7JgPq/dOTnNmEfO0Fv8=");
-  fail|=test_sha1("kd94hf93k423kf44","pfkkdhi9sl3r4s00","GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal","tR3+Ty81lMeYAr/Fid0kMTYa/WM=");
-
-
 #endif
+
+#if 0
+  b64d = oauth_sign_rsa_sha1(testurl , "");
+  printf("rsa sig: '%s'\n",b64d);
+  free(b64d);
+#else
+  printf("RSA-SHA1 skipped. not implemented.\n");
+#endif
+
 
   // example code.
 
