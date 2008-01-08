@@ -372,7 +372,7 @@ int split_url_parameters(const char *url, char ***argv) {
  *
  */
 char *serialize_url (int argc, int start, char **argv) {
-  char *token, *tmp, *t1;
+  char  *tmp, *t1;
   int i;
   char *query = (char*) xmalloc(sizeof(char)); 
   *query='\0';
@@ -438,7 +438,7 @@ char *gen_nonce() {
   if(rndinit) {srand(time(NULL)); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
 
   len=15+floor(rand()*16.0/(double)RAND_MAX);
-  nc = xmalloc((len+1)*sizeof(char));
+  nc = (char*) xmalloc((len+1)*sizeof(char));
   for(i=0;i<len; i++) {
     nc[i] = chars[ rand() % max ];
   }
@@ -460,7 +460,7 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   // array elements (once) before sorting.
   v1=url_escape(* (char * const *)p1);
   v2=url_escape(* (char * const *)p2);
-  char *tmp;
+
   // '=' signs are not "%3D" !
   if ((t1=strstr(v1,"%3D"))) {
     t1[0]='\0'; t1[1]='='; t1[2]='=';
