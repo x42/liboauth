@@ -90,6 +90,18 @@ char *url_escape(const char *string);
 char *oauth_sign_hmac_sha1 (char *m, char *k);
 
 /**
+ * same as \ref oauth_sign_hmac_sha1 but allows
+ * to specify length of message and key (in case they contain null chars)
+ *
+ * @param m message to be signed
+ * @param ml length of message
+ * @param k key used for signing
+ * @param kl length of key
+ * @return signature string.
+ */
+char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl);
+
+/**
  * returns plaintext signature for the given key.
  *
  * the returned string needs to be freed by the caller

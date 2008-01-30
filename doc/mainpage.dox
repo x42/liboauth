@@ -14,7 +14,7 @@
  The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install liboauth and liboauth-dev package.
 
  liboauth uses autotools and libtools. You first need to generate the build environement with something alike:
- <tt>aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy</tt>. run <tt>./configure</tt> and build it with <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
+ <tt>aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy</tt>. (<i>OSX users use <tt>glibtoolize</tt></i>). Then run <tt>./configure</tt> and build liboauth with <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
 
  If doxygen is available, the documentation can be rendered from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code can be run with <tt>make check</tt>.
 

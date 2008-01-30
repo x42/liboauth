@@ -229,11 +229,15 @@ char *url_escape(const char *string) {
  * @return signature string.
  */
 char *oauth_sign_hmac_sha1 (char *m, char *k) {
+  oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k));
+}
+
+char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl) {
   unsigned char result[EVP_MAX_MD_SIZE];
   unsigned int resultlen = 0;
   
-  HMAC(EVP_sha1(), k, strlen(k), 
-      (unsigned char*) m,strlen(m),
+  HMAC(EVP_sha1(), k, kl, 
+      (unsigned char*) m, ml,
       result, &resultlen);
 
   return(oauth_encode_base64(resultlen, result));
