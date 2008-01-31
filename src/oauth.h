@@ -144,6 +144,7 @@ char *catenc(int len, ...);
 /**
  * splits the given url into a parameter array. 
  * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ * (see \ref split_post_parameters for a more generic version)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -154,6 +155,22 @@ char *catenc(int len, ...);
  * @return number of parameter(s) in array.
  */
 int split_url_parameters(const char *url, char ***argv);
+
+/**
+ * splits the given url into a parameter array. 
+ * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ *
+ * @param url the url or query-string to parse. 
+ * @param argv pointer to a (char *) array where the results are stored.
+ *  The array is re-allocated to match the number of parameters and each 
+ *  parameter-string is allocated with strdup. - The memory needs to be freed
+ *  by the caller.
+ * @param qesc use query parameter escape (vs post-param-escape) - if set
+ *        to 1 all '+' are treated as spaces ' '
+ * 
+ * @return number of parameter(s) in array.
+ */
+int split_post_parameters(const char *url, char ***argv, short qesc);
 
 /**
  * build a url query sting from an array.
@@ -258,3 +275,18 @@ char *oauth_sign_url (const char *url, char **postargs,
  * @return replied content from HTTP server. needs to be freed by caller.
  */
 char *oauth_http_post (char *u, char *p);
+
+/**
+ * http post raw data from file.
+ * the returned string needs to be freed by the caller
+ * (requires libcurl)
+ *
+ * see dislaimer: /ref oauth_http_post
+ *
+ * @param u url to retrieve
+ * @param fn filename of the file to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_post_file (char *u, char *fn, size_t len, char *contenttype);

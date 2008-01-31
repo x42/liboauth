@@ -33,6 +33,7 @@
 
 #ifdef HAVE_CURL
 #include <curl/curl.h>
+#include <sys/stat.h>
 
 struct MemoryStruct {
   char *data;
@@ -93,6 +94,61 @@ char *oauth_curl_post (char *u, char *p) {
 char *oauth_curl_get (char *u, char *p) {
   ;
 }
+
+/**
+ * cURL http post raw data from file.
+ * the returned string needs to be freed by the caller
+ *
+ * @param u url to retrieve
+ * @param fn filename of the file to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP or NULL on error
+ */
+char *oauth_curl_post_file (char *u, char *fn, size_t len, char *contenttype) {
+  CURL *curl;
+  CURLcode res;
+
+  struct MemoryStruct chunk;
+  chunk.data=NULL;
+  chunk.size = 0;
+
+  struct curl_slist *slist=NULL;
+  if (contenttype)
+    slist = curl_slist_append(slist, contenttype);
+  else
+    slist = curl_slist_append(slist, "Content-Type: image/jpeg;");
+
+  if (!len) {
+    struct stat statbuf;
+    if (stat(fn, &statbuf) == -1) return(NULL);
+    len = statbuf.st_size;
+  }
+
+  FILE *f = fopen(fn,"r");
+  if (!f) return NULL;
+
+  curl = curl_easy_init();
+  if(!curl) return NULL;
+  curl_easy_setopt(curl, CURLOPT_URL, u);
+  curl_easy_setopt(curl, CURLOPT_POST, 1);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, len);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
+  curl_easy_setopt(curl, CURLOPT_READDATA, f);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, "liboauth-agent/0.1");
+  res = curl_easy_perform(curl);
+  if (res) {
+    // error
+    return NULL;
+  }
+  fclose(f);
+
+  curl_easy_cleanup(curl);
+  return (chunk.data);
+}
+
 #endif // no cURL.
 
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
@@ -115,7 +171,7 @@ char *oauth_exec_post (char *u, char *p) {
   t1=strstr(cmdtpl, "%p");
   t2=strstr(cmdtpl, "%u");
   if (!t1 || !t2) {
-	printf("invalid HTTP command. set the '%s' environement variable.\n",_OAUTH_ENV_HTTPCMD);
+	fprintf(stderr, "invalid HTTP command. set the '%s' environement variable.\n",_OAUTH_ENV_HTTPCMD);
 	return(NULL); // FIXME
   }
   *(++t1)= 's'; *(++t2)= 's';
@@ -151,12 +207,31 @@ char *oauth_exec_post (char *u, char *p) {
  *
  * @param u url to query
  * @param p postargs to send along with the HTTP request.
- * @return replied content from HTTP server. needs to be freed by caller.
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
  */
 char *oauth_http_post (char *u, char *p) {
 #ifdef HAVE_CURL
   return oauth_curl_post(u,p);
 #else // no cURL.
   return oauth_exec_post(u,p);
+#endif
+}
+
+/**
+ * http post raw data from file.
+ * the returned string needs to be freed by the caller
+ *
+ * @param u url to retrieve
+ * @param fn filename of the file to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_post_file (char *u, char *fn, size_t len, char *contenttype){
+#ifdef HAVE_CURL
+  return oauth_curl_post_file (u, fn, len, contenttype);
+#else
+  fprintf(stderr, "Warning: oauth_post_file requires curl. curl is not available.\n");
 #endif
 }

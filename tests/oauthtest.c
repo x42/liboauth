@@ -177,6 +177,7 @@ int main (int argc, char **argv) {
   fail|=test_encoding("abcABC123","abcABC123");
   fail|=test_encoding("-._~","-._~");
   fail|=test_encoding("%","%25");
+  fail|=test_encoding("+","%2B");
   fail|=test_encoding("&=*","%26%3D%2A");
 
  #ifdef TEST_UNICODE

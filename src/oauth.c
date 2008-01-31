@@ -27,6 +27,8 @@
 # include <config.h>
 #endif
 
+#define DEBUG_OAUTH
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -341,17 +343,19 @@ char *catenc(int len, ...) {
  *  The array is re-allocated to match the number of parameters and each 
  *  parameter-string is allocated with strdup. - The memory needs to be freed
  *  by the caller.
+ * @param qesc use query parameter escape (vs post-param-escape) - if set
+ *        to 1 all '+' are treated as spaces ' '
  * 
  * @return number of parameter(s) in array.
  */
-int split_url_parameters(const char *url, char ***argv) {
+int split_post_parameters(const char *url, char ***argv, short qesc) {
   int argc=0;
   char *token, *tmp, *t1;
   if (!argv) return 0;
   t1=xstrdup(url);
 
   // '+' represents a space, in a URL query string
-  while ((tmp=strchr(t1,'+'))) *tmp=' ';
+  while (qesc && (tmp=strchr(t1,'+'))) *tmp=' ';
 
   tmp=t1;
   while((token=strtok(tmp,"&?"))) {
@@ -364,6 +368,10 @@ int split_url_parameters(const char *url, char ***argv) {
 
   free(t1);
   return argc;
+}
+
+int split_url_parameters(const char *url, char ***argv) {
+  return split_post_parameters(url, argv, 1);
 }
 
 /**
@@ -530,7 +538,11 @@ char *oauth_sign_url (const char *url, char **postargs,
   int  argc;
   char **argv = NULL;
   char *tmp;
-  argc = split_url_parameters(url, &argv);
+
+  if (postargs)
+    argc = split_post_parameters(url, &argv, 0);
+  else
+    argc = split_url_parameters(url, &argv);
 
 #define ADD_TO_ARGV \
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
@@ -545,13 +557,15 @@ char *oauth_sign_url (const char *url, char **postargs,
   snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
   ADD_TO_ARGV;
   if (t_key && strlen(t_key) >0) {
-    tmp = url_escape(t_key); // FIXME: check if we need to escape this here
+    //tmp = url_escape(t_key); // FIXME: check if we need to escape this here
+    tmp = xstrdup(t_key);
     snprintf(oarg, 1024, "oauth_token=%s", tmp);
     ADD_TO_ARGV;
     if(tmp) free(tmp);
   }
 
-  tmp = url_escape(c_key); // FIXME: check if we need to escape this here
+  //tmp = url_escape(c_key); // FIXME: check if we need to escape this here
+  tmp = xstrdup(c_key);
   snprintf(oarg, 1024, "oauth_consumer_key=%s", tmp);
   ADD_TO_ARGV;
   if(tmp) free(tmp);
@@ -574,8 +588,9 @@ char *oauth_sign_url (const char *url, char **postargs,
   okey = catenc(2, c_secret, t_secret);
   odat = catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
-  printf ("\n\ndata to sign: %s\n\n", odat);
+//printf ("\n\ndata to sign: %s\n\n", odat);
   printf ("key: %s\n\n", okey);
+  printf ("\n\ndata to sign:                                                %s\n\n", odat);
 #endif
   switch(method) {
     case OA_RSA:
@@ -587,7 +602,8 @@ char *oauth_sign_url (const char *url, char **postargs,
     default:
       sign = oauth_sign_hmac_sha1(odat,okey);
   }
-  senc = url_escape(sign);
+  //senc = url_escape(sign); // FIXME: check if we need to escape this here
+  senc = xstrdup(sign); // will be encoded by serialize_url() below
   free(odat); 
   free(okey);
   free(sign);
@@ -598,6 +614,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(senc);
 
   // build URL params
+#if 0 // don't escape query params
   int i;
   char *result = (char*) xmalloc(sizeof(char)); 
   *result='\0';
@@ -610,6 +627,9 @@ char *oauth_sign_url (const char *url, char **postargs,
     strcat(result, argv[i]);
     free(argv[i]);
   }
+#else
+  char *result = serialize_url(argc, (postargs?1:0), argv);
+#endif
 
   if(postargs) { 
     *postargs = result;
