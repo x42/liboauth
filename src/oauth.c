@@ -27,8 +27,6 @@
 # include <config.h>
 #endif
 
-#define DEBUG_OAUTH
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -584,13 +582,12 @@ char *oauth_sign_url (const char *url, char **postargs,
   char *query= serialize_url_parameters(argc, argv);
 
   // generate signature
-  char *okey, *odat, *sign, *senc;
+  char *okey, *odat, *sign;
   okey = catenc(2, c_secret, t_secret);
   odat = catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
-//printf ("\n\ndata to sign: %s\n\n", odat);
+  printf ("\n\ndata to sign: %s\n\n", odat);
   printf ("key: %s\n\n", okey);
-  printf ("\n\ndata to sign:                                                %s\n\n", odat);
 #endif
   switch(method) {
     case OA_RSA:
@@ -602,34 +599,16 @@ char *oauth_sign_url (const char *url, char **postargs,
     default:
       sign = oauth_sign_hmac_sha1(odat,okey);
   }
-  //senc = url_escape(sign); // FIXME: check if we need to escape this here
-  senc = xstrdup(sign); // will be encoded by serialize_url() below
   free(odat); 
   free(okey);
-  free(sign);
 
   // append signature to query args.
-  snprintf(oarg, 1024, "oauth_signature=%s",senc);
+  snprintf(oarg, 1024, "oauth_signature=%s",sign);
   ADD_TO_ARGV;
-  free(senc);
+  free(sign);
 
   // build URL params
-#if 0 // don't escape query params
-  int i;
-  char *result = (char*) xmalloc(sizeof(char)); 
-  *result='\0';
-  for(i=(postargs?1:0); i< argc; i++) {
-    int len = 0;
-    if(result) len+=strlen(result);
-    len+=strlen(argv[i])+3;
-    result= (char *)xrealloc(result,len*sizeof(char));
-    strcat(result, ((i==0||(postargs&&i==1))?"":((!postargs&&i==1)?"?":"&")));
-    strcat(result, argv[i]);
-    free(argv[i]);
-  }
-#else
   char *result = serialize_url(argc, (postargs?1:0), argv);
-#endif
 
   if(postargs) { 
     *postargs = result;
