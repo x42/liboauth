@@ -1,3 +1,9 @@
+version 0.1.2
+ different handlers for POST and GET query string. Get escapes '+' to ' '.
+ oauth_sign_url() returns escaped query string.
+ added oauth_curl_post_file - preparing for xoauth_body_signature.
+ updated test code.
+
 version 0.1.1
  fixed parameter normalization and sorting for some edge cases.
  added Test Cases from http://wiki.oauth.net/TestCases
