@@ -105,7 +105,7 @@ char *oauth_curl_get (char *u, char *p) {
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP or NULL on error
  */
-char *oauth_curl_post_file (char *u, char *fn, size_t len, char *contenttype) {
+char *oauth_curl_post_file (char *u, char *fn, size_t len, char *customheader) {
   CURL *curl;
   CURLcode res;
 
@@ -114,8 +114,8 @@ char *oauth_curl_post_file (char *u, char *fn, size_t len, char *contenttype) {
   chunk.size = 0;
 
   struct curl_slist *slist=NULL;
-  if (contenttype)
-    slist = curl_slist_append(slist, contenttype);
+  if (customheader)
+    slist = curl_slist_append(slist, customheader);
   else
     slist = curl_slist_append(slist, "Content-Type: image/jpeg;");
 

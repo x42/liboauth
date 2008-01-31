@@ -289,4 +289,4 @@ char *oauth_http_post (char *u, char *p);
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_post_file (char *u, char *fn, size_t len, char *contenttype);
+char *oauth_post_file (char *u, char *fn, size_t len, char *customheader);
