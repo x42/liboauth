@@ -1,0 +1,20 @@
+liboauth (0.1.3-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Wed, 23 Jul 2008 21:51:11 +0200
+
+liboauth (0.1.2-1) unstable; urgency=low
+  *  new upstream release
+
+ -- Robin Gareus <robin@mediamatic.nl>  Thu, 31 Jan 2008 14:46:33 +0100
+
+liboauth (0.1.1-1) unstable; urgency=low
+  *  new upstream release
+
+ -- Robin Gareus <robin@mediamatic.nl>  Mon, 07 Jan 2008 23:57:20 +0100
+
+liboauth (0.1.0-1) unstable; urgency=low
+
+  * Initial release 
+
+ -- Robin Gareus <robin@mediamatic.nl>  Sun, 09 Dec 2007 22:01:34 +0100
+

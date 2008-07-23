@@ -1,0 +1,22 @@
+Source: liboauth
+Priority: extra
+Maintainer: Robin Gareus <robin@mediamatic.nl>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+Section: libs
+
+Package: liboauth-dev
+Section: libdevel
+Architecture: any
+Depends: liboauth(= ${Source-Version})
+Description: oAuth - secure authentication for web applications
+ liboauth implements request signing and url escape functions
+ according to the oAuth standard. see http://oauth.net/
+
+Package: liboauth
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: oAuth - secure authentication for web applications
+ liboauth implements request signing and url escape functions
+ according to the oAuth standard. see http://oauth.net/

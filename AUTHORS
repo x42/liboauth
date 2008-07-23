@@ -1,0 +1,9 @@
+Robin Gareus <robin@mediamatic.net> has written and is maintaining liboauth.
+
+The base64 code is used with permission from Jan-Henrik 
+Haukeland <hauk@tildeslash.com>.
+
+escape_url() contains code from curl by Daniel Stenberg <daniel@haxx.se>
+
+many thanks to Marc Worrel - http://www.marcworrell.com/ - for an introducing
+to the oAuth API and helping to debug this code.

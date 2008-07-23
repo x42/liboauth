@@ -1,0 +1,24 @@
+version 0.1.3
+ removed getpid() on random-number initialization for win.
+ moving to sourceforge.
+
+version 0.1.2
+ different handlers for POST and GET query string. Get escapes '+' to ' '.
+ oauth_sign_url() returns escaped query string.
+ added oauth_curl_post_file - preparing for xoauth_body_signature.
+ updated test code.
+
+version 0.1.1
+ fixed parameter normalization and sorting for some edge cases.
+ added Test Cases from http://wiki.oauth.net/TestCases
+ added simple HTTP POST using libcurl or a command-line HTTP client.
+
+version 0.1.0
+ added xmalloc - removed NULL checks after [re|m|c]alloc.
+ libtoolized and prepared packaging.
+ fixed a couple of typos
+ added a some more documentation.
+
+version 0.0.1
+ first public release
+ oAuth parameter escape and URL request signing functions.

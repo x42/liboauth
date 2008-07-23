@@ -1,0 +1,423 @@
+.TH "src/oauth.h" 3 "8 Jan 2008" "Version 0.1.1" "oAuth library functions" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/oauth.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBOAuthMethod\fP { \fBOA_HMAC\fP = 0, \fBOA_RSA\fP, \fBOA_PLAINTEXT\fP }"
+.br
+.RI "\fIsignature method to used for signing the request. \fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "char \fBoauth_b64_encode\fP (unsigned char u)"
+.br
+.RI "\fIBase64 encode one byte. \fP"
+.ti -1c
+.RI "unsigned char \fBoauth_b64_decode\fP (char c)"
+.br
+.RI "\fIDecode a single base64 character. \fP"
+.ti -1c
+.RI "int \fBoauth_b64_is_base64\fP (char c)"
+.br
+.RI "\fIReturn TRUE if 'c' is a valid base64 character, otherwise FALSE. \fP"
+.ti -1c
+.RI "char * \fBoauth_encode_base64\fP (int size, unsigned char *src)"
+.br
+.RI "\fIBase64 encode and return size data in 'src'. \fP"
+.ti -1c
+.RI "int \fBoauth_decode_base64\fP (unsigned char *dest, const char *src)"
+.br
+.RI "\fIDecode the base64 encoded string 'src' into the memory pointed to by 'dest'. \fP"
+.ti -1c
+.RI "char * \fBurl_escape\fP (const char *string)"
+.br
+.RI "\fIEscape 'string' according to RFC3986 and http://oauth.net/core/1.0/#encoding_parameters. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_hmac_sha1\fP (char *m, char *k)"
+.br
+.RI "\fIreturns base64 encoded HMAC-SHA1 signature for given message and key. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_plaintext\fP (char *m, char *k)"
+.br
+.RI "\fIreturns plaintext signature for the given key. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_rsa_sha1\fP (char *m, char *k)"
+.br
+.RI "\fIreturns RSA signature for given data. \fP"
+.ti -1c
+.RI "char * \fBcatenc\fP (int len,...)"
+.br
+.RI "\fIencode strings and concatenate with '&' separator. \fP"
+.ti -1c
+.RI "int \fBsplit_url_parameters\fP (const char *url, char ***argv)"
+.br
+.RI "\fIsplits the given url into a parameter array. \fP"
+.ti -1c
+.RI "char * \fBserialize_url\fP (int argc, int start, char **argv)"
+.br
+.RI "\fIbuild a url query sting from an array. \fP"
+.ti -1c
+.RI "char * \fBserialize_url_parameters\fP (int argc, char **argv)"
+.br
+.RI "\fIbuild a query parameter string from an array. \fP"
+.ti -1c
+.RI "char * \fBgen_nonce\fP ()"
+.br
+.RI "\fIgenerate a random string between 15 and 32 chars length and return a pointer to it. \fP"
+.ti -1c
+.RI "int \fBoauth_cmpstringp\fP (const void *p1, const void *p2)"
+.br
+.RI "\fIstring compare function for oauth parameters. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
+.br
+.RI "\fIcalculate oAuth-signature for a given request URL, parameters and oauth-tokens. \fP"
+.ti -1c
+.RI "char * \fBoauth_http_post\fP (char *u, char *p)"
+.br
+.RI "\fIdo a HTTP POST request, wait for it to finish and return the content of the reply. \fP"
+.in -1c
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBOAuthMethod\fP"
+.PP
+signature method to used for signing the request. 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIOA_HMAC \fP\fP
+use HMAC-SHA1 request signing method 
+.TP
+\fB\fIOA_RSA \fP\fP
+use RSA signature (not implemented) 
+.TP
+\fB\fIOA_PLAINTEXT \fP\fP
+use plain text signature (for testing only) 
+.PP
+Definition at line 26 of file oauth.h.
+.SH "Function Documentation"
+.PP 
+.SS "char* catenc (int len,  ...)"
+.PP
+encode strings and concatenate with '&' separator. 
+.PP
+The number of strings to be concatenated must be given as first argument. all arguments thereafter must be of type (char *)
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlen\fP the number of arguments to follow this parameter 
+.br
+\fI...\fP string to escape and added
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+pointer to memory holding the concatenated strings - needs to be free(d) by the caller. or NULL in case we ran out of memory. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* gen_nonce ()"
+.PP
+generate a random string between 15 and 32 chars length and return a pointer to it. 
+.PP
+The value needs to be freed by the caller
+.PP
+\fBReturns:\fP
+.RS 4
+zero terminated random string. 
+.RE
+.PP
+
+.SS "unsigned char oauth_b64_decode (char c)"
+.PP
+Decode a single base64 character. 
+.PP
+.SS "char oauth_b64_encode (unsigned char u)"
+.PP
+Base64 encode one byte. 
+.PP
+.SS "int oauth_b64_is_base64 (char c)"
+.PP
+Return TRUE if 'c' is a valid base64 character, otherwise FALSE. 
+.PP
+.SS "int oauth_cmpstringp (const void * p1, const void * p2)"
+.PP
+string compare function for oauth parameters. 
+.PP
+used with qsort. needed to normalize request parameters. see http://oauth.net/core/1.0/#anchor14 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "int oauth_decode_base64 (unsigned char * dest, const char * src)"
+.PP
+Decode the base64 encoded string 'src' into the memory pointed to by 'dest'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdest\fP Pointer to memory for holding the decoded string. Must be large enough to recieve the decoded string. 
+.br
+\fIsrc\fP A base64 encoded string. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+the length of the decoded string if decode succeeded otherwise 0. 
+.RE
+.PP
+
+.SS "char* oauth_encode_base64 (int size, unsigned char * src)"
+.PP
+Base64 encode and return size data in 'src'. 
+.PP
+The caller must free the returned string.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsize\fP The size of the data in src 
+.br
+\fIsrc\fP The data to be base64 encode 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+encoded string otherwise NULL 
+.RE
+.PP
+
+.SS "char* oauth_http_post (char * u, char * p)"
+.PP
+do a HTTP POST request, wait for it to finish and return the content of the reply. 
+.PP
+(requires libcurl or a command-line HTTP client)
+.PP
+If compiled \fBwithout\fP libcurl this function calls a command-line executable defined in the environment variable OAUTH_HTTP_CMD - it defaults to \fCcurl -sA 'liboauth-agent/0.1' -d '%p' '%u'\fP where %p is replaced with the postargs and %u is replaced with the URL.
+.PP
+bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' '\fP
+.PP
+WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handing for one thing..
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu\fP url to query 
+.br
+\fIp\fP postargs to send along with the HTTP request. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+replied content from HTTP server. needs to be freed by caller. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* oauth_sign_hmac_sha1 (char * m, char * k)"
+.PP
+returns base64 encoded HMAC-SHA1 signature for given message and key. 
+.PP
+both data and key need to be urlencoded.
+.PP
+the returned string needs to be freed by the caller
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP message to be signed 
+.br
+\fIk\fP key used for signing 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+signature string. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* oauth_sign_plaintext (char * m, char * k)"
+.PP
+returns plaintext signature for the given key. 
+.PP
+the returned string needs to be freed by the caller
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP message to be signed 
+.br
+\fIk\fP key used for signing 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+signature string 
+.RE
+.PP
+
+.SS "char* oauth_sign_rsa_sha1 (char * m, char * k)"
+.PP
+returns RSA signature for given data. 
+.PP
+data needs to be urlencoded.
+.PP
+THIS FUNCTION IS NOT YET IMPLEMENTED!
+.PP
+the returned string needs to be freed by the caller.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP message to be signed 
+.br
+\fIk\fP key used for signing 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+signature string. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
+.PP
+calculate oAuth-signature for a given request URL, parameters and oauth-tokens. 
+.PP
+if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
+.PP
+both, the return value and (if given) 'postargs' need to be freed by the caller.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIurl\fP The request URL to be signed. append all GET or POST query-parameters separated by either '?' or '&' to this parameter.
+.br
+\fIpostargs\fP This parameter points to an area where the return value is stored. If 'postargs' is NULL, no value is stored.
+.br
+\fImethod\fP specify the signature method to use. It is of type \fBOAuthMethod\fP and most likely \fBOA_HMAC\fP.
+.br
+\fIc_key\fP consumer key 
+.br
+\fIc_secret\fP consumer secret 
+.br
+\fIt_key\fP token key 
+.br
+\fIt_secret\fP token secret
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+the signed url or NULL if an error occurred. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* serialize_url (int argc, int start, char ** argv)"
+.PP
+build a url query sting from an array. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargc\fP the total number of elements in the array 
+.br
+\fIstart\fP element in the array at which to start concatenating. 
+.br
+\fIargv\fP parameter-array to concatenate. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+url string needs to be freed by the caller. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* serialize_url_parameters (int argc, char ** argv)"
+.PP
+build a query parameter string from an array. 
+.PP
+This function is a shortcut for \fBserialize_url\fP (argc, 1, argv). It strips the leading host/path, which is usually the first element when using split_url_parameters on an URL.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargc\fP the total number of elements in the array 
+.br
+\fIargv\fP parameter-array to concatenate. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+url string needs to be freed by the caller. 
+.RE
+.PP
+
+.SS "int split_url_parameters (const char * url, char *** argv)"
+.PP
+splits the given url into a parameter array. 
+.PP
+(see \fBserialize_url\fP and \fBserialize_url_parameters\fP for the reverse)
+.PP
+\fBParameters:\fP
+.RS 4
+\fIurl\fP the url or query-string to parse. 
+.br
+\fIargv\fP pointer to a (char *) array where the results are stored. The array is re-allocated to match the number of parameters and each parameter-string is allocated with strdup. - The memory needs to be freed by the caller.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+number of parameter(s) in array. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "char* url_escape (const char * string)"
+.PP
+Escape 'string' according to RFC3986 and http://oauth.net/core/1.0/#encoding_parameters. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstring\fP The data to be encoded 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+encoded string otherwise NULL The caller must free the returned string. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for oAuth library functions from the source code.
