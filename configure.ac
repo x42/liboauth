@@ -27,8 +27,8 @@ AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
-
-PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL) HAVE_CURL=1 ], [ NULL=0] )
+report_curl="no"
+PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL) HAVE_CURL=1 report_curl="yes" ], [ NULL=0 ] )
 #CURL_LIBS="-lcurl"
 AC_SUBST(CURL_LIBS)
 
@@ -72,7 +72,7 @@ AC_MSG_NOTICE([
  liboauth configured:
  -----------------------
 
-  libcurl:             $HAVE_CURL
+  libcurl:             $report_curl
   doxygen:             $DOXYGEN
   installation prefix: $prefix
 

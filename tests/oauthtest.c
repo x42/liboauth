@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <oauth.h>
 
-int loglevel = 0; //< report each successful test
+int loglevel = 1; //< report each successful test
 
 /**
  * test parameter encodinf
