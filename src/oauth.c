@@ -229,7 +229,7 @@ char *url_escape(const char *string) {
  * @return signature string.
  */
 char *oauth_sign_hmac_sha1 (char *m, char *k) {
-  oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k));
+  return(oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k)));
 }
 
 char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl) {
@@ -445,7 +445,11 @@ char *gen_nonce() {
   unsigned int max = strlen( chars );
   int i, len;
 
-  if(rndinit) {srand(time(NULL) * getpid()); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
+  if(rndinit) {srand(time(NULL) 
+#ifndef WIN // quick windows check.
+  	* getpid()
+#endif
+	); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
 
   len=15+floor(rand()*16.0/(double)RAND_MAX);
   nc = (char*) xmalloc((len+1)*sizeof(char));
