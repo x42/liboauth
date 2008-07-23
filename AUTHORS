@@ -5,5 +5,8 @@ Haukeland <hauk@tildeslash.com>.
 
 escape_url() contains code from curl by Daniel Stenberg <daniel@haxx.se>
 
-many thanks to Marc Worrel - http://www.marcworrell.com/ - for an introducing
-to the oAuth API and helping to debug this code.
+cheers to Arjan arjan@mediamatic.nl for using and testing this code. 
+
+Special thanks to Marc Worrel - http://www.marcworrell.com/ - for an introducing
+to the oAuth API and helping to get this project alive.
+
