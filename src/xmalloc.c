@@ -58,7 +58,7 @@ static VOID *fixup_null_alloc (size_t n);
 VOID *xmalloc (size_t n);
 VOID *xcalloc (size_t n, size_t s);
 VOID *xrealloc (VOID *p, size_t n);
-char *xstrdup (char *p);
+char *xstrdup (const char *p);
 #endif
 
 
@@ -130,7 +130,7 @@ xrealloc (p, n)
 
 char *
 xstrdup (str)
-     char *str;
+     const char *str;
 {
   VOID *p;
 
