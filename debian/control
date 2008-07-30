@@ -1,7 +1,7 @@
 Source: liboauth
 Priority: extra
 Maintainer: Robin Gareus <robin@mediamatic.nl>
-Build-Depends: debhelper (>= 5), autotools-dev, automake, libssl-dev
+Build-Depends: debhelper (>= 5), autotools-dev, automake, libssl-dev, libtool
 Standards-Version: 3.7.2
 Section: libs
 

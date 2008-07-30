@@ -1,4 +1,9 @@
-This library for the http://oauth.net API is under development.
+liboauth is a collection of c functions implementing the http://oauth.net API.
+
+liboauth provides basic functions to escape and encode stings according to
+oAuth specifications and offers high-level functions built on top to sign
+requests or verify signatures.
 
 The included documentation and example code can be found online at 
-http://mir.dnsalias.com/dox/oauth/
+http://liboauth.sourceforge.net/
+
