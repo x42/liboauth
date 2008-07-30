@@ -9,6 +9,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <oauth.h>
 
 int loglevel = 1; //< report each successful test
@@ -149,8 +150,8 @@ void request_token_example(void) {
     if( rc==2 
 	&& !strncmp(rv[0],"oauth_token=",11)
 	&& !strncmp(rv[1],"oauth_token_secret=",18) ){
-	  res_t_key=xstrdup(&(rv[0][12]));
-	  res_t_secret=xstrdup(&(rv[1][19]));
+	  res_t_key=strdup(&(rv[0][12]));
+	  res_t_secret=strdup(&(rv[1][19]));
 	  printf("key:    '%s'\nsecret: '%s'\n",res_t_key, res_t_secret);
     }
     if(rv) free(rv);

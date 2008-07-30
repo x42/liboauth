@@ -560,7 +560,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   ADD_TO_ARGV;
   if (t_key && strlen(t_key) >0) {
     //tmp = url_escape(t_key); // FIXME: check if we need to escape this here
-    tmp = xstrdup(t_key);
+    tmp = xstrdup((char*)t_key);
     snprintf(oarg, 1024, "oauth_token=%s", tmp);
     ADD_TO_ARGV;
     if(tmp) free(tmp);
