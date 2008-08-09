@@ -14,7 +14,7 @@
  The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install liboauth and liboauth-dev package.
 
  liboauth uses autotools and libtools. You first need to generate the build environement with something alike:
- <tt>aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy</tt>. (<i>OSX users use <tt>glibtoolize</tt></i>). Then run <tt>./configure</tt> and build liboauth with <tt>make install</tt>. see the INSTALL file for further instructions on gnu autotools.
+ <tt>aclocal; autoheader; libtoolize --copy; autoconf; automake --gnu --add-missing --copy</tt>. (<i>OSX users use <tt>glibtoolize</tt></i>). Then run <tt>./configure</tt> and build liboauth with <tt>make</tt>. see the INSTALL file for further instructions on gnu autotools.
 
  If doxygen is available, the documentation can be rendered from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code can be run with <tt>make check</tt>.
 
@@ -32,6 +32,7 @@
   Download Source: <a href="http://mir.dnsalias.com/_media/oss/oauth/liboauth-0.1.2.tar.gz">liboauth-0.1.2.tar.gz</a>
   Download Source: <a href="https://sourceforge.net/project/showfiles.php?group_id=234865">liboauth-0.1.2.tar.gz</a>
   !-->
+  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.0.tar.gz">liboauth-0.2.0.tar.gz</a>
 
   liboauth is maintained at sourceforge subversion repositories:
   <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>.
@@ -41,7 +42,7 @@
 @section bug Bugs
  send bug reports, patches or suggestions to robin @ mediamatic . net.
 
- Check out the <a href="http://oauth.net/community/">oauth-community</a> and join the <a href="http://groups.google.com/group/oauth/">mailing list</a> for discussion.
+ Ask the <a href="http://oauth.net/community/">oauth-community</a> or join the <a href="http://groups.google.com/group/oauth/">mailing list</a> for discussion.
 
 @section license License
 <pre>
