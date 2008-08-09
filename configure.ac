@@ -1,7 +1,7 @@
 AC_INIT
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(liboauth, 0.1.3)
+AM_INIT_AUTOMAKE(liboauth, 0.2.0)
 AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)
@@ -28,7 +28,7 @@ AC_FUNC_CLOSEDIR_VOID
 
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
 report_curl="no"
-PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL) HAVE_CURL=1 report_curl="yes" ], [ NULL=0 ] )
+PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have the curl library.]) HAVE_CURL=1 report_curl="yes" ], [ report_curl="no" ] )
 #CURL_LIBS="-lcurl"
 AC_SUBST(CURL_LIBS)
 
