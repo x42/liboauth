@@ -31,8 +31,9 @@
   <!--
   Download Source: <a href="http://mir.dnsalias.com/_media/oss/oauth/liboauth-0.1.2.tar.gz">liboauth-0.1.2.tar.gz</a>
   Download Source: <a href="https://sourceforge.net/project/showfiles.php?group_id=234865">liboauth-0.1.2.tar.gz</a>
-  !-->
   Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.0.tar.gz">liboauth-0.2.0.tar.gz</a>
+  !-->
+  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.1.tar.gz">liboauth-0.2.1.tar.gz</a>
 
   liboauth is maintained at sourceforge subversion repositories:
   <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>.
