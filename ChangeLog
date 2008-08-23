@@ -1,3 +1,10 @@
+version 0.2.2
+ updated empty HTTP Paths see http://wiki.oauth.net/TestCases and
+ http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en
+ fixed some compiler warnings
+ made signature function args /const char */ 
+ and mem-zero some possibly sensitive strings before free()ing them.
+
 version 0.2.1
  prepared for MIT license
  all c sources and headers by Robin Gareus are now MIT licensed.

@@ -91,7 +91,7 @@ char *url_escape(const char *string);
  * @param k key used for signing
  * @return signature string.
  */
-char *oauth_sign_hmac_sha1 (char *m, char *k);
+char *oauth_sign_hmac_sha1 (const char *m, const char *k);
 
 /**
  * same as \ref oauth_sign_hmac_sha1 but allows
@@ -103,7 +103,7 @@ char *oauth_sign_hmac_sha1 (char *m, char *k);
  * @param kl length of key
  * @return signature string.
  */
-char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl);
+char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, const size_t kl);
 
 /**
  * returns plaintext signature for the given key.
@@ -114,7 +114,7 @@ char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl);
  * @param k key used for signing
  * @return signature string
  */
-char *oauth_sign_plaintext (char *m, char *k);
+char *oauth_sign_plaintext (const char *m, const char *k);
 
 /**
  * returns RSA signature for given data.
@@ -128,7 +128,7 @@ char *oauth_sign_plaintext (char *m, char *k);
  * @param k key used for signing
  * @return signature string.
  */
-char *oauth_sign_rsa_sha1 (char *m, char *k);
+char *oauth_sign_rsa_sha1 (const char *m, const char *k);
 
 /**
  * encode strings and concatenate with '&' separator.

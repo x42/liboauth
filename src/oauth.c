@@ -26,10 +26,11 @@
  * THE SOFTWARE.
  * 
  */
-/* vi: sts=2 sw=2 ts=2 */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
+
+#define WIPE_MEMORY ///< overwrite sensitve data before free()ing it.
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -41,6 +42,11 @@
 
 #include "xmalloc.h"
 #include "oauth.h"
+
+#ifndef WIN // getpid() on POSIX systems
+#include <sys/types.h>
+#include <unistd.h>
+#endif
 
 /**
  * Base64 encode one byte
@@ -232,11 +238,11 @@ char *url_escape(const char *string) {
  * @param k key used for signing
  * @return signature string.
  */
-char *oauth_sign_hmac_sha1 (char *m, char *k) {
+char *oauth_sign_hmac_sha1 (const char *m, const char *k) {
   return(oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k)));
 }
 
-char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl) {
+char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, const size_t kl) {
   unsigned char result[EVP_MAX_MD_SIZE];
   unsigned int resultlen = 0;
   
@@ -256,7 +262,7 @@ char *oauth_sign_hmac_sha1_raw (char *m, size_t ml, char *k, size_t kl) {
  * @param k key used for signing
  * @return signature string
  */
-char *oauth_sign_plaintext (char *m, char *k) {
+char *oauth_sign_plaintext (const char *m, const char *k) {
   return(xstrdup(k));
 }
 
@@ -277,7 +283,7 @@ char *oauth_sign_plaintext (char *m, char *k) {
 #include <openssl/rsa.h>
 #include <openssl/engine.h>
 
-char *oauth_sign_rsa_sha1 (char *m, char *k) {
+char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   unsigned char *sig;
   unsigned int len;
   RSA *rsa = RSA_new();
@@ -287,14 +293,14 @@ char *oauth_sign_rsa_sha1 (char *m, char *k) {
   printf("len: %i\n",oauth_decode_base64(test, k);
 
   RSA_check_key(rsa);
-  if (!RSA_sign(NID_sha, (unsigned char *)m, strlen(m), sig, &len, rsa)) {
+  if (!RSA_sign(NID_sha, (const unsigned char *)m, strlen(m), sig, &len, rsa)) {
     printf("rsa signing failed\n");
   }
   RSA_free(rsa);
   return((char*) sig);
 }
 #else 
-  char *oauth_sign_rsa_sha1 (char *m, char *k) {
+  char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
    return xstrdup("RSA-is-not-implemented.");
   }
 #endif
@@ -364,6 +370,22 @@ int split_post_parameters(const char *url, char ***argv, short qesc) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     (*argv)[argc]=xstrdup(token);
+	  if (argc==0 && !strncmp("http", token,4)) {
+		  /* if there is no slash after the "://" add one before the '?'
+			   http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en
+			   Note that HTTP does not allow empty absolute paths, so the URL 'http://example.com' is equivalent to 'http://example.com/' and should be treated as such for the purposes of OAuth signing (rfc2616, section 3.2.1)
+			*/
+			char *slash=strstr(token, "://");
+			if (slash && !strchr(slash+3,'/')) {
+#ifdef DEBUG_OAUTH
+			  fprintf(stderr, "\nliboauth: added trailing slash to URL: '%s'\n\n", token);
+#endif
+				free((*argv)[argc]);
+				(*argv)[argc]= (char*) xmalloc(sizeof(char)*(2+strlen(token))); 
+				strcpy((*argv)[argc],token);
+				strcat((*argv)[argc],"/");
+		  }
+		}
     tmp=NULL;
     argc++;
   }
@@ -594,8 +616,8 @@ char *oauth_sign_url (const char *url, char **postargs,
   okey = catenc(2, c_secret, t_secret);
   odat = catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
-  printf ("\n\ndata to sign: %s\n\n", odat);
-  printf ("key: %s\n\n", okey);
+  fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
+  fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);
 #endif
   switch(method) {
     case OA_RSA:
@@ -607,6 +629,10 @@ char *oauth_sign_url (const char *url, char **postargs,
     default:
       sign = oauth_sign_hmac_sha1(odat,okey);
   }
+#ifdef WIPE_MEMORY
+	memset(okey,0, strlen(okey));
+	memset(odat,0, strlen(odat));
+#endif
   free(odat); 
   free(okey);
 
@@ -628,3 +654,4 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   return result;
 }
+// vi: sts=2 sw=2 ts=2
