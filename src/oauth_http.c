@@ -95,7 +95,7 @@ char *oauth_curl_post (char *u, char *p) {
  *
  */
 char *oauth_curl_get (char *u, char *p) {
-  ;
+  return(NULL);
 }
 
 /**
@@ -170,7 +170,7 @@ char *oauth_exec_post (char *u, char *p) {
   else cmdtpl = strdup (cmdtpl); // clone getenv() string.
 
   // add URL and post param - error if no '%p' or '%u' present in definition
-  char *t1,*t2, *tmp;
+  char *t1,*t2;
   t1=strstr(cmdtpl, "%p");
   t2=strstr(cmdtpl, "%u");
   if (!t1 || !t2) {

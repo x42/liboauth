@@ -194,6 +194,8 @@ void request_token_example(void) {
  */
 int main (int argc, char **argv) {
 
+  if (loglevel) printf("\n *** testing liboauth against http://wiki.oauth.net/TestCases (july 2008) ***\n");
+
 #if 1 // http://wiki.oauth.net/TestCases
   int fail=0;
 
@@ -218,22 +220,36 @@ int main (int argc, char **argv) {
   fail|=test_normalize("a=x!y&a=x+y", "a=x%20y&a=x%21y");
   fail|=test_normalize("x!y=a&x=a", "x=a&x%21y=a");
 
+  fail|=test_request("GET", "http://example.com/" "?" 
+      "n=v",
+  // expect:
+      "GET&http%3A%2F%2Fexample.com%2F&n%3Dv");
+
   fail|=test_request("GET", "http://example.com" "?" 
       "n=v",
-      "GET&http%3A%2F%2Fexample.com&n%3Dv");
+  // expect:
+      "GET&http%3A%2F%2Fexample.com%2F&n%3Dv");
 
   fail|=test_request("POST", "https://photos.example.net/request_token" "?" 
-      "oauth_version=1.0&oauth_consumer_key=dpf43f3p2l4k3l03"
-      "&oauth_timestamp=1191242090&oauth_nonce=hsu94j3884jdopsl"
-      "&oauth_signature_method=PLAINTEXT&oauth_signature=ignored",
+      "oauth_version=1.0"
+      "&oauth_consumer_key=dpf43f3p2l4k3l03"
+      "&oauth_timestamp=1191242090"
+      "&oauth_nonce=hsu94j3884jdopsl"
+      "&oauth_signature_method=PLAINTEXT"
+      "&oauth_signature=ignored",
+  // expect:
       "POST&https%3A%2F%2Fphotos.example.net%2Frequest_token&oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dhsu94j3884jdopsl%26oauth_signature_method%3DPLAINTEXT%26oauth_timestamp%3D1191242090%26oauth_version%3D1.0");
 
   fail|=test_request("GET", "http://photos.example.net/photos" "?" 
       "file=vacation.jpg&size=original"
-      "&oauth_version=1.0&oauth_consumer_key=dpf43f3p2l4k3l03"
+      "&oauth_version=1.0"
+      "&oauth_consumer_key=dpf43f3p2l4k3l03"
       "&oauth_token=nnch734d00sl2jdk"
-      "&oauth_timestamp=1191242096&oauth_nonce=kllo9940pd9333jh"
-      "&oauth_signature=ignored&oauth_signature_method=HMAC-SHA1",
+      "&oauth_timestamp=1191242096"
+      "&oauth_nonce=kllo9940pd9333jh"
+      "&oauth_signature=ignored"
+      "&oauth_signature_method=HMAC-SHA1",
+  // expect:
       "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal");
 
   fail|=test_sha1("cs","","bs","egQqG5AJep5sJ7anhXju1unge2I=");
@@ -241,9 +257,9 @@ int main (int argc, char **argv) {
   fail|=test_sha1("kd94hf93k423kf44","pfkkdhi9sl3r4s00","GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal","tR3+Ty81lMeYAr/Fid0kMTYa/WM=");
 
   if (fail) {
-    printf("One or more tests from http://wiki.oauth.net/TestCases failed.\n");
+    printf("\n !!! One or more tests from http://wiki.oauth.net/TestCases failed.\n\n");
   } else {
-    printf("http://wiki.oauth.net/TestCases verified sucessfully.\n");
+    printf(" *** http://wiki.oauth.net/TestCases verified sucessfully.\n");
   }
 #endif
 
@@ -259,10 +275,10 @@ int main (int argc, char **argv) {
   char *testkey = "kd94hf93k423kf44&pfkkdhi9sl3r4s00";
   b64d = oauth_sign_hmac_sha1(testurl , testkey);
   if (strcmp(b64d,"tR3+Ty81lMeYAr/Fid0kMTYa/WM=")) {
-    printf("HMAC-SHA1 signature selftest failed.\n"); 
+    printf("\n !!! HMAC-SHA1 signature selftest failed.\n\n");
     fail|=1;
   } else 
-    printf("HMAC-SHA1 signature selftest successful.\n");
+    printf(" *** HMAC-SHA1 signature selftest successful.\n");
   free(b64d);
 #endif
 
@@ -271,7 +287,7 @@ int main (int argc, char **argv) {
   printf("rsa sig: '%s'\n",b64d);
   free(b64d);
 #else
-  printf("RSA-SHA1 skipped. not implemented.\n");
+  printf(" --- RSA-SHA1 skipped. RSA signature is not yet implemented.\n");
 #endif
 
 
