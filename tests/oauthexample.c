@@ -1,5 +1,7 @@
 /**
- * Test and example code for liboauth.
+ *  @brief example code for liboauth using http://term.ie/oauth/example
+ *  @file oauthexample.c
+ *  @author Robin Gareus <robin@gareus.org>
  *
  * Copyright 2008 Robin Gareus <robin@gareus.org>
  *

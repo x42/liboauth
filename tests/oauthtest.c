@@ -1,5 +1,7 @@
 /**
- * Test and example code for liboauth.
+ *  @brief self-test and example code for liboauth.
+ *  @file oauthtest.c
+ *  @author Robin Gareus <robin@gareus.org>
  *
  * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
  * 

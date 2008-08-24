@@ -1,5 +1,7 @@
-/*
- * oAuth string functions in POSIX-C.
+/**
+ *  @brief oAuth string functions in POSIX-C.
+ *  @file oauth.h
+ *  @author Robin Gareus <robin@gareus.org>
  *
  * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
  *
