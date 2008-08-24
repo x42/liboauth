@@ -606,7 +606,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   ADD_TO_ARGV;
 
   snprintf(oarg, 1024, "oauth_signature_method=%s",
-      method==0?"HMAC_SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
+      method==0?"HMAC-SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
   ADD_TO_ARGV;
 
   snprintf(oarg, 1024, "oauth_version=1.0");

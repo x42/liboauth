@@ -274,7 +274,7 @@ char *oauth_sign_url (const char *url, char **postargs,
  * much error checking or handing for one thing..
  *
  * NOTE: \a u and \a q are just concatenated with a '?' in between,
- * unless \q q is NULL. in which case only \q u will be used.
+ * unless \a q is NULL. in which case only \a u will be used.
  *
  * @param u base url to get
  * @param q query string to send along with the HTTP request.

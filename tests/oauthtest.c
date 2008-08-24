@@ -203,9 +203,15 @@ void request_token_example_get(void) {
  * using the oauth-HTTP POST function.
  */
 void request_token_example_post(void) {
+#if 1
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
+#else
+  const char *request_token_uri = "http://term.ie/oauth/example/request_token.php";
+  const char *req_c_key         = "key"; //< consumer key
+  const char *req_c_secret      = "secret"; //< consumer secret
+#endif
   char *res_t_key    = NULL; //< replied key
   char *res_t_secret = NULL; //< replied secret
 
@@ -250,7 +256,7 @@ void request_token_example_post(void) {
  * Main Test and Example Code.
  * 
  * compile:
- *  gcc -lssl -loauth -o oauthtest
+ *  gcc -lssl -loauth -o oauthtest oauthtest.c
  */
 int main (int argc, char **argv) {
 

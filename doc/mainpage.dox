@@ -34,11 +34,14 @@
   Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.0.tar.gz">liboauth-0.2.0.tar.gz</a>
   !-->
   Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.3.tar.gz">liboauth-0.2.3.tar.gz</a>
+  &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
 
   liboauth is maintained at sourceforge subversion repositories:
   <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>.
 
+  <!--
   The development branch is available from <tt>git://mir.dnsalias.com/liboauth</tt> or download a <a href="http://mir.dnsalias.com/gitweb/?p=liboauth.git;a=snapshot;h=head">snapshot</a>.
+  !-->
 
 @section bug Bugs
  send bug reports, patches or suggestions to robin @ mediamatic . net.
