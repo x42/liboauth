@@ -1,3 +1,8 @@
+version 0.2.4
+ detect absoluteURI by ":/" (it was /^http/) - used to detect empty abs_path
+ added shell escape for (bash like) `sh` to invoke curl/wget
+ cleaned up example code and doc a bit.
+
 version 0.2.3
  fixed '?' in GET URL&parameter concatenation
  added cURL HTTP-GET function and test/example code

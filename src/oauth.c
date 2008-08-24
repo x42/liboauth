@@ -372,13 +372,19 @@ int split_post_parameters(const char *url, char ***argv, short qesc) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     (*argv)[argc]=xstrdup(token);
-	  if (argc==0 && !strncmp("http", token,4)) {
-		  /* if there is no slash after the "://" add one before the '?'
-			   http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en
-			   Note that HTTP does not allow empty absolute paths, so the URL 'http://example.com' is equivalent to 'http://example.com/' and should be treated as such for the purposes of OAuth signing (rfc2616, section 3.2.1)
-			*/
-			char *slash=strstr(token, "://");
-			if (slash && !strchr(slash+3,'/')) {
+	  if (argc==0 && strstr(token, ":/")) {
+			// HTTP does not allow empty absolute paths, so the URL 
+			// 'http://example.com' is equivalent to 'http://example.com/' and should
+			// be treated as such for the purposes of OAuth signing (rfc2616, section 3.2.1)
+			// see http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en
+			char *slash=strstr(token, ":/");
+			while (slash && *(++slash) == '/')  ; // skip slashes eg /xxx:[\/]*/
+#if 0
+			// skip possibly unescaped slashes in the userinfo - they're not allowed by RFC2396 but have been seen.
+			// the hostname/IP may only contain alphanumeric characters - so we're safe there.
+			if (slash && strchr(slash,'@')) slash=strchr(slash,'@'); 
+#endif
+			if (slash && !strchr(slash,'/')) {
 #ifdef DEBUG_OAUTH
 			  fprintf(stderr, "\nliboauth: added trailing slash to URL: '%s'\n\n", token);
 #endif
@@ -419,7 +425,7 @@ char *serialize_url (int argc, int start, char **argv) {
     int len = 0;
     if (query) len+=strlen(query);
 
-		if (i==start && i==0 && !strncmp("http",argv[i],4)) {
+		if (i==start && i==0 && strstr(argv[i], ":/")) {
       tmp=xstrdup(argv[i]);
       len+=strlen(tmp)+2;
 		} else if(!(t1=strchr(argv[i], '='))) {
@@ -444,7 +450,7 @@ char *serialize_url (int argc, int start, char **argv) {
     strcat(query, ((i==start||first)?"":"&"));
 		first=0;
     strcat(query, tmp);
-		if (i==start && i==0 && !strncmp("http",tmp,4)) {
+		if (i==start && i==0 && strstr(tmp, ":/")) {
 			strcat(query, "?");
 			first=1;
 		}
