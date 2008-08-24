@@ -24,11 +24,12 @@
  * THE SOFTWARE.
  */
 
-#define TEST_UNICODE
+#define TEST_UNICODE //< include unicode encoding tests
 
 #ifdef TEST_UNICODE
 #include <locale.h>
 #endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +38,7 @@
 int loglevel = 1; //< report each successful test
 
 /**
- * test parameter encodinf
+ * test parameter encoding
  */
 int test_encoding(char *param, char *expected) {
   int rv=0;
@@ -54,6 +55,9 @@ int test_encoding(char *param, char *expected) {
 }
 
 #ifdef TEST_UNICODE
+/**
+ * test unicode paramter encoding
+ */
 int test_uniencoding(wchar_t *src, char *expected) {
 // check unicode: http://www.thescripts.com/forum/thread223350.html
   const char *encoding = "en_US.UTF-8"; // or try en_US.ISO-8859-1 etc.
@@ -79,6 +83,9 @@ int test_uniencoding(wchar_t *src, char *expected) {
 }
 #endif
 
+/**
+ * test request normalization
+ */
 int test_normalize(char *param, char *expected) {
   int rv=2;
   int  i, argc;
@@ -101,6 +108,9 @@ int test_normalize(char *param, char *expected) {
   return (rv);
 }
 
+/**
+ * test request concatenation
+ */
 int test_request(char *http_method, char *request, char *expected) {
   int rv=2;
   int  i, argc;
@@ -125,6 +135,9 @@ int test_request(char *http_method, char *request, char *expected) {
   return (rv);
 }
 
+/**
+ * test sha1 checksum
+ */
 int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
   int rv=0;
   char *okey = catenc(2, c_secret, t_secret);
@@ -141,14 +154,15 @@ int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
 
 /** 
  * a example requesting and parsing a request-token from an oAuth service-provider
- * excercising the oauth-HTTP GET function.
+ * excercising the oauth-HTTP GET function. - it is almost the same as 
+ * \ref request_token_example_post below. 
  */
 void request_token_example_get(void) {
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
-  char *res_t_key    = NULL; //< reply key
-  char *res_t_secret = NULL; //< reply secret
+  char *res_t_key    = NULL; //< replied key
+  char *res_t_secret = NULL; //< replied secret
 
   char *req_url = NULL;
 
@@ -183,16 +197,17 @@ void request_token_example_get(void) {
   if(res_t_key) free(res_t_key);
   if(res_t_secret) free(res_t_secret);
 }
+
 /** 
  * a example requesting and parsing a request-token from an oAuth service-provider
- * excercising the oauth-HTTP function.
+ * using the oauth-HTTP POST function.
  */
 void request_token_example_post(void) {
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
-  char *res_t_key    = NULL; //< reply key
-  char *res_t_secret = NULL; //< reply secret
+  char *res_t_key    = NULL; //< replied key
+  char *res_t_secret = NULL; //< replied secret
 
   char *req_url = NULL;
   char *postarg = NULL;
@@ -230,8 +245,9 @@ void request_token_example_post(void) {
   if(res_t_secret) free(res_t_secret);
 }
 
-/**
- * Test and Example Code.
+
+/*****************************************************************************
+ * Main Test and Example Code.
  * 
  * compile:
  *  gcc -lssl -loauth -o oauthtest
@@ -365,13 +381,16 @@ int main (int argc, char **argv) {
   if(postargs) free(postargs);
 #endif
 
-#if 0 // request-token request
+// These two will make a request to http://oauth-sandbox.mediamatic.nl/
+// requesting an access token. - it's intended both as test (verify signature) 
+// and example code.
+#if 0 // POST a request-token request
   request_token_example_post();
 #endif
-
-#if 0 // request-token request
+#if 0 // GET a request-token
   request_token_example_get();
 #endif
+
 
   return (fail?1:0);
 }
