@@ -45,7 +45,7 @@ int loglevel = 1; //< report each successful test
 int test_encoding(char *param, char *expected) {
   int rv=0;
   char *testcase=NULL;
-  testcase = url_escape(param);
+  testcase = oauth_url_escape(param);
   if (strcmp(testcase,expected)) {
     rv=1;
     printf("parameter encoding test for '%s' failed.\n"
@@ -94,9 +94,9 @@ int test_normalize(char *param, char *expected) {
   char **argv = NULL;
   char *tmp;
 
-  argc = split_url_parameters(param, &argv);
+  argc = oauth_split_url_parameters(param, &argv);
   qsort(argv, argc, sizeof(char *), oauth_cmpstringp);
-  char *testcase= serialize_url(argc,0, argv);
+  char *testcase= oauth_serialize_url(argc,0, argv);
 
   rv=strcmp(testcase,expected);
   if (rv) {
@@ -119,10 +119,10 @@ int test_request(char *http_method, char *request, char *expected) {
   char **argv = NULL;
   char *tmp;
 
-  argc = split_url_parameters(request, &argv);
+  argc = oauth_split_url_parameters(request, &argv);
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
-  char *query= serialize_url(argc,1, argv);
-  char *testcase = catenc(3, http_method, argv[0], query);
+  char *query= oauth_serialize_url(argc,1, argv);
+  char *testcase = oauth_catenc(3, http_method, argv[0], query);
 
   rv=strcmp(testcase,expected);
   if (rv) {
@@ -142,7 +142,7 @@ int test_request(char *http_method, char *request, char *expected) {
  */
 int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
   int rv=0;
-  char *okey = catenc(2, c_secret, t_secret);
+  char *okey = oauth_catenc(2, c_secret, t_secret);
   char *b64d = oauth_sign_hmac_sha1(base, okey);
   if (strcmp(b64d,expected)) {
     printf("HMAC-SHA1 invalid. base:'%s' secrets:'%s'\n"
@@ -182,7 +182,7 @@ void request_token_example_get(void) {
     //parse reply
     int rc;
     char **rv = NULL;
-    rc = split_url_parameters(reply, &rv);
+    rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
 	&& !strncmp(rv[0],"oauth_token=",11)
@@ -234,7 +234,7 @@ void request_token_example_post(void) {
     //parse reply
     int rc;
     char **rv = NULL;
-    rc = split_url_parameters(reply, &rv);
+    rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
 	&& !strncmp(rv[0],"oauth_token=",11)

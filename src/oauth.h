@@ -80,7 +80,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src);
  * @return encoded string otherwise NULL
  * The caller must free the returned string.
  */
-char *url_escape(const char *string);
+char *oauth_url_escape(const char *string);
 
 /**
  * returns base64 encoded HMAC-SHA1 signature for
@@ -145,12 +145,12 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k);
  * strings - needs to be free(d) by the caller. or NULL
  * in case we ran out of memory.
  */
-char *catenc(int len, ...);
+char *oauth_catenc(int len, ...);
 
 /**
  * splits the given url into a parameter array. 
- * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
- * (see \ref split_post_parameters for a more generic version)
+ * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
+ * (see \ref oauth_split_post_paramters for a more generic version)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -160,11 +160,11 @@ char *catenc(int len, ...);
  * 
  * @return number of parameter(s) in array.
  */
-int split_url_parameters(const char *url, char ***argv);
+int oauth_split_url_parameters(const char *url, char ***argv);
 
 /**
  * splits the given url into a parameter array. 
- * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -176,7 +176,7 @@ int split_url_parameters(const char *url, char ***argv);
  * 
  * @return number of parameter(s) in array.
  */
-int split_post_parameters(const char *url, char ***argv, short qesc);
+int oauth_split_post_paramters(const char *url, char ***argv, short qesc);
 
 /**
  * build a url query sting from an array.
@@ -187,20 +187,20 @@ int split_post_parameters(const char *url, char ***argv, short qesc);
  * @return url string needs to be freed by the caller.
  *
  */
-char *serialize_url (int argc, int start, char **argv);
+char *oauth_serialize_url (int argc, int start, char **argv);
 
 /**
  * build a query parameter string from an array.
  *
- * This function is a shortcut for \ref serialize_url (argc, 1, argv). 
+ * This function is a shortcut for \ref oauth_serialize_url (argc, 1, argv). 
  * It strips the leading host/path, which is usually the first 
- * element when using split_url_parameters on an URL.
+ * element when using oauth_split_url_parameters on an URL.
  *
  * @param argc the total number of elements in the array
  * @param argv parameter-array to concatenate.
  * @return url string needs to be freed by the caller.
  */
-char *serialize_url_parameters (int argc, char **argv);
+char *oauth_serialize_url_parameters (int argc, char **argv);
  
 /**
  * generate a random string between 15 and 32 chars length
@@ -209,7 +209,7 @@ char *serialize_url_parameters (int argc, char **argv);
  *
  * @return zero terminated random string.
  */
-char *gen_nonce();
+char *oauth_gen_nonce();
 
 /**
  * string compare function for oauth parameters.

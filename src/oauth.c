@@ -179,7 +179,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
  * @return encoded string otherwise NULL
  * The caller must free the returned string.
  */
-char *url_escape(const char *string) {
+char *oauth_url_escape(const char *string) {
   if (!string) return strdup("");
   size_t alloc = strlen(string)+1;
   char *ns = NULL, *testing_ptr = NULL;
@@ -320,7 +320,7 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
  * strings - needs to be free(d) by the caller. or NULL
  * in case we ran out of memory.
  */
-char *catenc(int len, ...) {
+char *oauth_catenc(int len, ...) {
   va_list va;
   char *rv = (char*) xmalloc(sizeof(char));
   *rv='\0';
@@ -330,7 +330,7 @@ char *catenc(int len, ...) {
     char *arg = va_arg(va, char *);
     char *enc;
     int len;
-    enc = url_escape(arg);
+    enc = oauth_url_escape(arg);
     if(!enc) break;
     len = strlen(enc) + 1 + ((i>0)?1:0);
     if(rv) len+=strlen(rv);
@@ -346,7 +346,7 @@ char *catenc(int len, ...) {
 
 /**
  * splits the given url into a parameter array. 
- * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -358,7 +358,7 @@ char *catenc(int len, ...) {
  * 
  * @return number of parameter(s) in array.
  */
-int split_post_parameters(const char *url, char ***argv, short qesc) {
+int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
   int argc=0;
   char *token, *tmp, *t1;
   if (!argv) return 0;
@@ -402,8 +402,8 @@ int split_post_parameters(const char *url, char ***argv, short qesc) {
   return argc;
 }
 
-int split_url_parameters(const char *url, char ***argv) {
-  return split_post_parameters(url, argv, 1);
+int oauth_split_url_parameters(const char *url, char ***argv) {
+  return oauth_split_post_paramters(url, argv, 1);
 }
 
 /**
@@ -415,7 +415,7 @@ int split_url_parameters(const char *url, char ***argv) {
  * @return url string needs to be freed by the caller.
  *
  */
-char *serialize_url (int argc, int start, char **argv) {
+char *oauth_serialize_url (int argc, int start, char **argv) {
   char  *tmp, *t1;
   int i;
   int	first=0;
@@ -437,9 +437,9 @@ char *serialize_url (int argc, int start, char **argv) {
       len+=strlen(tmp)+2;
     } else {
       *t1=0;
-      tmp = url_escape(argv[i]);
+      tmp = oauth_url_escape(argv[i]);
       *t1='=';
-      t1 = url_escape((t1+1));
+      t1 = oauth_url_escape((t1+1));
       tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
       strcat(tmp,"=");
       strcat(tmp,t1);
@@ -462,16 +462,16 @@ char *serialize_url (int argc, int start, char **argv) {
 /**
  * build a query parameter string from an array.
  *
- * This function is a shortcut for \ref serialize_url (argc, 1, argv). 
+ * This function is a shortcut for \ref oauth_serialize_url (argc, 1, argv). 
  * It strips the leading host/path, which is usually the first 
- * element when using split_url_parameters on an URL.
+ * element when using oauth_split_url_parameters on an URL.
  *
  * @param argc the total number of elements in the array
  * @param argv parameter-array to concatenate.
  * @return url string needs to be freed by the caller.
  */
-char *serialize_url_parameters (int argc, char **argv) {
-  return serialize_url(argc, 1, argv);
+char *oauth_serialize_url_parameters (int argc, char **argv) {
+  return oauth_serialize_url(argc, 1, argv);
 }
 
 /**
@@ -481,7 +481,7 @@ char *serialize_url_parameters (int argc, char **argv) {
  *
  * @return zero terminated random string.
  */
-char *gen_nonce() {
+char *oauth_gen_nonce() {
   char *nc;
   static int rndinit = 1;
   const char *chars = "abcdefghijklmnopqrstuvwxyz"
@@ -516,8 +516,8 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   int rv;
   // TODO: this is not fast - we should escape the 
   // array elements (once) before sorting.
-  v1=url_escape(* (char * const *)p1);
-  v2=url_escape(* (char * const *)p2);
+  v1=oauth_url_escape(* (char * const *)p1);
+  v2=oauth_url_escape(* (char * const *)p2);
 
   // '=' signs are not "%3D" !
   if ((t1=strstr(v1,"%3D"))) {
@@ -586,9 +586,9 @@ char *oauth_sign_url (const char *url, char **postargs,
   char *tmp;
 
   if (postargs)
-    argc = split_post_parameters(url, &argv, 0);
+    argc = oauth_split_post_paramters(url, &argv, 0);
   else
-    argc = split_url_parameters(url, &argv);
+    argc = oauth_split_url_parameters(url, &argv);
 
 #define ADD_TO_ARGV \
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
@@ -596,7 +596,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   // add oAuth specific arguments
   char oarg[1024];
-  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=gen_nonce()));
+  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
   ADD_TO_ARGV;
   free(tmp);
 
@@ -622,12 +622,12 @@ char *oauth_sign_url (const char *url, char **postargs,
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
 
   // serialize URL
-  char *query= serialize_url_parameters(argc, argv);
+  char *query= oauth_serialize_url_parameters(argc, argv);
 
   // generate signature
   char *okey, *odat, *sign;
-  okey = catenc(2, c_secret, t_secret);
-  odat = catenc(3, postargs?"POST":"GET", argv[0], query);
+  okey = oauth_catenc(2, c_secret, t_secret);
+  odat = oauth_catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
   fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);
@@ -655,7 +655,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(sign);
 
   // build URL params
-  char *result = serialize_url(argc, (postargs?1:0), argv);
+  char *result = oauth_serialize_url(argc, (postargs?1:0), argv);
 
   if(postargs) { 
     *postargs = result;
