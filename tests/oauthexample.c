@@ -49,12 +49,13 @@ int parse_reply(const char *reply, char **token, char **secret) {
  * a example requesting and parsing a request-token from an oAuth service-provider
  * using the oauth-HTTP POST function.
  */
-int request_token_example_post(void) {
+int request_token_example_post(int use_post) {
   const char *request_token_uri = "http://term.ie/oauth/example/request_token.php";
   const char *access_token_uri = "http://term.ie/oauth/example/access_token.php";
   const char *test_call_uri = "http://term.ie/oauth/example/echo_api.php?method=foo&bar=baz";
   const char *c_key         = "key"; //< consumer key
   const char *c_secret      = "secret"; //< consumer secret
+
   char *t_key    = NULL; //< access token key
   char *t_secret = NULL; //< access token secret
 
@@ -62,18 +63,32 @@ int request_token_example_post(void) {
   char *postarg = NULL;
 
   printf("Request token..\n");
-  req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, c_key, c_secret, NULL, NULL);
-  char *reply = oauth_http_post(req_url,postarg);
+  char *reply;
+  if (use_post) {
+    req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, c_key, c_secret, NULL, NULL);
+    reply = oauth_http_post(req_url,postarg);
+  } else {
+    req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, c_key, c_secret, NULL, NULL);
+    reply = oauth_http_get(req_url,postarg);
+  }
   if (req_url) free(req_url);
   if (postarg) free(postarg);
   if (!reply) return(1);
   if (parse_reply(reply, &t_key, &t_secret)) return(2);
   free(reply);
 
+  // The Request Token provided above is already authorized, for this test server
+  // so we may use it to request an Access Token right away.
+
   printf("Access token..\n");
 
-  req_url = oauth_sign_url(access_token_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
-  reply = oauth_http_post(req_url,postarg);
+  if (use_post) {
+    req_url = oauth_sign_url(access_token_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    reply = oauth_http_post(req_url,postarg);
+  } else {
+    req_url = oauth_sign_url(access_token_uri, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    reply = oauth_http_get(req_url,postarg);
+  }
   if (req_url) free(req_url);
   if (postarg) free(postarg);
   if (!reply) return(3);
@@ -84,8 +99,13 @@ int request_token_example_post(void) {
 
   printf("make some request..\n");
 
-  req_url = oauth_sign_url(test_call_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
-  reply = oauth_http_post(req_url,postarg);
+  if (use_post) {
+    req_url = oauth_sign_url(test_call_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    reply = oauth_http_post(req_url,postarg);
+  } else {
+    req_url = oauth_sign_url(test_call_uri, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    reply = oauth_http_get(req_url,postarg);
+  }
   printf("%s\n",reply);
   if(req_url) free(req_url);
   if(postarg) free(postarg);
@@ -108,7 +128,7 @@ int request_token_example_post(void) {
  */
 
 int main (int argc, char **argv) {
-  switch(request_token_example_post()) {
+  switch(request_token_example_post(0)) {
     case 1:
       printf("HTTP request for an oauth request-token failed.\n");
       break;
