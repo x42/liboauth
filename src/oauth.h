@@ -277,7 +277,7 @@ char *oauth_sign_url (const char *url, char **postargs,
  * unless \a q is NULL. in which case only \a u will be used.
  *
  * @param u base url to get
- * @param q query string to send along with the HTTP request.
+ * @param q query string to send along with the HTTP request or NULL.
  * @return  In case of an error NULL is returned; otherwise a pointer to the
  * replied content from HTTP server. latter needs to be freed by caller.
  */

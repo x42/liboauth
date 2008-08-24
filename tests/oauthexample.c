@@ -52,7 +52,7 @@ int parse_reply(const char *reply, char **token, char **secret) {
 int request_token_example_post(int use_post) {
   const char *request_token_uri = "http://term.ie/oauth/example/request_token.php";
   const char *access_token_uri = "http://term.ie/oauth/example/access_token.php";
-  const char *test_call_uri = "http://term.ie/oauth/example/echo_api.php?method=foo&bar=baz";
+  const char *test_call_uri = "http://term.ie/oauth/example/echo_api.php?method=foo%20bar&bar=baz";
   const char *c_key         = "key"; //< consumer key
   const char *c_secret      = "secret"; //< consumer secret
 
@@ -106,11 +106,12 @@ int request_token_example_post(int use_post) {
     req_url = oauth_sign_url(test_call_uri, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
     reply = oauth_http_get(req_url,postarg);
   }
-  printf("%s\n",reply);
+  printf("query:'%s'\n",req_url);
+  printf("reply:'%s'\n",reply);
   if(req_url) free(req_url);
   if(postarg) free(postarg);
 
-  if (strcmp(reply,"bar=baz&method=foo")) return (5);
+  if (strcmp(reply,"bar=baz&method=foo%2520bar")) return (5);
 
   if(reply) free(reply);
   if(t_key) free(t_key);

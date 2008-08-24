@@ -84,7 +84,6 @@ char *oauth_curl_post (const char *u, const char *p) {
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
   res = curl_easy_perform(curl);
   if (res) {
-    // error
     return NULL;
   }
 
@@ -186,6 +185,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
 
 #endif // no cURL.
 
+// command line presets and ENV variable name
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
 #define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
 // alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
@@ -197,13 +197,55 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
 #include <stdio.h>
 
 /**
- * execute command and return it's output.
- * This is used to call 'curl' or 'wget'.
+ *  escape URL for use in String Quotes (aka shell single quotes)
+ *  the returned string needs to be free()d by the calling function
  *
- * @param cmd speify the commandline to execute
+ * WARNING: this function only escapes single-quotes (')
+ *
+ *
+ * RFC2396 defines the following 
+ *  reserved    = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ","
+ *  besides alphanum the following are allowed as unreserved:
+ *  mark        = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+ *
+ *  checking  `echo '-_.!~*()'` it seems we
+ *  just need to escape the tick (') itself from "'" to "'\''"
+ *
+ *  In C shell, the "!" character may need a backslash before it. 
+ *  It depends on the characters next to it. If it is surrounded by spaces,
+ *  you don't need to use a backslash. 
+ *  (here: we'd always need to escape it for c shell)
+ * @todo: escape  '!' for c-shell curl/wget commandlines
+ *
+ * @param cmd URI string or parameter to be escaped
+ * @return escaped parameter
+ */
+char *oauth_escape_shell (const char *cmd) {
+  char *esc = xstrdup(cmd);
+  char *tmp = esc;
+  int idx;
+  while ((tmp=strchr(tmp,'\''))) { 
+    idx = tmp-esc;
+    esc=xrealloc(esc,(strlen(esc)+5)*sizeof(char));
+    memmove(esc+idx+4,esc+idx+1, strlen(esc+idx));
+    esc[idx+1]='\\'; esc[idx+2]='\''; esc[idx+3]='\'';
+    tmp=esc+(idx+4);
+  }
+
+// TODO escape '!' if CSHELL ?!
+
+  return esc;
+}
+
+/**
+ * execute command via shell and return it's output.
+ * This is used to call 'curl' or 'wget'.
+ * the command is uses <em>as is</em> and needs to be propery escaped.
+ *
+ * @param cmd the commandline to execute
  * @return stdout string that needs to be freed or NULL if there's no output
  */
-char *oauth_exec_shell (char *cmd) {
+char *oauth_exec_shell (const char *cmd) {
 #ifdef DEBUG_OAUTH
   printf("DEBUG: executing: %s\n",cmd);
 #endif
@@ -231,7 +273,15 @@ char *oauth_exec_shell (char *cmd) {
 }
 
 /**
- * send POST via a command line HTTP client.
+ * send POST via a command line HTTP client,  wait for it to finish
+ * and return the content of the reply. requires a command-line HTTP client
+ *
+ * see \ref  oauth_http_post
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
  */
 char *oauth_exec_post (const char *u, const char *p) {
   char cmd[BUFSIZ];
@@ -247,15 +297,34 @@ char *oauth_exec_post (const char *u, const char *p) {
 	fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environement variable.\n\n",_OAUTH_ENV_HTTPCMD);
 	return(NULL);
   }
-  *(++t1)= 's'; *(++t2)= 's';
   // TODO: check if there are exactly two '%' in cmdtpl
-  snprintf(cmd, BUFSIZ, cmdtpl, (t1 > t2)?u:p, (t1 > t2)?p:u);
+  *(++t1)= 's'; *(++t2)= 's';
+  if (t1>t2) {
+    t1=oauth_escape_shell(u);
+    t2=oauth_escape_shell(p);
+  } else {
+    t1=oauth_escape_shell(p);
+    t2=oauth_escape_shell(u);
+  }
+  snprintf(cmd, BUFSIZ, cmdtpl, t1, t2);
   free(cmdtpl);
+  free(t1); free(t2);
   return oauth_exec_shell(cmd);
 }
 
 /**
- * send GET via a command line HTTP client.
+ * send GET via a command line HTTP client
+ * and return the content of the reply..
+ * requires a command-line HTTP client.
+ * 
+ * Note: u and q are just concatenated with a '?' in between unless q is NULL. in which case only u will be used.
+ *
+ * see \ref  oauth_http_get
+ *
+ * @param u base url to get
+ * @param q query string to send along with the HTTP request.
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
  */
 char *oauth_exec_get (const char *u, const char *q) {
   char cmd[BUFSIZ];
@@ -272,12 +341,19 @@ char *oauth_exec_get (const char *u, const char *q) {
 	return(NULL);
   }
   *(++t1)= 's';
+
+  char *e1;
+  e1 = oauth_escape_shell(u);
   if (q) {
-    t1=xmalloc(sizeof(char)*(strlen(u)+strlen(q)+2));
-    strcat(t1,u); strcat(t1,"?"); strcat(t1,q);
+    char *e2;
+    e2 = oauth_escape_shell(q);
+    t1=xmalloc(sizeof(char)*(strlen(e1)+strlen(e2)+2));
+    strcat(t1,e1); strcat(t1,"?"); strcat(t1,e2);
+    free(e2);
   }
-  snprintf(cmd, BUFSIZ, cmdtpl, q?t1:u);
+  snprintf(cmd, BUFSIZ, cmdtpl, q?t1:e1);
   free(cmdtpl);
+  free(e1);
   if (q) free(t1);
   return oauth_exec_shell(cmd);
 }
@@ -287,10 +363,10 @@ char *oauth_exec_get (const char *u, const char *q) {
  * and return the content of the reply.
  * (requires libcurl or a command-line HTTP client)
  * 
- * Note: u and q are just concatenated with a '?' in between unless q is NULL. in which case only u will be used.
+ * more documentation in oauth.h
  *
  * @param u base url to get
- * @param q query string to send along with the HTTP request.
+ * @param q query string to send along with the HTTP request or NULL.
  * @return  In case of an error NULL is returned; otherwise a pointer to the
  * replied content from HTTP server. latter needs to be freed by caller.
  */
@@ -306,6 +382,8 @@ char *oauth_http_get (const char *u, const char *q) {
  * do a HTTP POST request, wait for it to finish 
  * and return the content of the reply.
  * (requires libcurl or a command-line HTTP client)
+ *
+ * more documentation in oauth.h
  *
  * @param u url to query
  * @param p postargs to send along with the HTTP request.
@@ -323,6 +401,8 @@ char *oauth_http_post (const char *u, const char *p) {
 /**
  * http post raw data from file.
  * the returned string needs to be freed by the caller
+ *
+ * more documentation in oauth.h
  *
  * @param u url to retrieve
  * @param fn filename of the file to post along
