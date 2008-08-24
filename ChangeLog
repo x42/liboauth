@@ -1,3 +1,7 @@
+version 0.2.3
+ fixed '?' in GET URL+parameter concatenation
+ added cURL HTTP-GET function and test/example code
+
 version 0.2.2
  updated empty HTTP Paths see http://wiki.oauth.net/TestCases and
  http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en

@@ -141,9 +141,53 @@ int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
 
 /** 
  * a example requesting and parsing a request-token from an oAuth service-provider
+ * excercising the oauth-HTTP GET function.
+ */
+void request_token_example_get(void) {
+  const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
+  const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
+  const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
+  char *res_t_key    = NULL; //< reply key
+  char *res_t_secret = NULL; //< reply secret
+
+  char *req_url = NULL;
+
+  req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
+
+  printf("request URL:%s\n\n", req_url);
+  char *reply = oauth_http_get(req_url,NULL);
+  if (!reply) 
+    printf("HTTP request for an oauth request-token failed.\n");
+  else {
+    printf("HTTP-reply: %s\n", reply);
+    //example reply: 
+    //"oauth_token=2a71d1c73d2771b00f13ca0acb9836a10477d3c56&oauth_token_secret=a1b5c00c1f3e23fb314a0aa22e990266"
+
+    //parse reply
+    int rc;
+    char **rv = NULL;
+    rc = split_url_parameters(reply, &rv);
+    qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
+    if( rc==2 
+	&& !strncmp(rv[0],"oauth_token=",11)
+	&& !strncmp(rv[1],"oauth_token_secret=",18) ){
+	  res_t_key=strdup(&(rv[0][12]));
+	  res_t_secret=strdup(&(rv[1][19]));
+	  printf("key:    '%s'\nsecret: '%s'\n",res_t_key, res_t_secret);
+    }
+    if(rv) free(rv);
+  }
+
+  if(req_url) free(req_url);
+  if(reply) free(reply);
+  if(res_t_key) free(res_t_key);
+  if(res_t_secret) free(res_t_secret);
+}
+/** 
+ * a example requesting and parsing a request-token from an oAuth service-provider
  * excercising the oauth-HTTP function.
  */
-void request_token_example(void) {
+void request_token_example_post(void) {
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
@@ -322,7 +366,11 @@ int main (int argc, char **argv) {
 #endif
 
 #if 0 // request-token request
-  request_token_example();
+  request_token_example_post();
+#endif
+
+#if 0 // request-token request
+  request_token_example_get();
 #endif
 
   return (fail?1:0);

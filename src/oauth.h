@@ -255,6 +255,36 @@ char *oauth_sign_url (const char *url, char **postargs,
 
 
 /**
+ * do a HTTP GET request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl or a command-line HTTP client)
+ *
+ * If compiled <b>without</b> libcurl this function calls
+ * a command-line executable defined in the environment variable
+ * OAUTH_HTTP_GET_CMD - it defaults to 
+ * <tt>curl -sA 'liboauth-agent/0.1' '%%u'</tt>
+ * where %%u is replaced with the URL and query parameters.
+ *
+ * bash & wget example:
+ * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' '%%u' "</tt>
+ *
+ * WARNING: this is a tentative function. it's convenient and handy for testing
+ * or developing oAuth code. But don't rely on this function
+ * to become a stable part of this API. It does not do 
+ * much error checking or handing for one thing..
+ *
+ * NOTE: \a u and \a q are just concatenated with a '?' in between,
+ * unless \q q is NULL. in which case only \q u will be used.
+ *
+ * @param u base url to get
+ * @param q query string to send along with the HTTP request.
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_get (const char *u, const char *q);
+
+
+/**
  * do a HTTP POST request, wait for it to finish 
  * and return the content of the reply.
  * (requires libcurl or a command-line HTTP client)
@@ -278,7 +308,7 @@ char *oauth_sign_url (const char *url, char **postargs,
  * @param p postargs to send along with the HTTP request.
  * @return replied content from HTTP server. needs to be freed by caller.
  */
-char *oauth_http_post (char *u, char *p);
+char *oauth_http_post (const char *u, const char *p);
 
 /**
  * http post raw data from file.
@@ -293,4 +323,4 @@ char *oauth_http_post (char *u, char *p);
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_post_file (char *u, char *fn, size_t len, char *customheader);
+char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);

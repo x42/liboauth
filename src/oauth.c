@@ -290,11 +290,13 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   //TODO read RSA secret key (from file? - k?)
   // `man 3 rsa` 
   char test[4096];
-  printf("len: %i\n",oauth_decode_base64(test, k);
+#ifdef DEBUG_OAUTH
+  printf("liboauth: rsa-base64-len=%i\n",oauth_decode_base64(test, k);
+#endif
 
   RSA_check_key(rsa);
   if (!RSA_sign(NID_sha, (const unsigned char *)m, strlen(m), sig, &len, rsa)) {
-    printf("rsa signing failed\n");
+    fprintf(stderr, "liboauth: rsa signing failed\n");
   }
   RSA_free(rsa);
   return((char*) sig);
@@ -410,14 +412,19 @@ int split_url_parameters(const char *url, char ***argv) {
 char *serialize_url (int argc, int start, char **argv) {
   char  *tmp, *t1;
   int i;
+  int	first=0;
   char *query = (char*) xmalloc(sizeof(char)); 
   *query='\0';
   for(i=start; i< argc; i++) {
     int len = 0;
-    if(query) len+=strlen(query);
+    if (query) len+=strlen(query);
+
+		if (i==start && i==0 && !strncmp("http",argv[i],4)) {
+      tmp=xstrdup(argv[i]);
+      len+=strlen(tmp)+2;
+		} else if(!(t1=strchr(argv[i], '='))) {
     // see http://oauth.net/core/1.0/#anchor14
     // escape parameter names and arguments but not the '='
-    if(!(t1=strchr(argv[i], '='))) {
       tmp=xstrdup(argv[i]);
       tmp=(char*) xrealloc(tmp,(strlen(tmp)+2)*sizeof(char));
       strcat(tmp,"=");
@@ -434,8 +441,13 @@ char *serialize_url (int argc, int start, char **argv) {
       len+=strlen(tmp)+2;
     }
     query=(char*) xrealloc(query,len*sizeof(char));
-    strcat(query, (i==start?"":"&"));
+    strcat(query, ((i==start||first)?"":"&"));
+		first=0;
     strcat(query, tmp);
+		if (i==start && i==0 && !strncmp("http",tmp,4)) {
+			strcat(query, "?");
+			first=1;
+		}
     free(tmp);
   }
   return (query);
@@ -584,19 +596,14 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
   ADD_TO_ARGV;
-  if (t_key && strlen(t_key) >0) {
-    //tmp = url_escape(t_key); // FIXME: check if we need to escape this here
-    tmp = xstrdup((char*)t_key);
-    snprintf(oarg, 1024, "oauth_token=%s", tmp);
+
+  if (t_key) {
+    snprintf(oarg, 1024, "oauth_token=%s", t_key);
     ADD_TO_ARGV;
-    if(tmp) free(tmp);
   }
 
-  //tmp = url_escape(c_key); // FIXME: check if we need to escape this here
-  tmp = xstrdup(c_key);
-  snprintf(oarg, 1024, "oauth_consumer_key=%s", tmp);
+  snprintf(oarg, 1024, "oauth_consumer_key=%s", c_key);
   ADD_TO_ARGV;
-  if(tmp) free(tmp);
 
   snprintf(oarg, 1024, "oauth_signature_method=%s",
       method==0?"HMAC_SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
