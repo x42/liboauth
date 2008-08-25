@@ -180,7 +180,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
  * The caller must free the returned string.
  */
 char *oauth_url_escape(const char *string) {
-  if (!string) return strdup("");
+  if (!string) return xstrdup("");
   size_t alloc = strlen(string)+1;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
