@@ -119,19 +119,25 @@ char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, c
 char *oauth_sign_plaintext (const char *m, const char *k);
 
 /**
- * returns RSA signature for given data.
- * data needs to be urlencoded.
- *
+ * returns RSA-SHA1 signature for given data.
  * the returned signature needs to be freed by the caller.
  *
  * @param m message to be signed
- * @param k key used for signing
- * @return signature string.
+ * @param k private-key PKCS#8 and Base64-encoded 
+ * @return base64 encoded signature string.
  */
 char *oauth_sign_rsa_sha1 (const char *m, const char *k);
 
 /**
+ * verify RSA-SHA1 signature.
  *
+ * returns the output of EVP_VerifyFinal() for a given message,
+ * cert/pubkey and signature.
+ *
+ * @param m message to be verified
+ * @param c public-key or x509 certificate
+ * @param s base64 encoded signature
+ * @return 1 for a correct signature, 0 for failure and -1 if some other error occurred
  */
 int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s);
 

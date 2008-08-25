@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "24 Aug 2008" "Version 0.3.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "25 Aug 2008" "Version 0.3.0" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -56,7 +56,11 @@ src/oauth.h \- oAuth string functions in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_sign_rsa_sha1\fP (const char *m, const char *k)"
 .br
-.RI "\fIreturns RSA signature for given data. \fP"
+.RI "\fIreturns RSA-SHA1 signature for given data. \fP"
+.ti -1c
+.RI "int \fBoauth_verify_rsa_sha1\fP (const char *m, const char *c, const char *s)"
+.br
+.RI "\fIverify RSA-SHA1 signature. \fP"
 .ti -1c
 .RI "char * \fBoauth_catenc\fP (int len,...)"
 .br
@@ -427,24 +431,20 @@ signature string
 
 .SS "char* oauth_sign_rsa_sha1 (const char * m, const char * k)"
 .PP
-returns RSA signature for given data. 
+returns RSA-SHA1 signature for given data. 
 .PP
-data needs to be urlencoded.
-.PP
-THIS FUNCTION IS NOT YET IMPLEMENTED!
-.PP
-the returned string needs to be freed by the caller.
+the returned signature needs to be freed by the caller.
 .PP
 \fBParameters:\fP
 .RS 4
 \fIm\fP message to be signed 
 .br
-\fIk\fP key used for signing 
+\fIk\fP private-key PKCS#8 and Base64-encoded 
 .RE
 .PP
 \fBReturns:\fP
 .RS 4
-signature string. 
+base64 encoded signature string. 
 .RE
 .PP
 
@@ -543,6 +543,31 @@ Escape 'string' according to RFC3986 and http://oauth.net/core/1.0/#encoding_par
 \fBReturns:\fP
 .RS 4
 encoded string otherwise NULL The caller must free the returned string. 
+.RE
+.PP
+
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthtest.c\fP.
+.SS "int oauth_verify_rsa_sha1 (const char * m, const char * c, const char * s)"
+.PP
+verify RSA-SHA1 signature. 
+.PP
+returns the output of EVP_VerifyFinal() for a given message, cert/pubkey and signature.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP message to be verified 
+.br
+\fIc\fP public-key or x509 certificate 
+.br
+\fIs\fP base64 encoded signature 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+1 for a correct signature, 0 for failure and -1 if some other error occurred 
 .RE
 .PP
 

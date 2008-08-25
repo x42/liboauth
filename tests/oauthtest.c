@@ -349,7 +349,6 @@ int main (int argc, char **argv) {
     printf(" *** HMAC-SHA1 signature selftest successful.\n");
   free(b64d);
 #endif
-    printf(" *******************************************\n");
 
 #if 1
   b64d = oauth_sign_rsa_sha1(
@@ -371,7 +370,7 @@ int main (int argc, char **argv) {
     "AO/0isr/3aa6O6NLQxISLKcPDk2NOccAfS/xOtfOz4sJYM3+Bs4Io9+dZGSDCA54\n"
     "Lw03eHTNQghS0A==\n"
     "-----END PRIVATE KEY-----");
-  printf("rsa-sig: '%s'\n",b64d);
+//printf("rsa-sig: '%s'\n",b64d);
 
   if (strcmp(b64d,"jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=")) {
     printf("\n !!! RSA-SHA1 signature selftest failed.\n\n");
@@ -396,7 +395,11 @@ int main (int argc, char **argv) {
     "WpkUQDIDJEoFUzKMVuJf4KO/FJ345+BNLGgbJ6WujreoM1X/gYfdnJ/J\n"
     "-----END CERTIFICATE-----\n", 
     "jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=");
-  printf("rsa-sig: %i\n",ok);
+  if (ok != 1) {
+    printf("\n !!! RSA-SHA1 verify-signature selftest failed.\n\n");
+    fail|=1;
+  } else 
+    printf(" *** RSA-SHA1 verify-signature selftest successful.\n");
 #endif
 
 #else

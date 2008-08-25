@@ -266,45 +266,34 @@ char *oauth_sign_plaintext (const char *m, const char *k) {
   return(xstrdup(k));
 }
 
-/**
- * returns RSA signature for given data.
- * data needs to be urlencoded.
- *
- * THIS FUNCTION IS NOT YET IMPLEMENTED!
- *
- * the returned string needs to be freed by the caller.
- *
- * @param m message to be signed
- * @param k key used for signing
- * @return signature string.
- */
-
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/ssl.h>
 
+/**
+ * returns RSA-SHA1 signature for given data.
+ * the returned signature needs to be freed by the caller.
+ *
+ * @param m message to be signed
+ * @param k private-key PKCS#8 and Base64-encoded 
+ * @return base64 encoded signature string.
+ */
 char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   unsigned char *sig = NULL;
   unsigned char *passphrase = NULL;
   unsigned int len=0;
-  unsigned int keylen=0;
   EVP_MD_CTX md_ctx;
-
-	unsigned char *b64d;
-  b64d= (unsigned char*) xstrdup(k);
-	keylen=strlen(k);
 
   EVP_PKEY *pkey;
   BIO *in;
-  in = BIO_new_mem_buf(b64d, keylen);
+  in = BIO_new_mem_buf((unsigned char*) k, strlen(k));
   pkey = PEM_read_bio_PrivateKey(in, NULL, 0, passphrase); // generate sign
   BIO_free(in);
-	free(b64d);
 
   if (pkey == NULL) {
-    fprintf(stderr, "ERROR 1\n");
-	  return xstrdup("liboauth/ssl: can not read/parse cert/key");
+  //fprintf(stderr, "liboauth/ssl: can not read private key\n");
+	  return xstrdup("liboauth/ssl: can not read private key");
   }
 
   len = EVP_PKEY_size(pkey);
@@ -316,19 +305,30 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
 	  char *tmp;
     sig[len] = '\0';
 		tmp = oauth_encode_base64(len,sig);
-		free(sig);
+		OPENSSL_free(sig);
+	  EVP_PKEY_free(pkey);
 		return tmp;
-  } else {
-	  sig = (unsigned char*) xstrdup("liboauth/ssl: rsa-signing failed");
   }
-  return((char*) sig); // note use OPENSSL_free() ?!
+  return xstrdup("liboauth/ssl: rsa-sha1 signing failed");
 }
 
+/**
+ * verify RSA-SHA1 signature.
+ *
+ * returns the output of EVP_VerifyFinal() for a given message,
+ * cert/pubkey and signature
+ *
+ * @param m message to be verified
+ * @param c public-key or x509 certificate
+ * @param s base64 encoded signature
+ * @return 1 for a correct signature, 0 for failure and -1 if some other error occurred
+ */
 int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
+  EVP_MD_CTX md_ctx;
   EVP_PKEY *pkey;
   BIO *in;
 
-  in = BIO_new_mem_buf(c, strlen(c));
+  in = BIO_new_mem_buf((unsigned char*)c, strlen(c));
   X509 *cert = NULL;
   cert = PEM_read_bio_X509(in, NULL, 0, NULL);
 	if (cert)  {
@@ -339,10 +339,21 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
 	}
   BIO_free(in);
   if (pkey == NULL) {
-    fprintf(stderr, "ERROR 1\n");
-	  return 1;
+  //fprintf(stderr, "could not read cert/pubkey.\n");
+	  return -2;
   }
-	return 0;
+
+	unsigned char *b64d;
+  b64d= (unsigned char*) xmalloc(sizeof(char)*strlen(s));
+  int slen = oauth_decode_base64(b64d, s);
+
+	EVP_VerifyInit(&md_ctx, EVP_sha1());
+	EVP_VerifyUpdate(&md_ctx, m, strlen(m));
+	int err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
+	EVP_MD_CTX_cleanup(&md_ctx);
+	EVP_PKEY_free(pkey);
+	free(b64d);
+	return (err);
 }
 
 /**
