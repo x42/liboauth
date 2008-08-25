@@ -123,7 +123,7 @@ char *oauth_sign_plaintext (const char *m, const char *k);
  * the returned signature needs to be freed by the caller.
  *
  * @param m message to be signed
- * @param k private-key PKCS#8 and Base64-encoded 
+ * @param k private-key PKCS and Base64-encoded 
  * @return base64 encoded signature string.
  */
 char *oauth_sign_rsa_sha1 (const char *m, const char *k);
