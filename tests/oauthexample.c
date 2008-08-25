@@ -51,7 +51,7 @@ int parse_reply(const char *reply, char **token, char **secret) {
  * a example requesting and parsing a request-token from an oAuth service-provider
  * using the oauth-HTTP POST function.
  */
-int request_token_example_post(int use_post) {
+int request_token_example(int use_post) {
   const char *request_token_uri = "http://term.ie/oauth/example/request_token.php";
   const char *access_token_uri = "http://term.ie/oauth/example/access_token.php";
   const char *test_call_uri = "http://term.ie/oauth/example/echo_api.php?method=foo%20bar&bar=baz";
@@ -131,7 +131,7 @@ int request_token_example_post(int use_post) {
  */
 
 int main (int argc, char **argv) {
-  switch(request_token_example_post(0)) {
+  switch(request_token_example(0)) {
     case 1:
       printf("HTTP request for an oauth request-token failed.\n");
       break;
