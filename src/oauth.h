@@ -1,5 +1,5 @@
 /**
- *  @brief oAuth string functions in POSIX-C.
+ *  @brief oAuth.net implementation in POSIX-C.
  *  @file oauth.h
  *  @author Robin Gareus <robin@gareus.org>
  *

@@ -286,8 +286,8 @@ char *oauth_exec_shell (const char *cmd) {
 char *oauth_exec_post (const char *u, const char *p) {
   char cmd[BUFSIZ];
   char *cmdtpl = getenv(_OAUTH_ENV_HTTPCMD);
-  if (!cmdtpl) cmdtpl = strdup (_OAUTH_DEF_HTTPCMD);
-  else cmdtpl = strdup (cmdtpl); // clone getenv() string.
+  if (!cmdtpl) cmdtpl = xstrdup (_OAUTH_DEF_HTTPCMD);
+  else cmdtpl = xstrdup (cmdtpl); // clone getenv() string.
 
   // add URL and post param - error if no '%p' or '%u' present in definition
   char *t1,*t2;
@@ -330,8 +330,8 @@ char *oauth_exec_get (const char *u, const char *q) {
   char cmd[BUFSIZ];
   if (!u) return (NULL);
   char *cmdtpl = getenv(_OAUTH_ENV_HTTPGET);
-  if (!cmdtpl) cmdtpl = strdup (_OAUTH_DEF_HTTPGET);
-  else cmdtpl = strdup (cmdtpl); // clone getenv() string.
+  if (!cmdtpl) cmdtpl = xstrdup (_OAUTH_DEF_HTTPGET);
+  else cmdtpl = xstrdup (cmdtpl); // clone getenv() string.
 
   // add URL and post param - error if no '%p' or '%u' present in definition
   char *t1;
