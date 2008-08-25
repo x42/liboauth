@@ -122,15 +122,18 @@ char *oauth_sign_plaintext (const char *m, const char *k);
  * returns RSA signature for given data.
  * data needs to be urlencoded.
  *
- * THIS FUNCTION IS NOT YET IMPLEMENTED!
- *
- * the returned string needs to be freed by the caller.
+ * the returned signature needs to be freed by the caller.
  *
  * @param m message to be signed
  * @param k key used for signing
  * @return signature string.
  */
 char *oauth_sign_rsa_sha1 (const char *m, const char *k);
+
+/**
+ *
+ */
+int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s);
 
 /**
  * encode strings and concatenate with '&' separator.

@@ -278,45 +278,29 @@ char *oauth_sign_plaintext (const char *m, const char *k) {
  * @param k key used for signing
  * @return signature string.
  */
-#if 1
-
-#include <openssl/rsa.h>
-#include <openssl/engine.h>
 
 #include <openssl/evp.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
-#include <openssl/crypto.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
-#include <openssl/conf.h>
-#include <openssl/rand.h>
 #include <openssl/ssl.h>
-#include <openssl/pkcs12.h>
-
-#include "authfile.c" // XXX
-//#define DEBUG_OAUTH  // XXX
 
 char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   unsigned char *sig = NULL;
   unsigned char *passphrase = NULL;
   unsigned int len=0;
+  unsigned int keylen=0;
   EVP_MD_CTX md_ctx;
-	char *b64d = xmalloc((1+strlen(k))*sizeof(char));
 
-	if (oauth_decode_base64(b64d, k) ==0 ) {
-    fprintf(stderr, "ERROR 0\n");
-	  return xstrdup("liboauth/ssl: can not decode cert/key");
-  }
+	unsigned char *b64d;
+  b64d= (unsigned char*) xstrdup(k);
+	keylen=strlen(k);
 
   EVP_PKEY *pkey;
   BIO *in;
-  in = BIO_new_mem_buf(b64d, strlen(b64d));
-  pkey = PEM_read_bio_PrivateKey(in, NULL,NULL, passphrase); // generate sign
-//pkey = (EVP_PKEY *) X509_get_pubkey(cert); // verify sign
+  in = BIO_new_mem_buf(b64d, keylen);
+  pkey = PEM_read_bio_PrivateKey(in, NULL, 0, passphrase); // generate sign
   BIO_free(in);
-
-  fprintf(stderr, "DEBUG 1\n");
+	free(b64d);
 
   if (pkey == NULL) {
     fprintf(stderr, "ERROR 1\n");
@@ -328,50 +312,38 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
 
   EVP_SignInit(&md_ctx, EVP_sha1());
   EVP_SignUpdate(&md_ctx, m, strlen(m));
-  fprintf(stderr, "DEBUG 2\n");
   if (EVP_SignFinal (&md_ctx, sig, &len, pkey)) {
-  fprintf(stderr, "DEBUG 2a\n");
+	  char *tmp;
     sig[len] = '\0';
+		tmp = oauth_encode_base64(len,sig);
+		free(sig);
+		return tmp;
   } else {
-  fprintf(stderr, "DEBUG 2e\n");
 	  sig = (unsigned char*) xstrdup("liboauth/ssl: rsa-signing failed");
   }
-  fprintf(stderr, "DEBUG 3\n");
-
-#if 0
-  RSA *rsa;
-
-#ifdef DEBUG_OAUTH
-  unsigned char test[4096];
-  printf("liboauth: rsa-base64-len=%i\n",oauth_decode_base64(test, k));
-#endif
-
-  rsa = load_private_key("", "");
-
-  if (RSA_check_key(rsa)!=1) {
-  fprintf(stderr, "failed\n");
-    RSA_free(rsa);
-	  return xstrdup("liboauth/ssl: rsa-key-error");
-	}
-
-  sig = xmalloc(RSA_size(rsa));
-  if (!RSA_sign(NID_sha1, (const unsigned char *)m, strlen(m), sig, &len, rsa)) {
-#ifdef DEBUG_OAUTH
-    fprintf(stderr, "liboauth/ssl: rsa signing failed\n");
-#endif
-    fprintf(stderr, " ~~~ %i\n", len);
-	  sig = (unsigned char*) xstrdup("liboauth/ssl: rsa-signing failed");
-  }
-  RSA_free(rsa);
-#endif
-
   return((char*) sig); // note use OPENSSL_free() ?!
 }
-#else 
-  char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
-   return xstrdup("RSA-is-not-implemented.");
+
+int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
+  EVP_PKEY *pkey;
+  BIO *in;
+
+  in = BIO_new_mem_buf(c, strlen(c));
+  X509 *cert = NULL;
+  cert = PEM_read_bio_X509(in, NULL, 0, NULL);
+	if (cert)  {
+    pkey = (EVP_PKEY *) X509_get_pubkey(cert); 
+		X509_free(cert);
+	} else {
+    pkey = PEM_read_bio_PUBKEY(in, NULL, 0, NULL);
+	}
+  BIO_free(in);
+  if (pkey == NULL) {
+    fprintf(stderr, "ERROR 1\n");
+	  return 1;
   }
-#endif
+	return 0;
+}
 
 /**
  * encode strings and concatenate with '&' separator.
