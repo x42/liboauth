@@ -39,7 +39,7 @@
 
 int loglevel = 1; //< report each successful test
 
-/**
+/*
  * test parameter encoding
  */
 int test_encoding(char *param, char *expected) {
@@ -57,7 +57,7 @@ int test_encoding(char *param, char *expected) {
 }
 
 #ifdef TEST_UNICODE
-/**
+/*
  * test unicode paramter encoding
  */
 int test_uniencoding(wchar_t *src, char *expected) {
@@ -85,7 +85,7 @@ int test_uniencoding(wchar_t *src, char *expected) {
 }
 #endif
 
-/**
+/*
  * test request normalization
  */
 int test_normalize(char *param, char *expected) {
@@ -110,7 +110,7 @@ int test_normalize(char *param, char *expected) {
   return (rv);
 }
 
-/**
+/*
  * test request concatenation
  */
 int test_request(char *http_method, char *request, char *expected) {
@@ -137,8 +137,8 @@ int test_request(char *http_method, char *request, char *expected) {
   return (rv);
 }
 
-/**
- * test sha1 checksum
+/*
+ * test hmac-sha1 checksum
  */
 int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
   int rv=0;
@@ -154,7 +154,7 @@ int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
   return (rv);
 }
 
-/** 
+/* 
  * a example requesting and parsing a request-token from an oAuth service-provider
  * excercising the oauth-HTTP GET function. - it is almost the same as 
  * \ref request_token_example_post below. 
@@ -200,7 +200,7 @@ void request_token_example_get(void) {
   if(res_t_secret) free(res_t_secret);
 }
 
-/** 
+/*
  * a example requesting and parsing a request-token from an oAuth service-provider
  * using the oauth-HTTP POST function.
  */
@@ -254,7 +254,7 @@ void request_token_example_post(void) {
 }
 
 
-/*****************************************************************************
+/*
  * Main Test and Example Code.
  * 
  * compile:
@@ -324,11 +324,6 @@ int main (int argc, char **argv) {
   fail|=test_sha1("cs","ts","bs","VZVjXceV7JgPq/dOTnNmEfO0Fv8=");
   fail|=test_sha1("kd94hf93k423kf44","pfkkdhi9sl3r4s00","GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal","tR3+Ty81lMeYAr/Fid0kMTYa/WM=");
 
-  if (fail) {
-    printf("\n !!! One or more tests from http://wiki.oauth.net/TestCases failed.\n\n");
-  } else {
-    printf(" *** http://wiki.oauth.net/TestCases verified sucessfully.\n");
-  }
 #endif
 
 #if 1 // HMAC-SHA1 selftest.
@@ -343,14 +338,14 @@ int main (int argc, char **argv) {
   char *testkey = "kd94hf93k423kf44&pfkkdhi9sl3r4s00";
   b64d = oauth_sign_hmac_sha1(testurl , testkey);
   if (strcmp(b64d,"tR3+Ty81lMeYAr/Fid0kMTYa/WM=")) {
-    printf("\n !!! HMAC-SHA1 signature selftest failed.\n\n");
+    printf("HMAC-SHA1 signature test failed.\n");
     fail|=1;
-  } else 
-    printf(" *** HMAC-SHA1 signature selftest successful.\n");
+  } else if (loglevel)
+    printf("HMAC-SHA1 signature test successful.\n");
   free(b64d);
 #endif
 
-#if 1
+#if 1 // rsa-signature based on http://wiki.oauth.net/TestCases example
   b64d = oauth_sign_rsa_sha1(
     "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacaction.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3D13917289812797014437%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1196666512%26oauth_version%3D1.0%26size%3Doriginal",
 
@@ -370,16 +365,15 @@ int main (int argc, char **argv) {
     "AO/0isr/3aa6O6NLQxISLKcPDk2NOccAfS/xOtfOz4sJYM3+Bs4Io9+dZGSDCA54\n"
     "Lw03eHTNQghS0A==\n"
     "-----END PRIVATE KEY-----");
-//printf("rsa-sig: '%s'\n",b64d);
 
+//printf("rsa-sig: '%s'\n",b64d);
   if (strcmp(b64d,"jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=")) {
-    printf("\n !!! RSA-SHA1 signature selftest failed.\n\n");
+    printf("RSA-SHA1 signature test failed.\n");
     fail|=1;
-  } else 
-    printf(" *** RSA-SHA1 signature selftest successful.\n");
+  } else if (loglevel)
+    printf("RSA-SHA1 signature test successful.\n");
   free(b64d);
 
-#if 1 
   int ok = oauth_verify_rsa_sha1(
     "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacaction.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3D13917289812797014437%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1196666512%26oauth_version%3D1.0%26size%3Doriginal",
 
@@ -396,15 +390,20 @@ int main (int argc, char **argv) {
     "-----END CERTIFICATE-----\n", 
     "jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=");
   if (ok != 1) {
-    printf("\n !!! RSA-SHA1 verify-signature selftest failed.\n\n");
+    printf("RSA-SHA1 verify-signature test failed.\n");
     fail|=1;
-  } else 
-    printf(" *** RSA-SHA1 verify-signature selftest successful.\n");
+  } else if (loglevel)
+    printf("RSA-SHA1 verify-signature test successful.\n");
+#else
+  printf("RSA-SHA1 skipped. RSA signature is not yet implemented.\n");
 #endif
 
-#else
-  printf(" --- RSA-SHA1 skipped. RSA signature is not yet implemented.\n");
-#endif
+
+  if (fail) {
+    printf("\n !!! One or more tests from http://wiki.oauth.net/TestCases failed.\n\n");
+  } else {
+    printf(" *** http://wiki.oauth.net/TestCases verified sucessfully.\n");
+  }
 
   // example code.
 

@@ -36,21 +36,6 @@ typedef enum {
 	} OAuthMethod;
 
 /**
- * Base64 encode one byte
- */
-char oauth_b64_encode(unsigned char u);
-
-/**
- * Decode a single base64 character.
- */
-unsigned char oauth_b64_decode(char c);
-
-/**
- * Return TRUE if 'c' is a valid base64 character, otherwise FALSE
- */
-int oauth_b64_is_base64(char c);
-
-/**
  * Base64 encode and return size data in 'src'. The caller must free the
  * returned string.
  *
