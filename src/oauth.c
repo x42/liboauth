@@ -179,7 +179,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
  * @return encoded string otherwise NULL
  * The caller must free the returned string.
  */
-char *url_escape(const char *string) {
+char *oauth_url_escape(const char *string) {
   if (!string) return strdup("");
   size_t alloc = strlen(string)+1;
   char *ns = NULL, *testing_ptr = NULL;
@@ -266,46 +266,95 @@ char *oauth_sign_plaintext (const char *m, const char *k) {
   return(xstrdup(k));
 }
 
+#include <openssl/evp.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/ssl.h>
+
 /**
- * returns RSA signature for given data.
- * data needs to be urlencoded.
- *
- * THIS FUNCTION IS NOT YET IMPLEMENTED!
- *
- * the returned string needs to be freed by the caller.
+ * returns RSA-SHA1 signature for given data.
+ * the returned signature needs to be freed by the caller.
  *
  * @param m message to be signed
- * @param k key used for signing
- * @return signature string.
+ * @param k private-key PKCS and Base64-encoded 
+ * @return base64 encoded signature string.
  */
-#if 0
-
-#include <openssl/rsa.h>
-#include <openssl/engine.h>
-
 char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
-  unsigned char *sig;
-  unsigned int len;
-  RSA *rsa = RSA_new();
-  //TODO read RSA secret key (from file? - k?)
-  // `man 3 rsa` 
-  char test[4096];
-#ifdef DEBUG_OAUTH
-  printf("liboauth: rsa-base64-len=%i\n",oauth_decode_base64(test, k);
-#endif
+  unsigned char *sig = NULL;
+  unsigned char *passphrase = NULL;
+  unsigned int len=0;
+  EVP_MD_CTX md_ctx;
 
-  RSA_check_key(rsa);
-  if (!RSA_sign(NID_sha, (const unsigned char *)m, strlen(m), sig, &len, rsa)) {
-    fprintf(stderr, "liboauth: rsa signing failed\n");
+  EVP_PKEY *pkey;
+  BIO *in;
+  in = BIO_new_mem_buf((unsigned char*) k, strlen(k));
+  pkey = PEM_read_bio_PrivateKey(in, NULL, 0, passphrase); // generate sign
+  BIO_free(in);
+
+  if (pkey == NULL) {
+  //fprintf(stderr, "liboauth/ssl: can not read private key\n");
+	  return xstrdup("liboauth/ssl: can not read private key");
   }
-  RSA_free(rsa);
-  return((char*) sig);
+
+  len = EVP_PKEY_size(pkey);
+  sig = xmalloc((len+1)*sizeof(char));
+
+  EVP_SignInit(&md_ctx, EVP_sha1());
+  EVP_SignUpdate(&md_ctx, m, strlen(m));
+  if (EVP_SignFinal (&md_ctx, sig, &len, pkey)) {
+	  char *tmp;
+    sig[len] = '\0';
+		tmp = oauth_encode_base64(len,sig);
+		OPENSSL_free(sig);
+	  EVP_PKEY_free(pkey);
+		return tmp;
+  }
+  return xstrdup("liboauth/ssl: rsa-sha1 signing failed");
 }
-#else 
-  char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
-   return xstrdup("RSA-is-not-implemented.");
+
+/**
+ * verify RSA-SHA1 signature.
+ *
+ * returns the output of EVP_VerifyFinal() for a given message,
+ * cert/pubkey and signature
+ *
+ * @param m message to be verified
+ * @param c public-key or x509 certificate
+ * @param s base64 encoded signature
+ * @return 1 for a correct signature, 0 for failure and -1 if some other error occurred
+ */
+int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
+  EVP_MD_CTX md_ctx;
+  EVP_PKEY *pkey;
+  BIO *in;
+
+  in = BIO_new_mem_buf((unsigned char*)c, strlen(c));
+  X509 *cert = NULL;
+  cert = PEM_read_bio_X509(in, NULL, 0, NULL);
+	if (cert)  {
+    pkey = (EVP_PKEY *) X509_get_pubkey(cert); 
+		X509_free(cert);
+	} else {
+    pkey = PEM_read_bio_PUBKEY(in, NULL, 0, NULL);
+	}
+  BIO_free(in);
+  if (pkey == NULL) {
+  //fprintf(stderr, "could not read cert/pubkey.\n");
+	  return -2;
   }
-#endif
+
+	unsigned char *b64d;
+  b64d= (unsigned char*) xmalloc(sizeof(char)*strlen(s));
+  int slen = oauth_decode_base64(b64d, s);
+
+	EVP_VerifyInit(&md_ctx, EVP_sha1());
+	EVP_VerifyUpdate(&md_ctx, m, strlen(m));
+	int err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
+	EVP_MD_CTX_cleanup(&md_ctx);
+	EVP_PKEY_free(pkey);
+	free(b64d);
+	return (err);
+}
 
 /**
  * encode strings and concatenate with '&' separator.
@@ -320,7 +369,7 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
  * strings - needs to be free(d) by the caller. or NULL
  * in case we ran out of memory.
  */
-char *catenc(int len, ...) {
+char *oauth_catenc(int len, ...) {
   va_list va;
   char *rv = (char*) xmalloc(sizeof(char));
   *rv='\0';
@@ -330,7 +379,7 @@ char *catenc(int len, ...) {
     char *arg = va_arg(va, char *);
     char *enc;
     int len;
-    enc = url_escape(arg);
+    enc = oauth_url_escape(arg);
     if(!enc) break;
     len = strlen(enc) + 1 + ((i>0)?1:0);
     if(rv) len+=strlen(rv);
@@ -346,7 +395,7 @@ char *catenc(int len, ...) {
 
 /**
  * splits the given url into a parameter array. 
- * (see \ref serialize_url and \ref serialize_url_parameters for the reverse)
+ * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
  *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
@@ -358,7 +407,7 @@ char *catenc(int len, ...) {
  * 
  * @return number of parameter(s) in array.
  */
-int split_post_parameters(const char *url, char ***argv, short qesc) {
+int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
   int argc=0;
   char *token, *tmp, *t1;
   if (!argv) return 0;
@@ -402,8 +451,8 @@ int split_post_parameters(const char *url, char ***argv, short qesc) {
   return argc;
 }
 
-int split_url_parameters(const char *url, char ***argv) {
-  return split_post_parameters(url, argv, 1);
+int oauth_split_url_parameters(const char *url, char ***argv) {
+  return oauth_split_post_paramters(url, argv, 1);
 }
 
 /**
@@ -415,7 +464,7 @@ int split_url_parameters(const char *url, char ***argv) {
  * @return url string needs to be freed by the caller.
  *
  */
-char *serialize_url (int argc, int start, char **argv) {
+char *oauth_serialize_url (int argc, int start, char **argv) {
   char  *tmp, *t1;
   int i;
   int	first=0;
@@ -437,9 +486,9 @@ char *serialize_url (int argc, int start, char **argv) {
       len+=strlen(tmp)+2;
     } else {
       *t1=0;
-      tmp = url_escape(argv[i]);
+      tmp = oauth_url_escape(argv[i]);
       *t1='=';
-      t1 = url_escape((t1+1));
+      t1 = oauth_url_escape((t1+1));
       tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
       strcat(tmp,"=");
       strcat(tmp,t1);
@@ -462,16 +511,16 @@ char *serialize_url (int argc, int start, char **argv) {
 /**
  * build a query parameter string from an array.
  *
- * This function is a shortcut for \ref serialize_url (argc, 1, argv). 
+ * This function is a shortcut for \ref oauth_serialize_url (argc, 1, argv). 
  * It strips the leading host/path, which is usually the first 
- * element when using split_url_parameters on an URL.
+ * element when using oauth_split_url_parameters on an URL.
  *
  * @param argc the total number of elements in the array
  * @param argv parameter-array to concatenate.
  * @return url string needs to be freed by the caller.
  */
-char *serialize_url_parameters (int argc, char **argv) {
-  return serialize_url(argc, 1, argv);
+char *oauth_serialize_url_parameters (int argc, char **argv) {
+  return oauth_serialize_url(argc, 1, argv);
 }
 
 /**
@@ -481,7 +530,7 @@ char *serialize_url_parameters (int argc, char **argv) {
  *
  * @return zero terminated random string.
  */
-char *gen_nonce() {
+char *oauth_gen_nonce() {
   char *nc;
   static int rndinit = 1;
   const char *chars = "abcdefghijklmnopqrstuvwxyz"
@@ -516,8 +565,8 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   int rv;
   // TODO: this is not fast - we should escape the 
   // array elements (once) before sorting.
-  v1=url_escape(* (char * const *)p1);
-  v2=url_escape(* (char * const *)p2);
+  v1=oauth_url_escape(* (char * const *)p1);
+  v2=oauth_url_escape(* (char * const *)p2);
 
   // '=' signs are not "%3D" !
   if ((t1=strstr(v1,"%3D"))) {
@@ -586,9 +635,9 @@ char *oauth_sign_url (const char *url, char **postargs,
   char *tmp;
 
   if (postargs)
-    argc = split_post_parameters(url, &argv, 0);
+    argc = oauth_split_post_paramters(url, &argv, 0);
   else
-    argc = split_url_parameters(url, &argv);
+    argc = oauth_split_url_parameters(url, &argv);
 
 #define ADD_TO_ARGV \
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
@@ -596,7 +645,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   // add oAuth specific arguments
   char oarg[1024];
-  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=gen_nonce()));
+  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
   ADD_TO_ARGV;
   free(tmp);
 
@@ -622,12 +671,12 @@ char *oauth_sign_url (const char *url, char **postargs,
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
 
   // serialize URL
-  char *query= serialize_url_parameters(argc, argv);
+  char *query= oauth_serialize_url_parameters(argc, argv);
 
   // generate signature
   char *okey, *odat, *sign;
-  okey = catenc(2, c_secret, t_secret);
-  odat = catenc(3, postargs?"POST":"GET", argv[0], query);
+  okey = oauth_catenc(2, c_secret, t_secret);
+  odat = oauth_catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
   fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);
@@ -655,7 +704,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(sign);
 
   // build URL params
-  char *result = serialize_url(argc, (postargs?1:0), argv);
+  char *result = oauth_serialize_url(argc, (postargs?1:0), argv);
 
   if(postargs) { 
     *postargs = result;

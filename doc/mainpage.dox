@@ -8,7 +8,7 @@
  
  liboauth depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
  
- The source includes example code and a selftest based on <a href="http://wiki.oauth.net/TestCases">http://wiki.oauth.net/TestCases</a>. The library has been tested against the http://oauth-sandbox.mediamatic.nl test server using a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and OSX-10.5.
+ The source includes example code and a selftest based on <a href="http://wiki.oauth.net/TestCases">http://wiki.oauth.net/TestCases</a>. The library has been tested against the http://oauth-sandbox.mediamatic.nl and http://term.ie/oauth/example test servers using commandline-cURL, libcurl and a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and OSX-10.5.
 
 @section installation Installation
  The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install liboauth and liboauth-dev package.
@@ -33,7 +33,7 @@
   <!--
   Download Source: <a href="https://sourceforge.net/project/showfiles.php?group_id=234865">liboauth-0.1.2.tar.gz</a>
   !-->
-  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.2.4.tar.gz">liboauth-0.2.4.tar.gz</a>
+  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.3.0.tar.gz">liboauth-0.3.0.tar.gz</a>
   &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
 
   liboauth is maintained at sourceforge subversion repositories:
@@ -66,4 +66,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 </pre>
 
 \example tests/oauthtest.c
+\example tests/oauthexample.c
 */

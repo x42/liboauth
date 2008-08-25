@@ -1,5 +1,7 @@
 /**
- * Test and example code for liboauth.
+ *  @brief self-test and example code for liboauth.
+ *  @file oauthtest.c
+ *  @author Robin Gareus <robin@gareus.org>
  *
  * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
  * 
@@ -43,7 +45,7 @@ int loglevel = 1; //< report each successful test
 int test_encoding(char *param, char *expected) {
   int rv=0;
   char *testcase=NULL;
-  testcase = url_escape(param);
+  testcase = oauth_url_escape(param);
   if (strcmp(testcase,expected)) {
     rv=1;
     printf("parameter encoding test for '%s' failed.\n"
@@ -92,9 +94,9 @@ int test_normalize(char *param, char *expected) {
   char **argv = NULL;
   char *tmp;
 
-  argc = split_url_parameters(param, &argv);
+  argc = oauth_split_url_parameters(param, &argv);
   qsort(argv, argc, sizeof(char *), oauth_cmpstringp);
-  char *testcase= serialize_url(argc,0, argv);
+  char *testcase= oauth_serialize_url(argc,0, argv);
 
   rv=strcmp(testcase,expected);
   if (rv) {
@@ -117,10 +119,10 @@ int test_request(char *http_method, char *request, char *expected) {
   char **argv = NULL;
   char *tmp;
 
-  argc = split_url_parameters(request, &argv);
+  argc = oauth_split_url_parameters(request, &argv);
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
-  char *query= serialize_url(argc,1, argv);
-  char *testcase = catenc(3, http_method, argv[0], query);
+  char *query= oauth_serialize_url(argc,1, argv);
+  char *testcase = oauth_catenc(3, http_method, argv[0], query);
 
   rv=strcmp(testcase,expected);
   if (rv) {
@@ -140,7 +142,7 @@ int test_request(char *http_method, char *request, char *expected) {
  */
 int test_sha1(char *c_secret, char *t_secret, char *base, char *expected) {
   int rv=0;
-  char *okey = catenc(2, c_secret, t_secret);
+  char *okey = oauth_catenc(2, c_secret, t_secret);
   char *b64d = oauth_sign_hmac_sha1(base, okey);
   if (strcmp(b64d,expected)) {
     printf("HMAC-SHA1 invalid. base:'%s' secrets:'%s'\n"
@@ -180,7 +182,7 @@ void request_token_example_get(void) {
     //parse reply
     int rc;
     char **rv = NULL;
-    rc = split_url_parameters(reply, &rv);
+    rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
 	&& !strncmp(rv[0],"oauth_token=",11)
@@ -232,7 +234,7 @@ void request_token_example_post(void) {
     //parse reply
     int rc;
     char **rv = NULL;
-    rc = split_url_parameters(reply, &rv);
+    rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
 	&& !strncmp(rv[0],"oauth_token=",11)
@@ -348,14 +350,61 @@ int main (int argc, char **argv) {
   free(b64d);
 #endif
 
-#if 0
-  b64d = oauth_sign_rsa_sha1(testurl , "");
-  printf("rsa sig: '%s'\n",b64d);
+#if 1
+  b64d = oauth_sign_rsa_sha1(
+    "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacaction.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3D13917289812797014437%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1196666512%26oauth_version%3D1.0%26size%3Doriginal",
+
+    "-----BEGIN PRIVATE KEY-----\n"
+    "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALRiMLAh9iimur8V\n"
+    "A7qVvdqxevEuUkW4K+2KdMXmnQbG9Aa7k7eBjK1S+0LYmVjPKlJGNXHDGuy5Fw/d\n"
+    "7rjVJ0BLB+ubPK8iA/Tw3hLQgXMRRGRXXCn8ikfuQfjUS1uZSatdLB81mydBETlJ\n"
+    "hI6GH4twrbDJCR2Bwy/XWXgqgGRzAgMBAAECgYBYWVtleUzavkbrPjy0T5FMou8H\n"
+    "X9u2AC2ry8vD/l7cqedtwMPp9k7TubgNFo+NGvKsl2ynyprOZR1xjQ7WgrgVB+mm\n"
+    "uScOM/5HVceFuGRDhYTCObE+y1kxRloNYXnx3ei1zbeYLPCHdhxRYW7T0qcynNmw\n"
+    "rn05/KO2RLjgQNalsQJBANeA3Q4Nugqy4QBUCEC09SqylT2K9FrrItqL2QKc9v0Z\n"
+    "zO2uwllCbg0dwpVuYPYXYvikNHHg+aCWF+VXsb9rpPsCQQDWR9TT4ORdzoj+Nccn\n"
+    "qkMsDmzt0EfNaAOwHOmVJ2RVBspPcxt5iN4HI7HNeG6U5YsFBb+/GZbgfBT3kpNG\n"
+    "WPTpAkBI+gFhjfJvRw38n3g/+UeAkwMI2TJQS4n8+hid0uus3/zOjDySH3XHCUno\n"
+    "cn1xOJAyZODBo47E+67R4jV1/gzbAkEAklJaspRPXP877NssM5nAZMU0/O/NGCZ+\n"
+    "3jPgDUno6WbJn5cqm8MqWhW1xGkImgRk+fkDBquiq4gPiT898jusgQJAd5Zrr6Q8\n"
+    "AO/0isr/3aa6O6NLQxISLKcPDk2NOccAfS/xOtfOz4sJYM3+Bs4Io9+dZGSDCA54\n"
+    "Lw03eHTNQghS0A==\n"
+    "-----END PRIVATE KEY-----");
+//printf("rsa-sig: '%s'\n",b64d);
+
+  if (strcmp(b64d,"jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=")) {
+    printf("\n !!! RSA-SHA1 signature selftest failed.\n\n");
+    fail|=1;
+  } else 
+    printf(" *** RSA-SHA1 signature selftest successful.\n");
   free(b64d);
+
+#if 1 
+  int ok = oauth_verify_rsa_sha1(
+    "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacaction.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3D13917289812797014437%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1196666512%26oauth_version%3D1.0%26size%3Doriginal",
+
+    "-----BEGIN CERTIFICATE-----\n"
+    "MIIBpjCCAQ+gAwIBAgIBATANBgkqhkiG9w0BAQUFADAZMRcwFQYDVQQDDA5UZXN0\n"
+    "IFByaW5jaXBhbDAeFw03MDAxMDEwODAwMDBaFw0zODEyMzEwODAwMDBaMBkxFzAV\n"
+    "BgNVBAMMDlRlc3QgUHJpbmNpcGFsMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB\n"
+    "gQC0YjCwIfYoprq/FQO6lb3asXrxLlJFuCvtinTF5p0GxvQGu5O3gYytUvtC2JlY\n"
+    "zypSRjVxwxrsuRcP3e641SdASwfrmzyvIgP08N4S0IFzEURkV1wp/IpH7kH41Etb\n"
+    "mUmrXSwfNZsnQRE5SYSOhh+LcK2wyQkdgcMv11l4KoBkcwIDAQABMA0GCSqGSIb3\n"
+    "DQEBBQUAA4GBAGZLPEuJ5SiJ2ryq+CmEGOXfvlTtEL2nuGtr9PewxkgnOjZpUy+d\n"
+    "4TvuXJbNQc8f4AMWL/tO9w0Fk80rWKp9ea8/df4qMq5qlFWlx6yOLQxumNOmECKb\n"
+    "WpkUQDIDJEoFUzKMVuJf4KO/FJ345+BNLGgbJ6WujreoM1X/gYfdnJ/J\n"
+    "-----END CERTIFICATE-----\n", 
+    "jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=");
+  if (ok != 1) {
+    printf("\n !!! RSA-SHA1 verify-signature selftest failed.\n\n");
+    fail|=1;
+  } else 
+    printf(" *** RSA-SHA1 verify-signature selftest successful.\n");
+#endif
+
 #else
   printf(" --- RSA-SHA1 skipped. RSA signature is not yet implemented.\n");
 #endif
-
 
   // example code.
 

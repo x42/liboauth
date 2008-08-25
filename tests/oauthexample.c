@@ -1,5 +1,7 @@
 /**
- * Test and example code for liboauth.
+ *  @brief example code for liboauth using http://term.ie/oauth/example
+ *  @file oauthexample.c
+ *  @author Robin Gareus <robin@gareus.org>
  *
  * Copyright 2008 Robin Gareus <robin@gareus.org>
  *
@@ -31,7 +33,7 @@ int parse_reply(const char *reply, char **token, char **secret) {
   int rc;
   int ok=1;
   char **rv = NULL;
-  rc = split_url_parameters(reply, &rv);
+  rc = oauth_split_url_parameters(reply, &rv);
   qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
   if( rc==2 
       && !strncmp(rv[0],"oauth_token=",11)

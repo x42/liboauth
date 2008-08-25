@@ -1,3 +1,7 @@
+version 0.3.0
+ prefixed all public oauth.h functions with "oauth_"
+ added RSA-SHA1 signature support
+
 version 0.2.4
  detect absoluteURI by ":/" (it was /^http/) - used to detect empty abs_path
  added shell escape for (bash like) `sh` to invoke curl/wget

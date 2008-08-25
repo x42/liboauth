@@ -1,7 +1,7 @@
 AC_INIT
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(liboauth, 0.2.4)
+AM_INIT_AUTOMAKE(liboauth, 0.3.0)
 AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)
