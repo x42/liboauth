@@ -1,3 +1,7 @@
+version 0.3.1
+ added #ifndef _OAUTH_H to header - avoid double include errors
+ fixed some typos in the doc.
+
 version 0.3.0
  prefixed all public oauth.h functions with "oauth_"
  added RSA-SHA1 signature support

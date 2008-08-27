@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "25 Aug 2008" "Version 0.3.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "28 Aug 2008" "Version 0.3.1" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -6,6 +6,13 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .SH SYNOPSIS
 .br
 .PP
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fB_OAUTH_H\fP   1"
+.br
+.in -1c
 .SS "Enumerations"
 
 .in +1c
@@ -112,6 +119,11 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
 .PP
 Definition in file \fBoauth.h\fP.
+.SH "Define Documentation"
+.PP 
+.SS "#define _OAUTH_H   1"
+.PP
+Definition at line 30 of file oauth.h.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBOAuthMethod\fP"
@@ -130,7 +142,7 @@ use RSA signature (not implemented)
 \fB\fIOA_PLAINTEXT \fP\fP
 use plain text signature (for testing only) 
 .PP
-Definition at line 32 of file oauth.h.
+Definition at line 35 of file oauth.h.
 .SH "Function Documentation"
 .PP 
 .SS "char* oauth_catenc (int len,  ...)"

@@ -26,6 +26,9 @@
  */
 /* vi:set ts=8 sts=2 sw=2: */
 
+#ifndef _OAUTH_H
+#define _OAUTH_H      1 
+
 /** \enum OAuthMethod
  * signature method to used for signing the request.
  */ 
@@ -320,3 +323,5 @@ char *oauth_http_post (const char *u, const char *p);
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);
+
+#endif
