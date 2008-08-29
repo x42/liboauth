@@ -1,3 +1,6 @@
+version 0.3.2
+ added NULL uri check to oauth_split_post_paramters() 
+ testcode comment updates.
 version 0.3.1
  added #ifndef _OAUTH_H to header - avoid double include errors
  fixed some typos in the doc.

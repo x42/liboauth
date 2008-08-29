@@ -411,6 +411,7 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
   int argc=0;
   char *token, *tmp, *t1;
   if (!argv) return 0;
+  if (!url) return 0;
   t1=xstrdup(url);
 
   // '+' represents a space, in a URL query string
