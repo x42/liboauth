@@ -149,7 +149,7 @@ char *oauth_catenc(int len, ...);
  * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
  * (see \ref oauth_split_post_paramters for a more generic version)
  *
- * @param url the url or query-string to parse. 
+ * @param url the url or query-string to parse; may be NULL
  * @param argv pointer to a (char *) array where the results are stored.
  *  The array is re-allocated to match the number of parameters and each 
  *  parameter-string is allocated with strdup. - The memory needs to be freed

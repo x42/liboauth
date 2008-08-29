@@ -504,7 +504,7 @@ splits the given url into a parameter array.
 .PP
 \fBParameters:\fP
 .RS 4
-\fIurl\fP the url or query-string to parse. 
+\fIurl\fP the url or query-string to parse; may be NULL 
 .br
 \fIargv\fP pointer to a (char *) array where the results are stored. The array is re-allocated to match the number of parameters and each parameter-string is allocated with strdup. - The memory needs to be freed by the caller.
 .RE
