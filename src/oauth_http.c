@@ -197,7 +197,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
 #include <stdio.h>
 
 /**
- *  escape URL for use in String Quotes (aka shell single quotes)
+ *  escape URL for use in String Quotes (aka shell single quotes).
  *  the returned string needs to be free()d by the calling function
  *
  * WARNING: this function only escapes single-quotes (')
@@ -414,9 +414,8 @@ char *oauth_post_file (const char *u, const char *fn, const size_t len, const ch
 #ifdef HAVE_CURL
   return oauth_curl_post_file (u, fn, len, contenttype);
 #else
-  fprintf(stderr, "\nliboauth: oauth_post_file requires curl. curl is not available.\n\n");
+  fprintf(stderr, "\nliboauth: oauth_post_file requires libcurl. libcurl is not available.\n\n");
   return (NULL);
 #endif
 }
 /* vi:set ts=8 sts=2 sw=2: */
-

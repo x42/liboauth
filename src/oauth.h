@@ -24,8 +24,6 @@
  * THE SOFTWARE.
  *
  */
-/* vi:set ts=8 sts=2 sw=2: */
-
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
@@ -270,7 +268,7 @@ char *oauth_sign_url (const char *url, char **postargs,
  * WARNING: this is a tentative function. it's convenient and handy for testing
  * or developing oAuth code. But don't rely on this function
  * to become a stable part of this API. It does not do 
- * much error checking or handing for one thing..
+ * much error checking or handling for one thing..
  *
  * NOTE: \a u and \a q are just concatenated with a '?' in between,
  * unless \a q is NULL. in which case only \a u will be used.
@@ -298,10 +296,15 @@ char *oauth_http_get (const char *u, const char *q);
  * bash & wget example:
  * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%%p' '%%u' "</tt>
  *
+ * NOTE: This function uses the curl's default HTTP-POST Content-Type:
+ * application/x-www-form-urlencoded which is the only option allowed
+ * by oauth core 1.0 spec. Experimental code can use the Environment variable
+ * to transmit custom HTTP headers or parameters.
+ *
  * WARNING: this is a tentative function. it's convenient and handy for testing
  * or developing oAuth code. But don't rely on this function
  * to become a stable part of this API. It does not do 
- * much error checking or handing for one thing..
+ * much error checking for one thing..
  *
  * @param u url to query
  * @param p postargs to send along with the HTTP request.
@@ -325,3 +328,4 @@ char *oauth_http_post (const char *u, const char *p);
 char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);
 
 #endif
+/* vi:set ts=8 sts=2 sw=2: */
