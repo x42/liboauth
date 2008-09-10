@@ -29,6 +29,10 @@
 #include <string.h>
 #include <oauth.h>
 
+/**
+ * split and parse URL parameters replied by the test-server
+ * into <em>oauth_token</em> and <em>oauth_token_secret</em>.
+ */
 int parse_reply(const char *reply, char **token, char **secret) {
   int rc;
   int ok=1;
@@ -68,10 +72,10 @@ int oauth_consumer_example(int use_post) {
 
   printf("Request token..\n");
   char *reply;
-  if (use_post) {
+  if (use_post) { // HTTP POST 
     req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, c_key, c_secret, NULL, NULL);
     reply = oauth_http_post(req_url,postarg);
-  } else {
+  } else { // HTTP GET
     req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, c_key, c_secret, NULL, NULL);
     reply = oauth_http_get(req_url,postarg);
   }
