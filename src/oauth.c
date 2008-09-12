@@ -397,6 +397,15 @@ char *oauth_catenc(int len, ...) {
  * splits the given url into a parameter array. 
  * (see \ref oauth_serialize_url and \ref oauth_serialize_url_parameters for the reverse)
  *
+ * NOTE: Request-parameters-values may include an ampersand character.
+ * However if unescaped this function will use them as parameter delimiter. 
+ * If you need to make such a request, this function since version 0.3.5 allows
+ * to use the ASCII SOH (0x01) character as alias for '&' (0x26).
+ * (the motivation is convenience: SOH is /untypeable/ and much more 
+ * unlikely to appear than '&' - If you plan to sign fancy URLs you 
+ * should not split a query-string, but rather provide the parameter array
+ * directly to \ref oauth_serialize_url)
+ *
  * @param url the url or query-string to parse. 
  * @param argv pointer to a (char *) array where the results are stored.
  *  The array is re-allocated to match the number of parameters and each 
@@ -415,12 +424,13 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
   t1=xstrdup(url);
 
   // '+' represents a space, in a URL query string
-  while (qesc && (tmp=strchr(t1,'+'))) *tmp=' ';
+  while ((qesc&1) && (tmp=strchr(t1,'+'))) *tmp=' ';
 
   tmp=t1;
   while((token=strtok(tmp,"&?"))) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
+    while (!(qesc&2) && (tmp=strchr(token,'\001'))) *tmp='&';
     (*argv)[argc]=xstrdup(token);
 	  if (argc==0 && strstr(token, ":/")) {
 			// HTTP does not allow empty absolute paths, so the URL 
@@ -443,6 +453,9 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
 				strcpy((*argv)[argc],token);
 				strcat((*argv)[argc],"/");
 		  }
+		}
+	  if (argc==0 && (tmp=strstr((*argv)[argc],":80/"))) {
+			  memmove(tmp, tmp+3, strlen(tmp+2));
 		}
     tmp=NULL;
     argc++;
@@ -595,6 +608,17 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
 }
 
 /**
+ * search array for parameter.
+ */
+int oauth_param_exists(char **argv, int argc, char *param) {
+	int i;
+	size_t l= strlen(param);
+	for (i=0;i<argc;i++)
+		if (strlen(argv[i])>l && !strncmp(argv[i],param,l) && argv[i][l] == '=') return 1;
+	return 0;
+}
+
+/**
  * calculate oAuth-signature for a given request URL, parameters and oauth-tokens.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 
@@ -643,15 +667,18 @@ char *oauth_sign_url (const char *url, char **postargs,
 #define ADD_TO_ARGV \
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
   argv[argc++]=xstrdup(oarg); 
-
   // add oAuth specific arguments
   char oarg[1024];
-  snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
-  ADD_TO_ARGV;
-  free(tmp);
+	if (!oauth_param_exists(argv,argc,"oauth_nonce")) {
+		snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
+		ADD_TO_ARGV;
+		free(tmp);
+	}
 
-  snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
-  ADD_TO_ARGV;
+	if (!oauth_param_exists(argv,argc,"oauth_timestamp")) {
+		snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
+		ADD_TO_ARGV;
+	}
 
   if (t_key) {
     snprintf(oarg, 1024, "oauth_token=%s", t_key);
@@ -665,8 +692,10 @@ char *oauth_sign_url (const char *url, char **postargs,
       method==0?"HMAC-SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
   ADD_TO_ARGV;
 
-  snprintf(oarg, 1024, "oauth_version=1.0");
-  ADD_TO_ARGV;
+	if (!oauth_param_exists(argv,argc,"oauth_version")) {
+		snprintf(oarg, 1024, "oauth_version=1.0");
+		ADD_TO_ARGV;
+	}
 
   // sort parameters
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);

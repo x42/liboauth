@@ -1,7 +1,7 @@
 AC_INIT
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(liboauth, 0.3.2)
+AM_INIT_AUTOMAKE(liboauth, 0.3.3)
 AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)
@@ -31,6 +31,11 @@ report_curl="no"
 PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have the curl library.]) HAVE_CURL=1 report_curl="yes" ], [ report_curl="no" ] )
 #CURL_LIBS="-lcurl"
 AC_SUBST(CURL_LIBS)
+
+dnl *** complier flags ***
+LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
+AC_SUBST(LIBOAUTH_CFLAGS)
+
 
 dnl *** doxygen ***
 AC_ARG_VAR(DOXYGEN, Doxygen)

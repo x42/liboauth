@@ -127,7 +127,7 @@ int test_request(char *http_method, char *request, char *expected) {
   rv=strcmp(testcase,expected);
   if (rv) {
     printf("request concatenation test failed for: '%s'.\n"
-           " got: '%s' expected: '%s'\n", request, testcase, expected);
+           " got:      '%s'\n expected: '%s'\n", request, testcase, expected);
   }
   else if (loglevel) printf("request concatenation ok.\n");
   for (i=0;i<argc;i++) free(argv[i]);
@@ -261,12 +261,54 @@ void request_token_example_post(void) {
  *  gcc -lssl -loauth -o oauthtest oauthtest.c
  */
 int main (int argc, char **argv) {
+  int fail=0;
 
   if (loglevel) printf("\n *** testing liboauth against http://wiki.oauth.net/TestCases (july 2008) ***\n");
 
-#if 1 // http://wiki.oauth.net/TestCases
-  int fail=0;
+#if 1 // Eran's test-cases - http://groups.google.com/group/oauth/browse_frm/thread/243f4da439fd1f51?hl=en
+  fail|=test_encoding("1234=asdf=4567","1234%3Dasdf%3D4567");
+  fail|=test_encoding("asdf-4354=asew-5698","asdf-4354%3Dasew-5698");
+  fail|=test_encoding("erks823*43=asd&123ls%23","erks823%2A43%3Dasd%26123ls%2523");
+  fail|=test_encoding("dis9$#$Js009%==","dis9%24%23%24Js009%25%3D%3D");
+  fail|=test_encoding("3jd834jd9","3jd834jd9");
+  fail|=test_encoding("12303202302","12303202302");
+  fail|=test_encoding("taken with a 30% orange filter","taken%20with%20a%2030%25%20orange%20filter");
+  fail|=test_encoding("mountain & water view","mountain%20%26%20water%20view");
 
+  fail|=test_request("GET", "http://example.com:80/photo" "?" 
+      "oauth_version=1.0"
+      "&oauth_consumer_key=1234=asdf=4567"
+      "&oauth_timestamp=12303202302"
+      "&oauth_nonce=3jd834jd9"
+      "&oauth_token=asdf-4354=asew-5698"
+      "&oauth_signature_method=HMAC-SHA1"
+      "&title=taken with a 30% orange filter"
+      "&file=mountain \001 water view"
+      "&format=jpeg"
+      "&include=date"
+      "&include=aperture",
+  "GET&http%3A%2F%2Fexample.com%2Fphoto&file%3Dmountain%2520%2526%2520water%2520view%26format%3Djpeg%26include%3Daperture%26include%3Ddate%26oauth_consumer_key%3D1234%253Dasdf%253D4567%26oauth_nonce%3D3jd834jd9%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D12303202302%26oauth_token%3Dasdf-4354%253Dasew-5698%26oauth_version%3D1.0%26title%3Dtaken%2520with%2520a%252030%2525%2520orange%2520filter" );
+
+  char *tmptst;
+  tmptst = oauth_sign_url(
+      "http://example.com:80/photo" "?" 
+      "oauth_version=1.0"
+      "&oauth_timestamp=12303202302"
+      "&oauth_nonce=3jd834jd9"
+      "&title=taken with a 30% orange filter"
+      "&file=mountain \001 water view"
+      "&format=jpeg"
+      "&include=date"
+      "&include=aperture",
+   NULL, OA_HMAC, "1234=asdf=4567", "erks823*43=asd&123ls%23", "asdf-4354=asew-5698", "dis9$#$Js009%==");
+  if (strcmp(tmptst,"http://example.com/photo?file=mountain%20%26%20water%20view&format=jpeg&include=aperture&include=date&oauth_consumer_key=1234%3Dasdf%3D4567&oauth_nonce=3jd834jd9&oauth_signature_method=HMAC-SHA1&oauth_timestamp=12303202302&oauth_token=asdf-4354%3Dasew-5698&oauth_version=1.0&title=taken%20with%20a%2030%25%20orange%20filter&oauth_signature=jMdUSR1vOr3SzNv3gZ5DDDuGirA%3D")) {
+  	printf(" got '%s'\n expected: '%s'\n",tmptst, "http://example.com/photo?file=mountain%20%26%20water%20view&format=jpeg&include=aperture&include=date&oauth_consumer_key=1234%3Dasdf%3D4567&oauth_nonce=3jd834jd9&oauth_signature_method=HMAC-SHA1&oauth_timestamp=12303202302&oauth_token=asdf-4354%3Dasew-5698&oauth_version=1.0&title=taken%20with%20a%2030%25%20orange%20filter&oauth_signature=jMdUSR1vOr3SzNv3gZ5DDDuGirA%3D");
+	fail|=1;
+  }
+  if(tmptst) free(tmptst);
+#endif
+
+#if 1 // http://wiki.oauth.net/TestCases
   fail|=test_encoding("abcABC123","abcABC123");
   fail|=test_encoding("-._~","-._~");
   fail|=test_encoding("%","%25");
