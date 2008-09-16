@@ -1,0 +1,17 @@
+Robin Gareus <robin@gareus.org> has written and is maintaining liboauth.
+
+The base64 code is used with permission from Jan-Henrik 
+Haukeland <hauk@tildeslash.com>.
+
+escape_url() contains code from curl by Daniel Stenberg <daniel@haxx.se>
+
+cheers to Arjan <arjan@scherpenisse.nl> for using and testing this code; and 
+Ralph Meijer <ralphm@ik.nu> for fixing the debian package and quality control.
+
+Kudos to Marc Worrel - http://www.marcworrell.com/ - for an introduction
+to the oAuth API and helping to get this project alive. And last but not 
+standing ovations to the http://oauth.net team who made it possible in i
+the first place.
+
+Marc Powell suggested minor changes and contributed patches to make this 
+library more usable.

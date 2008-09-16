@@ -1,0 +1,14 @@
+liboauth is a collection of c functions implementing the http://oauth.net API.
+
+liboauth provides basic functions to escape and encode stings according to
+oAuth specifications and offers high-level functions built on top to sign
+requests or verify signatures.
+
+The included documentation in the doc/ folder and example code from tests/ 
+can also be found online at http://liboauth.sourceforge.net/
+
+While the oauth source-code itself is under MIT license, this package 
+integrated with xmalloc (and possibly libcurl) is licensed under LGPL.
+
+Send bug-reports, patches or suggestions to robin@gareus.org.
+or inquire information at http://groups.google.com/group/oauth/

@@ -1,0 +1,70 @@
+/**
+@mainpage oAuth library functions
+
+@section intro Introduction
+
+ liboauth is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> Core <a href="http://oauth.net/core/1.0/">1.0</a> standard API.
+ liboauth provides basic functions to escape and encode parameters according to oAuth specs and offers high-level functions to sign requests or verify signatures.
+ 
+ liboauth depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
+ 
+ The source includes example code and a selftest based on <a href="http://wiki.oauth.net/TestCases">http://wiki.oauth.net/TestCases</a>. The library has been tested against the http://oauth-sandbox.mediamatic.nl and http://term.ie/oauth/example test servers using commandline-cURL, libcurl and a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and Mac/OSX.
+
+@section installation Installation
+ The source is debianized. On debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install <em>liboauth</em> and <em>liboauth-dev</em> package.
+
+ liboauth uses autotools and libtools. The tar.gz package includes the <tt>configure</tt> script, but if you get the source from the repository, you first need to generate the build environement with something alike:
+ <tt>aclocal; autoheader; libtoolize --copy; autoconf; automake --gnu --add-missing --copy</tt>. (<i>OSX users use <tt>glibtoolize</tt></i>). 
+ 
+ run <tt>./configure</tt> and build liboauth with <tt>make</tt>. see the INSTALL file for further instructions on gnu autotools.
+
+ If doxygen is available, the documentation can be rendered from the source by calling <tt>make dox</tt>. The http://wiki.oauth.net/TestCases scenarios in the example code can be run with <tt>make check</tt>.
+
+@section usage Usage
+ Consult \ref oauth.h for a detailed reference of available functions. This documentation is also available as unix manual page: <tt>man 3 oauth</tt>.  
+
+ See <tt>tests/oauthtest.c</tt> for the self-test code and example. <tt>tests/oauthexample.c</tt> implements a simple hardcoded consumer.
+ If you simply want to calculate the oAuth-signiature, all you need is \ref oauth_sign_url.  
+ Future releases might include more elaborate usage information: Feel free to ask questions.
+
+@section download Download
+
+  <!--
+  Download Source: <a href="https://sourceforge.net/project/showfiles.php?group_id=234865">liboauth-0.1.2.tar.gz</a>
+  !-->
+  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.3.3.tar.gz">liboauth-0.3.3.tar.gz</a>
+  &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
+
+  liboauth is maintained at sourceforge subversion repositories:
+  <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>.
+
+  <!--
+  The development branch is available from <tt>git://mir.dnsalias.com/liboauth</tt> or download a <a href="http://mir.dnsalias.com/gitweb/?p=liboauth.git;a=snapshot;h=head">snapshot</a>.
+  !-->
+
+@section bug Bugs
+ send bug reports, patches or suggestions to robin @ gareus . org.
+
+ Ask the <a href="http://oauth.net/community/">oauth-community</a> or join the <a href="http://groups.google.com/group/oauth/">mailing list</a> for discussion.
+
+@section license License
+While the oauth source-code itself is under MIT license, this package integrated with xmalloc (and possibly libcurl) is licensed under LGPL.
+<pre>
+This package is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This package is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this package; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+</pre>
+
+\example tests/oauthtest.c
+\example tests/oauthexample.c
+*/

@@ -1,0 +1,64 @@
+version 0.3.3
+ added Eran's test-cases.
+ removing ':80' portnumber from URL before signing
+ when splitting URL parameters: use '\001' as request param value as alias for ampersand ('&')
+version 0.3.2
+ added NULL uri check to oauth_split_post_paramters() 
+ testcode comment updates.
+version 0.3.1
+ added #ifndef _OAUTH_H to header - avoid double include errors
+ fixed some typos in the doc.
+
+version 0.3.0
+ prefixed all public oauth.h functions with "oauth_"
+ added RSA-SHA1 signature support
+
+version 0.2.4
+ detect absoluteURI by ":/" (it was /^http/) - used to detect empty abs_path
+ added shell escape for (bash like) `sh` to invoke curl/wget
+ cleaned up example code and doc a bit.
+
+version 0.2.3
+ fixed '?' in GET URL&parameter concatenation
+ added cURL HTTP-GET function and test/example code
+ test/example code using http://term.ie/oauth/example/ 
+
+version 0.2.2
+ fixed "empty HTTP Paths" see http://wiki.oauth.net/TestCases and
+ http://groups.google.com/group/oauth/browse_thread/thread/c44b6f061bfd98c?hl=en
+ fixed some compiler warnings
+ made signature function args 'const char *' 
+ and mem-zero some possibly sensitive strings before free()ing them.
+
+version 0.2.1
+ prepared for MIT license
+ all c sources and headers by Robin Gareus are now MIT licensed.
+
+version 0.2.0
+ updated documentation
+ fixed configure.ac
+
+version 0.1.3
+ removed getpid() on random-number initialization for win.
+ moving to sourceforge.
+
+version 0.1.2
+ different handlers for POST and GET query string. Get escapes '+' to ' '.
+ oauth_sign_url() returns escaped query string.
+ added oauth_curl_post_file - preparing for xoauth_body_signature.
+ updated test code.
+
+version 0.1.1
+ fixed parameter normalization and sorting for some edge cases.
+ added Test Cases from http://wiki.oauth.net/TestCases
+ added simple HTTP POST using libcurl or a command-line HTTP client.
+
+version 0.1.0
+ added xmalloc - removed NULL checks after [re|m|c]alloc.
+ libtoolized and prepared packaging.
+ fixed a couple of typos
+ added a some more documentation.
+
+version 0.0.1
+ first public release
+ oAuth parameter escape and URL request signing functions.
