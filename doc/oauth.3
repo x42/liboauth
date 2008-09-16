@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "29 Aug 2008" "Version 0.3.2" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "12 Sep 2008" "Version 0.3.3" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -123,7 +123,7 @@ Definition in file \fBoauth.h\fP.
 .PP 
 .SS "#define _OAUTH_H   1"
 .PP
-Definition at line 30 of file oauth.h.
+Definition at line 28 of file oauth.h.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBOAuthMethod\fP"
@@ -142,7 +142,7 @@ use RSA signature (not implemented)
 \fB\fIOA_PLAINTEXT \fP\fP
 use plain text signature (for testing only) 
 .PP
-Definition at line 35 of file oauth.h.
+Definition at line 33 of file oauth.h.
 .SH "Function Documentation"
 .PP 
 .SS "char* oauth_catenc (int len,  ...)"
@@ -235,7 +235,7 @@ If compiled \fBwithout\fP libcurl this function calls a command-line executable 
 .PP
 bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' '%u' '\fP
 .PP
-WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handing for one thing..
+WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handling for one thing..
 .PP
 NOTE: \fIu\fP and \fIq\fP are just concatenated with a '?' in between, unless \fIq\fP is NULL. in which case only \fIu\fP will be used.
 .PP
@@ -266,7 +266,9 @@ If compiled \fBwithout\fP libcurl this function calls a command-line executable 
 .PP
 bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' '\fP
 .PP
-WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handing for one thing..
+NOTE: This function uses the curl's default HTTP-POST Content-Type: application/x-www-form-urlencoded which is the only option allowed by oauth core 1.0 spec. Experimental code can use the Environment variable to transmit custom HTTP headers or parameters.
+.PP
+WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking for one thing..
 .PP
 \fBParameters:\fP
 .RS 4
