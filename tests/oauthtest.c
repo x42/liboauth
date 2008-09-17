@@ -43,21 +43,21 @@ void request_token_example_get(void) {
   char *res_t_secret = NULL; //< replied secret
 
   char *req_url = NULL;
+  char *reply;
 
   req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
 
   printf("request URL:%s\n\n", req_url);
-  char *reply = oauth_http_get(req_url,NULL);
+  reply = oauth_http_get(req_url,NULL);
   if (!reply) 
     printf("HTTP request for an oauth request-token failed.\n");
   else {
-    printf("HTTP-reply: %s\n", reply);
-    //example reply: 
+    // parse reply - example:
     //"oauth_token=2a71d1c73d2771b00f13ca0acb9836a10477d3c56&oauth_token_secret=a1b5c00c1f3e23fb314a0aa22e990266"
-
-    //parse reply
     int rc;
     char **rv = NULL;
+
+    printf("HTTP-reply: %s\n", reply);
     rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
@@ -93,23 +93,22 @@ void request_token_example_post(void) {
   char *res_t_key    = NULL; //< replied key
   char *res_t_secret = NULL; //< replied secret
 
-  char *req_url = NULL;
   char *postarg = NULL;
+  char *req_url;
+  char *reply;
 
   req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
 
   printf("request URL:%s\n\n", req_url);
-  char *reply = oauth_http_post(req_url,postarg);
+  reply = oauth_http_post(req_url,postarg);
   if (!reply) 
     printf("HTTP request for an oauth request-token failed.\n");
   else {
-    printf("HTTP-reply: %s\n", reply);
-    //example reply: 
+    //parse reply - example:
     //"oauth_token=2a71d1c73d2771b00f13ca0acb9836a10477d3c56&oauth_token_secret=a1b5c00c1f3e23fb314a0aa22e990266"
-
-    //parse reply
     int rc;
     char **rv = NULL;
+    printf("HTTP-reply: %s\n", reply);
     rc = oauth_split_url_parameters(reply, &rv);
     qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
     if( rc==2 
@@ -153,18 +152,22 @@ int main (int argc, char **argv) {
   			//< token secret
 
 #if 1 // example sign GET request and print the signed request URL
-  char *geturl = NULL;
-  geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
-  printf("GET: URL:%s\n\n", geturl);
-  if(geturl) free(geturl);
+  {
+    char *geturl = NULL;
+    geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    printf("GET: URL:%s\n\n", geturl);
+    if(geturl) free(geturl);
+  }
 #endif
 
 #if 1 // sign POST ;) example 
-  char *postargs = NULL, *post = NULL;
-  post = oauth_sign_url(url, &postargs, OA_HMAC, c_key, c_secret, t_key, t_secret);
-  printf("POST: URL:%s\n      PARAM:%s\n\n", post, postargs);
-  if(post) free(post);
-  if(postargs) free(postargs);
+  {
+    char *postargs = NULL, *post = NULL;
+    post = oauth_sign_url(url, &postargs, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    printf("POST: URL:%s\n      PARAM:%s\n\n", post, postargs);
+    if(post) free(post);
+    if(postargs) free(postargs);
+  }
 #endif
 
   printf(" *** sending request to http://oauth-sandbox.mediamatic.nl/ *** \n\n");

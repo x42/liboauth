@@ -59,6 +59,8 @@ int test_encoding(char *param, char *expected) {
  * test unicode paramter encoding
  */
 int test_uniencoding(wchar_t *src, char *expected) {
+  size_t n;
+  char *dst;
 // check unicode: http://www.thescripts.com/forum/thread223350.html
   const char *encoding = "en_US.UTF-8"; // or try en_US.ISO-8859-1 etc.
   //wchar_t src[] = {0x0080, 0};
@@ -68,8 +70,8 @@ int test_uniencoding(wchar_t *src, char *expected) {
     return -1;
   }
 
-  size_t n = wcstombs(NULL, src, 0);
-  char *dst = malloc(n + 1);
+  n = wcstombs(NULL, src, 0);
+  dst = malloc(n + 1);
   if(dst == NULL) {
     printf("memory allocation failed\n");
     return -2;
@@ -90,10 +92,11 @@ int test_normalize(char *param, char *expected) {
   int rv=2;
   int  i, argc;
   char **argv = NULL;
+  char *testcase;
 
   argc = oauth_split_url_parameters(param, &argv);
   qsort(argv, argc, sizeof(char *), oauth_cmpstringp);
-  char *testcase= oauth_serialize_url(argc,0, argv);
+  testcase= oauth_serialize_url(argc,0, argv);
 
   rv=strcmp(testcase,expected);
   if (rv) {
@@ -114,11 +117,12 @@ int test_request(char *http_method, char *request, char *expected) {
   int rv=2;
   int  i, argc;
   char **argv = NULL;
+  char *query, *testcase;
 
   argc = oauth_split_url_parameters(request, &argv);
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
-  char *query= oauth_serialize_url(argc,1, argv);
-  char *testcase = oauth_catenc(3, http_method, argv[0], query);
+  query= oauth_serialize_url(argc,1, argv);
+  testcase = oauth_catenc(3, http_method, argv[0], query);
 
   rv=strcmp(testcase,expected);
   if (rv) {

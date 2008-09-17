@@ -10,11 +10,13 @@ can also be found online at http://liboauth.sourceforge.net/
 Send bug-reports, patches or suggestions to robin@gareus.org.
 or inquire information at http://groups.google.com/group/oauth/
 
- == License ==
+ == License and Notes ==
 
 If configured with '--enable-lgpl' the GNU Lesser General Public License 
 applies otherwise the code can be distributed under MIT license.
 
+The difference is xmalloc - which is under LGPL. The MIT licensed code
+may segfault when it encounters an out-of-memory error.
 
  == Test and Example Code ==
 

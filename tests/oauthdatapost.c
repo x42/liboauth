@@ -55,6 +55,9 @@ int oauth_image_post(char *filename, char *url) {
 
   FILE *F;
 
+  char *okey, *sign;
+  char *sig_url;
+
   // get acces token - see oautexample.c
   t_key    = strdup("key"); //< access token key
   t_secret = strdup("secret"); //< access token secret
@@ -78,11 +81,10 @@ int oauth_image_post(char *filename, char *url) {
   #endif
 
   // sign the body
-  char *okey, *sign;
   okey = oauth_catenc(2, c_secret, t_secret);
   sign = oauth_sign_hmac_sha1_raw(filedata,filelen,okey,strlen(okey));
   free(okey);
-  char *sig_url = malloc(63+strlen(url)+strlen(sign));
+  sig_url = malloc(63+strlen(url)+strlen(sign));
   sprintf(sig_url,"%s&xoauth_body_signature=%s&xoauth_body_signature_method=HMAC_SHA1",url, sign);
 
   // sign a POST request
@@ -125,6 +127,7 @@ int main (int argc, char **argv) {
   char *filename = "/tmp/test.jpg";
   int anyid = 18704;
   char *title = "test";
+  char *url;
 
   if (argc>4) base_url = argv[4];
   if (argc>3) title = argv[3];
@@ -134,7 +137,7 @@ int main (int argc, char **argv) {
   // TODO check if file exists; also read oauth-params from args or file
 
   // anyMeta.nl image-post module URL
-  char *url = malloc(1024*sizeof(char));
+  url = malloc(1024*sizeof(char));
   if (anyid<1 && !title) 
     sprintf(url,"%s/module/ImagePost/",base_url);
   else if (anyid>0 && !title) 

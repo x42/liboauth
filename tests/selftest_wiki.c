@@ -41,6 +41,11 @@ int loglevel = 1; //< report each successful test
 
 int main (int argc, char **argv) {
   int fail=0;
+  char *b64d;
+  char *testurl, *testkey;
+ #ifdef TEST_UNICODE
+  wchar_t src[] = {0x000A, 0};
+ #endif
 
   if (loglevel) printf("\n *** testing liboauth against http://wiki.oauth.net/TestCases (july 2008) ***\n");
 
@@ -52,8 +57,7 @@ int main (int argc, char **argv) {
   fail|=test_encoding("&=*","%26%3D%2A");
 
  #ifdef TEST_UNICODE
-  wchar_t src[] = {0x000A, 0};
-                   fail|=test_uniencoding(src,"%0A");
+  src[0] = 0x000A; fail|=test_uniencoding(src,"%0A");
   src[0] = 0x0020; fail|=test_uniencoding(src,"%20");
   src[0] = 0x007F; fail|=test_uniencoding(src,"%7F");
   src[0] = 0x0080; fail|=test_uniencoding(src,"%C2%80");
@@ -104,14 +108,13 @@ int main (int argc, char **argv) {
 
   // HMAC-SHA1 selftest.
   // see http://oauth.net/core/1.0/#anchor25 
-  char *b64d;
-  char *testurl = "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3D"
+  testurl = "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3D"
       "vacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce"
       "%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26o"
       "auth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk"
       "%26oauth_version%3D1.0%26size%3Doriginal";
 
-  char *testkey = "kd94hf93k423kf44&pfkkdhi9sl3r4s00";
+  testkey = "kd94hf93k423kf44&pfkkdhi9sl3r4s00";
   b64d = oauth_sign_hmac_sha1(testurl , testkey);
   if (strcmp(b64d,"tR3+Ty81lMeYAr/Fid0kMTYa/WM=")) {
     printf("HMAC-SHA1 signature test failed.\n");
@@ -148,7 +151,7 @@ int main (int argc, char **argv) {
     printf("RSA-SHA1 signature test successful.\n");
   free(b64d);
 
-  int ok = oauth_verify_rsa_sha1(
+  if (oauth_verify_rsa_sha1(
     "GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacaction.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3D13917289812797014437%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1196666512%26oauth_version%3D1.0%26size%3Doriginal",
 
     "-----BEGIN CERTIFICATE-----\n"
@@ -162,8 +165,8 @@ int main (int argc, char **argv) {
     "4TvuXJbNQc8f4AMWL/tO9w0Fk80rWKp9ea8/df4qMq5qlFWlx6yOLQxumNOmECKb\n"
     "WpkUQDIDJEoFUzKMVuJf4KO/FJ345+BNLGgbJ6WujreoM1X/gYfdnJ/J\n"
     "-----END CERTIFICATE-----\n", 
-    "jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=");
-  if (ok != 1) {
+    "jvTp/wX1TYtByB1m+Pbyo0lnCOLIsyGCH7wke8AUs3BpnwZJtAuEJkvQL2/9n4s5wUmUl4aCI4BwpraNx4RtEXMe5qg5T1LVTGliMRpKasKsW//e+RinhejgCuzoH26dyF8iY2ZZ/5D1ilgeijhV/vBka5twt399mXwaYdCwFYE=")
+      != 1) {
     printf("RSA-SHA1 verify-signature test failed.\n");
     fail|=1;
   } else if (loglevel)

@@ -48,7 +48,8 @@ AC_SUBST(CURL_LIBS)
 
 
 dnl *** complier flags ***
-LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
+#LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
+LIBOAUTH_CFLAGS=""
 AC_SUBST(LIBOAUTH_CFLAGS)
 
 

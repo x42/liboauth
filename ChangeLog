@@ -1,6 +1,7 @@
 version 0.3.4
  allow to configure MIT only or LGPL licensed code (xmalloc)
  reorganized tests
+ removed mixed declarations and code
 
 version 0.3.3
  added Eran's test-cases.
