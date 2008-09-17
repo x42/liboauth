@@ -1,7 +1,15 @@
-noinst_PROGRAMS = oauthtest oauthexample oauthdatapost
+noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran oauthtest
 
 OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
+
+tcwiki_SOURCES = selftest_wiki.c commontest.c commontest.h
+tcwiki_LDADD = $(OAUTHDIR)/liboauth.la -lssl
+tcwiki_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
+
+tceran_SOURCES = selftest_eran.c commontest.c commontest.h
+tceran_LDADD = $(OAUTHDIR)/liboauth.la -lssl
+tceran_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
 
 oauthtest_SOURCES = oauthtest.c
 oauthtest_LDADD = $(OAUTHDIR)/liboauth.la -lssl

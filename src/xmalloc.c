@@ -19,6 +19,16 @@
 # include <config.h>
 #endif
 
+#ifndef USE_LGPL
+// TODO better use #define in header file?!
+#include <string.h>
+#include <stdlib.h>
+void *xmalloc (size_t n) {return malloc(n);}
+void *xcalloc (size_t n, size_t s) {return calloc(n,s);}
+void *xrealloc (void *p, size_t n) {return realloc(p,n);}
+char *xstrdup (const char *p) {return strdup(p);}
+
+#else // LGPL LICENSED CODE 
 #if __STDC__
 # define VOID void
 #else
@@ -138,3 +148,4 @@ xstrdup (str)
   strcpy (p, str);
   return p;
 }
+#endif
