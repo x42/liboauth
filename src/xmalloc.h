@@ -10,4 +10,3 @@ int strncasecmp(const char *s1, const char *s2, size_t n);
 int snprintf(char *str, size_t size, const char *format, ...);
 FILE *popen(const char *command, const char *type);
 int pclose(FILE *stream);
-
