@@ -32,7 +32,7 @@
   <!--
   Download Source: <a href="https://sourceforge.net/project/showfiles.php?group_id=234865">liboauth-0.1.2.tar.gz</a>
   !-->
-  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-0.3.3.tar.gz">liboauth-0.3.3.tar.gz</a>
+  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-@VERSION@.tar.gz">liboauth-@VERSION@.tar.gz</a>
   &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
 
   liboauth is maintained at sourceforge subversion repositories:

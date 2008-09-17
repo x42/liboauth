@@ -1,0 +1,64 @@
+liboauth (0.3.4-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Wed, 17 Sep 2008 11:07:07 +0200
+
+liboauth (0.3.3-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Fri, 12 Sep 2008 13:47:17 +0200
+
+liboauth (0.3.2-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Fri, 29 Aug 2008 21:36:14 +0200
+
+liboauth (0.3.1-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Thu, 28 Aug 2008 01:11:37 +0200
+
+liboauth (0.3.0-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sun, 24 Aug 2008 22:33:44 +0200
+
+liboauth (0.2.4-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sun, 24 Aug 2008 14:21:37 +0200
+
+liboauth (0.2.3-2) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sun, 24 Aug 2008 12:10:10 +0200
+
+liboauth (0.2.3-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sun, 24 Aug 2008 10:54:52 +0200
+
+liboauth (0.2.2-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sat, 23 Aug 2008 17:34:41 +0200
+
+liboauth (0.2.1-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Wed, 13 Aug 2008 16:11:25 +0200
+
+liboauth (0.2.0-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Sat, 09 Aug 2008 19:02:05 +0200
+
+liboauth (0.1.3-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Wed, 23 Jul 2008 21:51:11 +0200
+
+liboauth (0.1.2-1) unstable; urgency=low
+  *  new upstream release
+
+ -- Robin Gareus <robin@mediamatic.nl>  Thu, 31 Jan 2008 14:46:33 +0100
+
+liboauth (0.1.1-1) unstable; urgency=low
+  *  new upstream release
+
+ -- Robin Gareus <robin@mediamatic.nl>  Mon, 07 Jan 2008 23:57:20 +0100
+
+liboauth (0.1.0-1) unstable; urgency=low
+
+  * Initial release 
+
+ -- Robin Gareus <robin@mediamatic.nl>  Sun, 09 Dec 2007 22:01:34 +0100
+

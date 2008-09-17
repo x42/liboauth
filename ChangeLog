@@ -1,10 +1,17 @@
+version 0.3.4
+ allow to configure MIT only or LGPL licensed code (xmalloc)
+ reorganized tests
+ removed mixed declarations and code
+
 version 0.3.3
  added Eran's test-cases.
  removing ':80' portnumber from URL before signing
  when splitting URL parameters: use '\001' as request param value as alias for ampersand ('&')
+
 version 0.3.2
  added NULL uri check to oauth_split_post_paramters() 
  testcode comment updates.
+
 version 0.3.1
  added #ifndef _OAUTH_H to header - avoid double include errors
  fixed some typos in the doc.

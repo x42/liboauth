@@ -180,13 +180,16 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
  * The caller must free the returned string.
  */
 char *oauth_url_escape(const char *string) {
-  if (!string) return xstrdup("");
-  size_t alloc = strlen(string)+1;
+  size_t alloc, newlen;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
-  size_t newlen = alloc;
   int strindex=0;
   size_t length;
+
+  if (!string) return xstrdup("");
+
+  alloc = strlen(string)+1;
+  newlen = alloc;
 
   ns = (char*) xmalloc(alloc);
 
@@ -327,9 +330,11 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
   EVP_MD_CTX md_ctx;
   EVP_PKEY *pkey;
   BIO *in;
+  X509 *cert = NULL;
+	unsigned char *b64d;
+  int slen, err;
 
   in = BIO_new_mem_buf((unsigned char*)c, strlen(c));
-  X509 *cert = NULL;
   cert = PEM_read_bio_X509(in, NULL, 0, NULL);
 	if (cert)  {
     pkey = (EVP_PKEY *) X509_get_pubkey(cert); 
@@ -343,13 +348,12 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
 	  return -2;
   }
 
-	unsigned char *b64d;
   b64d= (unsigned char*) xmalloc(sizeof(char)*strlen(s));
-  int slen = oauth_decode_base64(b64d, s);
+  slen = oauth_decode_base64(b64d, s);
 
 	EVP_VerifyInit(&md_ctx, EVP_sha1());
 	EVP_VerifyUpdate(&md_ctx, m, strlen(m));
-	int err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
+	err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
 	EVP_MD_CTX_cleanup(&md_ctx);
 	EVP_PKEY_free(pkey);
 	free(b64d);
@@ -371,10 +375,10 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
  */
 char *oauth_catenc(int len, ...) {
   va_list va;
+  int i;
   char *rv = (char*) xmalloc(sizeof(char));
   *rv='\0';
   va_start(va, len);
-  int i;
   for(i=0;i<len;i++) {
     char *arg = va_arg(va, char *);
     char *enc;
@@ -658,6 +662,10 @@ char *oauth_sign_url (const char *url, char **postargs,
   int  argc;
   char **argv = NULL;
   char *tmp;
+  char oarg[1024];
+  char *query;
+  char *okey, *odat, *sign;
+  char *result;
 
   if (postargs)
     argc = oauth_split_post_paramters(url, &argv, 0);
@@ -668,7 +676,6 @@ char *oauth_sign_url (const char *url, char **postargs,
   argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
   argv[argc++]=xstrdup(oarg); 
   // add oAuth specific arguments
-  char oarg[1024];
 	if (!oauth_param_exists(argv,argc,"oauth_nonce")) {
 		snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
 		ADD_TO_ARGV;
@@ -701,10 +708,9 @@ char *oauth_sign_url (const char *url, char **postargs,
   qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
 
   // serialize URL
-  char *query= oauth_serialize_url_parameters(argc, argv);
+  query= oauth_serialize_url_parameters(argc, argv);
 
   // generate signature
-  char *okey, *odat, *sign;
   okey = oauth_catenc(2, c_secret, t_secret);
   odat = oauth_catenc(3, postargs?"POST":"GET", argv[0], query);
 #ifdef DEBUG_OAUTH
@@ -734,7 +740,7 @@ char *oauth_sign_url (const char *url, char **postargs,
   free(sign);
 
   // build URL params
-  char *result = oauth_serialize_url(argc, (postargs?1:0), argv);
+  result = oauth_serialize_url(argc, (postargs?1:0), argv);
 
   if(postargs) { 
     *postargs = result;

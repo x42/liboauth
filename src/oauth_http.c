@@ -103,13 +103,13 @@ char *oauth_curl_get (const char *u, const char *q) {
   CURL *curl;
   CURLcode res;
   char *t1=NULL;
+  struct MemoryStruct chunk;
 
   if (q) {
     t1=xmalloc(sizeof(char)*(strlen(u)+strlen(q)+2));
     strcat(t1,u); strcat(t1,"?"); strcat(t1,q);
   }
 
-  struct MemoryStruct chunk;
   chunk.data=NULL;
   chunk.size = 0;
 
@@ -142,12 +142,13 @@ char *oauth_curl_get (const char *u, const char *q) {
 char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const char *customheader) {
   CURL *curl;
   CURLcode res;
-
+  struct curl_slist *slist=NULL;
   struct MemoryStruct chunk;
+  FILE *f;
+
   chunk.data=NULL;
   chunk.size = 0;
 
-  struct curl_slist *slist=NULL;
   if (customheader)
     slist = curl_slist_append(slist, customheader);
   else
@@ -159,7 +160,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
     len = statbuf.st_size;
   }
 
-  FILE *f = fopen(fn,"r");
+  f = fopen(fn,"r");
   if (!f) return NULL;
 
   curl = curl_easy_init();
@@ -285,12 +286,12 @@ char *oauth_exec_shell (const char *cmd) {
  */
 char *oauth_exec_post (const char *u, const char *p) {
   char cmd[BUFSIZ];
+  char *t1,*t2;
   char *cmdtpl = getenv(_OAUTH_ENV_HTTPCMD);
   if (!cmdtpl) cmdtpl = xstrdup (_OAUTH_DEF_HTTPCMD);
   else cmdtpl = xstrdup (cmdtpl); // clone getenv() string.
 
   // add URL and post param - error if no '%p' or '%u' present in definition
-  char *t1,*t2;
   t1=strstr(cmdtpl, "%p");
   t2=strstr(cmdtpl, "%u");
   if (!t1 || !t2) {
@@ -328,13 +329,15 @@ char *oauth_exec_post (const char *u, const char *p) {
  */
 char *oauth_exec_get (const char *u, const char *q) {
   char cmd[BUFSIZ];
+  char *cmdtpl, *t1, *e1;
+
   if (!u) return (NULL);
-  char *cmdtpl = getenv(_OAUTH_ENV_HTTPGET);
+
+  cmdtpl = getenv(_OAUTH_ENV_HTTPGET);
   if (!cmdtpl) cmdtpl = xstrdup (_OAUTH_DEF_HTTPGET);
   else cmdtpl = xstrdup (cmdtpl); // clone getenv() string.
 
   // add URL and post param - error if no '%p' or '%u' present in definition
-  char *t1;
   t1=strstr(cmdtpl, "%u");
   if (!t1) {
 	fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environement variable.\n\n",_OAUTH_ENV_HTTPGET);
@@ -342,7 +345,6 @@ char *oauth_exec_get (const char *u, const char *q) {
   }
   *(++t1)= 's';
 
-  char *e1;
   e1 = oauth_escape_shell(u);
   if (q) {
     char *e2;

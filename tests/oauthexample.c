@@ -69,9 +69,9 @@ int oauth_consumer_example(int use_post) {
 
   char *req_url = NULL;
   char *postarg = NULL;
+  char *reply   = NULL;
 
   printf("Request token..\n");
-  char *reply;
   if (use_post) { // HTTP POST 
     req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, c_key, c_secret, NULL, NULL);
     reply = oauth_http_post(req_url,postarg);

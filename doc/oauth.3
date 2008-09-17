@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "12 Sep 2008" "Version 0.3.3" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "17 Sep 2008" "Version 0.3.4" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -164,10 +164,6 @@ pointer to memory holding the concatenated strings - needs to be free(d) by the 
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SS "int oauth_cmpstringp (const void * p1, const void * p2)"
 .PP
 string compare function for oauth parameters. 
@@ -331,10 +327,6 @@ url string needs to be freed by the caller.
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SS "char* oauth_serialize_url_parameters (int argc, char ** argv)"
 .PP
 build a query parameter string from an array. 
@@ -375,10 +367,6 @@ signature string.
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SS "char* oauth_sign_hmac_sha1_raw (const char * m, const size_t ml, const char * k, const size_t kl)"
 .PP
 same as \fBoauth_sign_hmac_sha1\fP but allows to specify length of message and key (in case they contain null chars) 
@@ -438,10 +426,6 @@ base64 encoded signature string.
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
 calculate oAuth-signature for a given request URL, parameters and oauth-tokens. 
@@ -536,10 +520,6 @@ encoded string otherwise NULL The caller must free the returned string.
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SS "int oauth_verify_rsa_sha1 (const char * m, const char * c, const char * s)"
 .PP
 verify RSA-SHA1 signature. 
@@ -561,10 +541,6 @@ returns the output of EVP_VerifyFinal() for a given message, cert/pubkey and sig
 .RE
 .PP
 
-.PP
-\fBExamples: \fP
-.in +1c
-\fBtests/oauthtest.c\fP.
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for oAuth library functions from the source code.

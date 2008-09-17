@@ -7,8 +7,38 @@ requests or verify signatures.
 The included documentation in the doc/ folder and example code from tests/ 
 can also be found online at http://liboauth.sourceforge.net/
 
-While the oauth source-code itself is under MIT license, this package 
-integrated with xmalloc (and possibly libcurl) is licensed under LGPL.
-
 Send bug-reports, patches or suggestions to robin@gareus.org.
 or inquire information at http://groups.google.com/group/oauth/
+
+ == License and Notes ==
+
+If configured with '--enable-lgpl' the GNU Lesser General Public License 
+applies otherwise the code can be distributed under MIT license.
+
+The difference is xmalloc - which is under LGPL. The MIT licensed code
+may segfault when it encounters an out-of-memory error.
+
+ == Test and Example Code ==
+
+After Complilation `make check` can be used to perform a offline selftest.
+
+There is also example code to perform and verify oAuth requests online,
+but they are not run automatically.
+
+
+ tests/oauthexample.c  - CONNECTS TO INTERNET
+     walk-though http://term.ie/oauth/example
+
+ tests/oauthtest.c     - CONNECTS TO INTERNET
+     walk-though http://oauth-sandbox.mediamatic.nl/
+   
+ tests/selftest_wiki.c
+ tests/selftest_eran.c
+     Test-Cases for parameter encoding, signatures, etc
+
+ tests/commontest.c
+     Common Test-Case functions exercising the low-level API used by selftests.
+
+ tests/oauthdatapost.c - CONNECTS TO INTERNET
+     Experimental code to sign data uploads
+
