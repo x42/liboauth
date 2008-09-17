@@ -1,4 +1,4 @@
-AC_INIT([liboauth], [0.3.4], [robin AT gareus DOT org])
+AC_INIT([liboauth], [0.4.0], [robin AT gareus DOT org])
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CONFIG_TESTDIR([tests])
 AC_CANONICAL_TARGET([])
