@@ -9,6 +9,22 @@ TESTS=tests/tcwiki tests/tceran
 
 CLEANFILES = stamp-doxygen stamp-doc
 
+MAINTAINERCLEANFILES = \
+	src/Makefile.in \
+	tests/Makefile.in \
+	tests/atconfig \
+	doc/Makefile.in \
+	Makefile.in \
+	aclocal.m4 \
+	compile \
+	config.guess \
+	config.h.in \
+	config.sub \
+	configure \
+	depcomp \
+	install-sh \
+	missing
+
 dox: stamp-doxygen
 
 stamp-doxygen: src/oauth.h doc/mainpage.dox
