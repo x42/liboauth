@@ -687,7 +687,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 		ADD_TO_ARGV;
 	}
 
-  if (t_key) {
+	if (t_key && strlen(t_key)>0) {
     snprintf(oarg, 1024, "oauth_token=%s", t_key);
     ADD_TO_ARGV;
   }
