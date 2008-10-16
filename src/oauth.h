@@ -27,6 +27,11 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
+#define LIBOAUTH_VERSION "0.4.1"
+#define LIBOAUTH_VERSION_MAJOR  0
+#define LIBOAUTH_VERSION_MINOR  4
+#define LIBOAUTH_VERSION_MICRO  1
+
 /** \enum OAuthMethod
  * signature method to used for signing the request.
  */ 
