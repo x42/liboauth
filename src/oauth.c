@@ -266,8 +266,7 @@ char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, c
  * @return signature string
  */
 char *oauth_sign_plaintext (const char *m, const char *k) {
-  return(oauth_encode_base64(strlen(k),(unsigned char*) k));
-  //return(xstrdup(k));
+  return(oauth_url_escape(k));
 }
 
 #include <openssl/evp.h>
