@@ -49,7 +49,7 @@ typedef enum {
  * @param src The data to be base64 encode
  * @return encoded string otherwise NULL
  */
-char *oauth_encode_base64(int size, unsigned char *src);
+char *oauth_encode_base64(int size, const unsigned char *src);
 
 /**
  * Decode the base64 encoded string 'src' into the memory pointed to by
