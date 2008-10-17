@@ -5,7 +5,7 @@ Haukeland <hauk@tildeslash.com>.
 
 escape_url() contains code from curl by Daniel Stenberg <daniel@haxx.se>
 
-cheers to Arjan <arjan@scherpenisse.nl> for using and testing this code; and 
+cheers to Arjan <arjan@scherpenisse.net> for using and testing this code; and 
 Ralph Meijer <ralphm@ik.nu> for fixing the debian package and quality control.
 
 Kudos to Marc Worrel - http://www.marcworrell.com/ - for an introduction

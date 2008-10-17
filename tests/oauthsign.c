@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <oauth.h>
+#include <strings.h>
 
 static void usage (char *program_name) {
   printf(" usage: %s mode url ckey tkey csec tsec\n", program_name);

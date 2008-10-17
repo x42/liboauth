@@ -1,3 +1,6 @@
+version 0.4.2
+ fixed escaping of PLAINTEXT signature.
+
 version 0.4.1
  added oauth_serialize_url_sep() 
  and OAUTH_VERSION defines in header file.

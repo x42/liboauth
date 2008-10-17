@@ -90,7 +90,7 @@ int oauth_b64_is_base64(char c) {
  * @param src The data to be base64 encode
  * @return encoded string otherwise NULL
  */
-char *oauth_encode_base64(int size, unsigned char *src) {
+char *oauth_encode_base64(int size, const unsigned char *src) {
   int i;
   char *out, *p;
 
@@ -266,7 +266,7 @@ char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, c
  * @return signature string
  */
 char *oauth_sign_plaintext (const char *m, const char *k) {
-  return(xstrdup(k));
+  return(oauth_url_escape(k));
 }
 
 #include <openssl/evp.h>
