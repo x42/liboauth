@@ -27,6 +27,11 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
+#define LIBOAUTH_VERSION "0.4.1"
+#define LIBOAUTH_VERSION_MAJOR  0
+#define LIBOAUTH_VERSION_MINOR  4
+#define LIBOAUTH_VERSION_MICRO  1
+
 /** \enum OAuthMethod
  * signature method to used for signing the request.
  */ 
@@ -174,7 +179,7 @@ int oauth_split_url_parameters(const char *url, char ***argv);
 int oauth_split_post_paramters(const char *url, char ***argv, short qesc);
 
 /**
- * build a url query sting from an array.
+ * build a url query string from an array.
  *
  * @param argc the total number of elements in the array
  * @param start element in the array at which to start concatenating.
@@ -183,6 +188,17 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc);
  *
  */
 char *oauth_serialize_url (int argc, int start, char **argv);
+
+/**
+ * encode query parameters from an array.
+ *
+ * @param argc the total number of elements in the array
+ * @param start element in the array at which to start concatenating.
+ * @param argv parameter-array to concatenate.
+ * @param sep separator for parameters (usually "&") 
+ * @return url string needs to be freed by the caller.
+ */
+char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep);
 
 /**
  * build a query parameter string from an array.
@@ -215,7 +231,7 @@ char *oauth_gen_nonce();
 int oauth_cmpstringp(const void *p1, const void *p2);
 
 /**
- * calculate oAuth-signature for a given request URL, parameters and oauth-tokens.
+ * calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 
  * signed URL is returned. Else this fn will modify 'postargs' 
@@ -250,6 +266,14 @@ char *oauth_sign_url (const char *url, char **postargs,
   const char *t_secret //< token secret - used as 2st part of secret-key
   );
 
+/**
+ * xep-0235
+ */
+char *oauth_sign_xmpp (const char *xml,
+  OAuthMethod method, 
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  );
 
 /**
  * do a HTTP GET request, wait for it to finish 

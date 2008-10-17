@@ -1,3 +1,7 @@
+version 0.4.1
+ added oauth_serialize_url_sep() 
+ and OAUTH_VERSION defines in header file.
+
 version 0.4.0
  release on googlecode under MIT license
  and on sourceforge/debian under LGPL

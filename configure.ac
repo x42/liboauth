@@ -1,9 +1,25 @@
-AC_INIT([liboauth], [0.4.0], [robin AT gareus DOT org])
+AC_PREREQ(2.57)
+AC_INIT([liboauth], [-], [robin AT gareus DOT org])
+#AM_MAINTAINER_MODE
+
+AC_PATH_PROG(SED, sed, "", $PATH:/bin:/usr/bin:/usr/local/bin)
+if test -z "$SED"; then
+  AC_MSG_WARN([sed was not found])
+fi
+
+AC_MSG_CHECKING([liboauth version])
+VERSION=`$SED -ne 's/^#define LIBOAUTH_VERSION "\(.*\)"/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+AC_MSG_RESULT($VERSION)
+if test -z "$VERSION"; then
+  AC_MSG_ERROR([version number can not be retrieved from src/oauth.h])
+fi
+
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CONFIG_TESTDIR([tests])
 AC_CANONICAL_TARGET([])
 AC_COPYRIGHT([Copyright (C) Robin Gareus 2007, 2008])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(liboauth,$VERSION)
+
 AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)

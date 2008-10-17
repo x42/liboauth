@@ -474,7 +474,7 @@ int oauth_split_url_parameters(const char *url, char ***argv) {
 }
 
 /**
- * build a url query sting from an array.
+ * build a url query string from an array.
  *
  * @param argc the total number of elements in the array
  * @param start element in the array at which to start concatenating.
@@ -483,9 +483,23 @@ int oauth_split_url_parameters(const char *url, char ***argv) {
  *
  */
 char *oauth_serialize_url (int argc, int start, char **argv) {
+	return oauth_serialize_url_sep( argc, start, argv, "&");
+}
+
+/**
+ * encode query parameters from an array.
+ *
+ * @param argc the total number of elements in the array
+ * @param start element in the array at which to start concatenating.
+ * @param argv parameter-array to concatenate.
+ * @param sep separator for parameters (usually "&") 
+ * @return url string needs to be freed by the caller.
+ */
+char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep) {
   char  *tmp, *t1;
   int i;
   int	first=0;
+	int seplen=strlen(sep);
   char *query = (char*) xmalloc(sizeof(char)); 
   *query='\0';
   for(i=start; i< argc; i++) {
@@ -494,14 +508,14 @@ char *oauth_serialize_url (int argc, int start, char **argv) {
 
 		if (i==start && i==0 && strstr(argv[i], ":/")) {
       tmp=xstrdup(argv[i]);
-      len+=strlen(tmp)+2;
+      len+=strlen(tmp);
 		} else if(!(t1=strchr(argv[i], '='))) {
     // see http://oauth.net/core/1.0/#anchor14
     // escape parameter names and arguments but not the '='
       tmp=xstrdup(argv[i]);
       tmp=(char*) xrealloc(tmp,(strlen(tmp)+2)*sizeof(char));
       strcat(tmp,"=");
-      len+=strlen(tmp)+2;
+      len+=strlen(tmp);
     } else {
       *t1=0;
       tmp = oauth_url_escape(argv[i]);
@@ -511,10 +525,11 @@ char *oauth_serialize_url (int argc, int start, char **argv) {
       strcat(tmp,"=");
       strcat(tmp,t1);
       free(t1);
-      len+=strlen(tmp)+2;
+      len+=strlen(tmp);
     }
+		len+=seplen+1;
     query=(char*) xrealloc(query,len*sizeof(char));
-    strcat(query, ((i==start||first)?"":"&"));
+    strcat(query, ((i==start||first)?"":sep));
 		first=0;
     strcat(query, tmp);
 		if (i==start && i==0 && strstr(tmp, ":/")) {
@@ -687,7 +702,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 		ADD_TO_ARGV;
 	}
 
-  if (t_key) {
+	if (t_key) {
     snprintf(oarg, 1024, "oauth_token=%s", t_key);
     ADD_TO_ARGV;
   }
@@ -752,4 +767,17 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   return result;
 }
+
+/**
+ * xep-0235
+ */
+char *oauth_sign_xmpp (const char *xml,
+  OAuthMethod method, 
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_secret //< token secret - used as 2st part of secret-key
+	) {
+
+  return NULL;
+}
+
 // vi: sts=2 sw=2 ts=2

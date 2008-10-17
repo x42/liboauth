@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "17 Sep 2008" "Version 0.4.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "17 Oct 2008" "Version 0.4.1" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,6 +11,18 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .in +1c
 .ti -1c
 .RI "#define \fB_OAUTH_H\fP   1"
+.br
+.ti -1c
+.RI "#define \fBLIBOAUTH_VERSION\fP   '0.4.1'"
+.br
+.ti -1c
+.RI "#define \fBLIBOAUTH_VERSION_MAJOR\fP   0"
+.br
+.ti -1c
+.RI "#define \fBLIBOAUTH_VERSION_MINOR\fP   4"
+.br
+.ti -1c
+.RI "#define \fBLIBOAUTH_VERSION_MICRO\fP   1"
 .br
 .in -1c
 .SS "Enumerations"
@@ -71,7 +83,11 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_serialize_url\fP (int argc, int start, char **argv)"
 .br
-.RI "\fIbuild a url query sting from an array. \fP"
+.RI "\fIbuild a url query string from an array. \fP"
+.ti -1c
+.RI "char * \fBoauth_serialize_url_sep\fP (int argc, int start, char **argv, char *sep)"
+.br
+.RI "\fIencode query parameters from an array. \fP"
 .ti -1c
 .RI "char * \fBoauth_serialize_url_parameters\fP (int argc, char **argv)"
 .br
@@ -87,7 +103,11 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
-.RI "\fIcalculate oAuth-signature for a given request URL, parameters and oauth-tokens. \fP"
+.RI "\fIcalculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_xmpp\fP (const char *xml, \fBOAuthMethod\fP method, const char *c_secret, const char *t_secret)"
+.br
+.RI "\fIxep-0235 \fP"
 .ti -1c
 .RI "char * \fBoauth_http_get\fP (const char *u, const char *q)"
 .br
@@ -124,6 +144,18 @@ Definition in file \fBoauth.h\fP.
 .SS "#define _OAUTH_H   1"
 .PP
 Definition at line 28 of file oauth.h.
+.SS "#define LIBOAUTH_VERSION   '0.4.1'"
+.PP
+Definition at line 30 of file oauth.h.
+.SS "#define LIBOAUTH_VERSION_MAJOR   0"
+.PP
+Definition at line 31 of file oauth.h.
+.SS "#define LIBOAUTH_VERSION_MICRO   1"
+.PP
+Definition at line 33 of file oauth.h.
+.SS "#define LIBOAUTH_VERSION_MINOR   4"
+.PP
+Definition at line 32 of file oauth.h.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBOAuthMethod\fP"
@@ -142,7 +174,7 @@ use RSA signature (not implemented)
 \fB\fIOA_PLAINTEXT \fP\fP
 use plain text signature (for testing only) 
 .PP
-Definition at line 33 of file oauth.h.
+Definition at line 38 of file oauth.h.
 .SH "Function Documentation"
 .PP 
 .SS "char* oauth_catenc (int len,  ...)"
@@ -310,7 +342,7 @@ returned HTTP reply or NULL on error
 
 .SS "char* oauth_serialize_url (int argc, int start, char ** argv)"
 .PP
-build a url query sting from an array. 
+build a url query string from an array. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -338,6 +370,27 @@ This function is a shortcut for \fBoauth_serialize_url\fP (argc, 1, argv). It st
 \fIargc\fP the total number of elements in the array 
 .br
 \fIargv\fP parameter-array to concatenate. 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+url string needs to be freed by the caller. 
+.RE
+.PP
+
+.SS "char* oauth_serialize_url_sep (int argc, int start, char ** argv, char * sep)"
+.PP
+encode query parameters from an array. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargc\fP the total number of elements in the array 
+.br
+\fIstart\fP element in the array at which to start concatenating. 
+.br
+\fIargv\fP parameter-array to concatenate. 
+.br
+\fIsep\fP separator for parameters (usually '&') 
 .RE
 .PP
 \fBReturns:\fP
@@ -428,7 +481,7 @@ base64 encoded signature string.
 
 .SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
-calculate oAuth-signature for a given request URL, parameters and oauth-tokens. 
+calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. 
 .PP
 if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
 .PP
@@ -461,6 +514,10 @@ the signed url or NULL if an error occurred.
 \fBExamples: \fP
 .in +1c
 \fBtests/oauthexample.c\fP, and \fBtests/oauthtest.c\fP.
+.SS "char* oauth_sign_xmpp (const char * xml, \fBOAuthMethod\fP method, const char * c_secret, const char * t_secret)"
+.PP
+xep-0235 
+.PP
 .SS "int oauth_split_post_paramters (const char * url, char *** argv, short qesc)"
 .PP
 splits the given url into a parameter array. 
