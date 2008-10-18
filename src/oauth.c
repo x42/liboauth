@@ -184,7 +184,7 @@ char *oauth_url_escape(const char *string) {
   size_t alloc, newlen;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
-  int strindex=0;
+  size_t strindex=0;
   size_t length;
 
   if (!string) return xstrdup("");
@@ -251,7 +251,7 @@ char *oauth_url_unescape(const char *string, size_t *olen) {
 
 	if (!string) return NULL;
   alloc = strlen(string)+1;
-  ns = xmalloc(alloc);
+  ns = (char*) xmalloc(alloc);
 
   while(--alloc > 0) {
     in = *string;
