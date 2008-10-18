@@ -27,10 +27,10 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
-#define LIBOAUTH_VERSION "0.4.2"
+#define LIBOAUTH_VERSION "0.4.3"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  4
-#define LIBOAUTH_VERSION_MICRO  2
+#define LIBOAUTH_VERSION_MICRO  3
 
 /** \enum OAuthMethod
  * signature method to used for signing the request.
@@ -65,13 +65,24 @@ int oauth_decode_base64(unsigned char *dest, const char *src);
 
 /**
  * Escape 'string' according to RFC3986 and
- * http://oauth.net/core/1.0/#encoding_parameters
+ * http://oauth.net/core/1.0/#encoding_parameters.
  *
  * @param string The data to be encoded
  * @return encoded string otherwise NULL
  * The caller must free the returned string.
  */
 char *oauth_url_escape(const char *string);
+
+/**
+ * Parse RFC3986 encoded 'string' back to  unescaped version.
+ *
+ * @param string The data to be unescaped
+ * @param olen unless NULL the length of the returned string is stored there.
+ * @return decoded string or NULL
+ * The caller must free the returned string.
+ */
+char *oauth_url_unescape(const char *string, size_t *olen);
+ 
 
 /**
  * returns base64 encoded HMAC-SHA1 signature for
@@ -88,7 +99,7 @@ char *oauth_sign_hmac_sha1 (const char *m, const char *k);
 
 /**
  * same as \ref oauth_sign_hmac_sha1 but allows
- * to specify length of message and key (in case they contain null chars)
+ * to specify length of message and key (in case they contain null chars).
  *
  * @param m message to be signed
  * @param ml length of message

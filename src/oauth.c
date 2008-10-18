@@ -4,7 +4,7 @@
  * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
  * 
  * The base64 functions are by Jan-Henrik Haukeland, <hauk@tildeslash.com>
- * and escape_url() was inspired by libcurl's curl_escape under ISC-license
+ * and un/escape_url() was inspired by libcurl's curl_escape under ISC-license
  * many thanks to Daniel Stenberg <daniel@haxx.se>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,6 +38,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <ctype.h> // isxdigit
 #include <openssl/hmac.h>
 
 #include "xmalloc.h"
@@ -173,7 +174,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
 
 /**
  * Escape 'string' according to RFC3986 and
- * http://oauth.net/core/1.0/#encoding_parameters
+ * http://oauth.net/core/1.0/#encoding_parameters.
  *
  * @param string The data to be encoded
  * @return encoded string otherwise NULL
@@ -183,7 +184,7 @@ char *oauth_url_escape(const char *string) {
   size_t alloc, newlen;
   char *ns = NULL, *testing_ptr = NULL;
   unsigned char in; 
-  int strindex=0;
+  size_t strindex=0;
   size_t length;
 
   if (!string) return xstrdup("");
@@ -217,8 +218,8 @@ char *oauth_url_escape(const char *string) {
       newlen += 2; /* this'll become a %XX */
       if(newlen > alloc) {
         alloc *= 2;
-	testing_ptr = (char*) xrealloc(ns, alloc);
-	ns = testing_ptr;
+				testing_ptr = (char*) xrealloc(ns, alloc);
+				ns = testing_ptr;
       }
       snprintf(&ns[strindex], 4, "%%%02X", in);
       strindex+=3;
@@ -227,6 +228,48 @@ char *oauth_url_escape(const char *string) {
     string++;
   }
   ns[strindex]=0;
+  return ns;
+}
+
+#ifndef ISXDIGIT
+# define ISXDIGIT(x) (isxdigit((int) ((unsigned char)x)))
+#endif
+
+/**
+ * Parse RFC3986 encoded 'string' back to  unescaped version.
+ *
+ * @param string The data to be unescaped
+ * @param olen unless NULL the length of the returned string is stored there.
+ * @return decoded string or NULL
+ * The caller must free the returned string.
+ */
+char *oauth_url_unescape(const char *string, size_t *olen) {
+  size_t alloc, strindex=0;
+  char *ns = NULL;
+  unsigned char in;
+  long hex;
+
+	if (!string) return NULL;
+  alloc = strlen(string)+1;
+  ns = (char*) xmalloc(alloc);
+
+  while(--alloc > 0) {
+    in = *string;
+    if(('%' == in) && ISXDIGIT(string[1]) && ISXDIGIT(string[2])) {
+      char hexstr[3]; // '%XX'
+      hexstr[0] = string[1];
+      hexstr[1] = string[2];
+      hexstr[2] = 0;
+      hex = strtol(hexstr, NULL, 16);
+      in = (unsigned char)hex; /* hex is always < 256 */
+      string+=2;
+      alloc-=2;
+    }
+    ns[strindex++] = in;
+    string++;
+  }
+  ns[strindex]=0;
+  if(olen) *olen = strindex;
   return ns;
 }
 
