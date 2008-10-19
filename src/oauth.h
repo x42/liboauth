@@ -27,6 +27,7 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
+#ifndef DOXYGEN_IGNORE
 // liboauth version
 #define LIBOAUTH_VERSION "0.4.3"
 #define LIBOAUTH_VERSION_MAJOR  0
@@ -38,6 +39,7 @@
 #define LIBOAUTH_CUR  1
 #define LIBOAUTH_REV  0
 #define LIBOAUTH_AGE  0
+#endif
 
 /** \enum OAuthMethod
  * signature method to used for signing the request.
