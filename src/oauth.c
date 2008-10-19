@@ -777,7 +777,7 @@ char *oauth_sign_url (const char *url, char **postargs,
 #endif
   switch(method) {
     case OA_RSA:
-      sign = oauth_sign_rsa_sha1(odat,okey);
+      sign = oauth_sign_rsa_sha1(odat,okey); // XXX okey needs to be RSA key!
     	break;
     case OA_PLAINTEXT:
       sign = oauth_sign_plaintext(odat,okey);
