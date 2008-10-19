@@ -1,3 +1,6 @@
+version 0.4.5
+ fixed dependencies in pkgconfig pc.in
+
 version 0.4.4
  libtool interface version number
 
