@@ -27,6 +27,8 @@
  If you simply want to calculate the oAuth-signiature, all you need is \ref oauth_sign_url.  
  Future releases might include more elaborate usage information: Feel free to ask questions.
 
+ <a href="http://mir.dnsalias.com/oss/oauth/">oauth-utils</a> includes a command-line OAuth-consumer using liboauth.
+
 @section download Download
 
   <!--
@@ -36,7 +38,7 @@
   &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
 
   liboauth is maintained at sourceforge subversion repositories:
-  <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>.
+  <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>, and mirrored at <a href="http://oauth.googlecode.com/svn/code/c/liboauth/">oauth googlecode repository</a>.
 
   <!--
   The development branch is available from <tt>git://mir.dnsalias.com/liboauth</tt> or download a <a href="http://mir.dnsalias.com/gitweb/?p=liboauth.git;a=snapshot;h=head">snapshot</a>.
