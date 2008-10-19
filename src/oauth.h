@@ -27,10 +27,17 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
+// liboauth version
 #define LIBOAUTH_VERSION "0.4.3"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  4
 #define LIBOAUTH_VERSION_MICRO  3
+
+//interface revision number
+//http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
+#define LIBOAUTH_CUR  1
+#define LIBOAUTH_REV  0
+#define LIBOAUTH_AGE  0
 
 /** \enum OAuthMethod
  * signature method to used for signing the request.

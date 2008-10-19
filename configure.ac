@@ -14,6 +14,11 @@ if test -z "$VERSION"; then
   AC_MSG_ERROR([version number can not be retrieved from src/oauth.h])
 fi
 
+VERSION_CUR=`$SED -ne 's/^#define LIBOAUTH_CUR\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_REV=`$SED -ne 's/^#define LIBOAUTH_REV\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_AGE=`$SED -ne 's/^#define LIBOAUTH_AGE\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_INFO=${VERSION_CUR}:${VERSION_REV}:${VERSION_AGE}
+
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CONFIG_TESTDIR([tests])
 AC_CANONICAL_TARGET([])
@@ -23,6 +28,7 @@ AM_INIT_AUTOMAKE(liboauth,$VERSION)
 AM_CONFIG_HEADER(src/config.h)
 
 AC_SUBST(VERSION)
+AC_SUBST(VERSION_INFO)
 ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 
@@ -111,6 +117,8 @@ AC_MSG_NOTICE([
  liboauth configured:
  -----------------------
 
+  version:                $VERSION
+  interface revision:     $VERSION_INFO
   license:                $report_license
   http integration:       $report_curl
   generate documentation: $DOXYGEN
