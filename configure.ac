@@ -54,6 +54,9 @@ AC_FUNC_CLOSEDIR_VOID
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
 AH_TEMPLATE([USE_LGPL], [Define as 1 if you agree with the GNU Lesser General Public License])
 
+# PKGconfig oauth.pc.in
+PC_REQ=""
+PC_LIB=""
 
 dnl *** configuration options ***
 AC_ARG_ENABLE(lgpl, AC_HELP_STRING([--enable-lgpl],[compile coder under LGPL]))
@@ -64,8 +67,7 @@ if test "$enable_lgpl" == "yes"; then
 fi
 
 report_curl="no"
-PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 report_curl="libcurl" ], [ report_curl="commandline http client" ] )
-#CURL_LIBS="-lcurl"
+PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ], [ report_curl="commandline http client" ] )
 AC_SUBST(CURL_LIBS)
 
 
@@ -104,6 +106,10 @@ AC_PATH_PROG(PERL, perl, no)
 if test "$PERL" == "no"; then
   AC_MSG_WARN([dude, where's your perl? doxygen will not like this!)])
 fi
+
+# PKGconfig oauth.pc.in
+AC_SUBST(PC_REQ)
+AC_SUBST(PC_LIB)
 
 
 dnl *** output ***
