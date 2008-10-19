@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "18 Oct 2008" "Version 0.4.3" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "19 Oct 2008" "Version 0.4.3" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -75,7 +75,7 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_catenc\fP (int len,...)"
 .br
-.RI "\fIencode strings and concatenate with '&' separator. \fP"
+.RI "\fIurl-escape strings and concatenate with '&' separator. \fP"
 .ti -1c
 .RI "int \fBoauth_split_url_parameters\fP (const char *url, char ***argv)"
 .br
@@ -183,15 +183,13 @@ Definition at line 38 of file oauth.h.
 .PP 
 .SS "char* oauth_catenc (int len,  ...)"
 .PP
-encode strings and concatenate with '&' separator. 
+url-escape strings and concatenate with '&' separator. 
 .PP
 The number of strings to be concatenated must be given as first argument. all arguments thereafter must be of type (char *)
 .PP
 \fBParameters:\fP
 .RS 4
-\fIlen\fP the number of arguments to follow this parameter 
-.br
-\fI...\fP string to escape and added
+\fIlen\fP the number of arguments to follow this parameter
 .RE
 .PP
 \fBReturns:\fP
