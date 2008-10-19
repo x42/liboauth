@@ -144,13 +144,12 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k);
 int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s);
 
 /**
- * encode strings and concatenate with '&' separator.
+ * url-escape strings and concatenate with '&' separator.
  * The number of strings to be concatenated must be
  * given as first argument.
  * all arguments thereafter must be of type (char *) 
  *
  * @param len the number of arguments to follow this parameter
- * @param ... string to escape and added
  *
  * @return pointer to memory holding the concatenated 
  * strings - needs to be free(d) by the caller. or NULL
