@@ -1,3 +1,6 @@
+version 0.4.4
+ libtool interface version number
+
 version 0.4.3
  added oauth_url_unescape()
 

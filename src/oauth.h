@@ -27,10 +27,19 @@
 #ifndef _OAUTH_H
 #define _OAUTH_H      1 
 
-#define LIBOAUTH_VERSION "0.4.3"
+#ifndef DOXYGEN_IGNORE
+// liboauth version
+#define LIBOAUTH_VERSION "0.4.4"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  4
-#define LIBOAUTH_VERSION_MICRO  3
+#define LIBOAUTH_VERSION_MICRO  4
+
+//interface revision number
+//http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
+#define LIBOAUTH_CUR  1
+#define LIBOAUTH_REV  0
+#define LIBOAUTH_AGE  0
+#endif
 
 /** \enum OAuthMethod
  * signature method to used for signing the request.
@@ -144,13 +153,12 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k);
 int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s);
 
 /**
- * encode strings and concatenate with '&' separator.
+ * url-escape strings and concatenate with '&' separator.
  * The number of strings to be concatenated must be
  * given as first argument.
  * all arguments thereafter must be of type (char *) 
  *
  * @param len the number of arguments to follow this parameter
- * @param ... string to escape and added
  *
  * @return pointer to memory holding the concatenated 
  * strings - needs to be free(d) by the caller. or NULL
