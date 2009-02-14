@@ -1,3 +1,8 @@
+version 0.5.0
+ fixed debian package liboauth -> liboauth0
+ minor fixes in the manual
+ else unchanged it's 0.4.5 after six month of stress tests in production
+
 version 0.4.5
  fixed dependencies in pkgconfig pc.in
 
