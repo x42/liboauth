@@ -15,3 +15,6 @@ the first place.
 
 Marc Powell suggested minor changes and contributed patches to make this 
 library more usable.
+
+Stephen Paul Weber <singpolyma@singpolyma.net> sent patches for the debian
+package.
