@@ -52,7 +52,7 @@ clean:
 	rm -f build-stamp 
 
 	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.sub config.guess
+	rm -f configure config.sub config.guess
 
 	dh_clean -a
 
