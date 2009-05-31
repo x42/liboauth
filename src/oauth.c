@@ -478,7 +478,7 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     while (!(qesc&2) && (tmp=strchr(token,'\001'))) *tmp='&';
-    (*argv)[argc]=xstrdup(token);
+		(*argv)[argc]=oauth_url_unescape(token, NULL);
 	  if (argc==0 && strstr(token, ":/")) {
 			// HTTP does not allow empty absolute paths, so the URL 
 			// 'http://example.com' is equivalent to 'http://example.com/' and should
@@ -740,7 +740,7 @@ void oauth_add_protocol(int *argcp, char ***argvp,
 #if 0 // oauth_version 1.0 Rev A
 	if (!oauth_param_exists(argv,argc,"oauth_callback")) {
 		snprintf(oarg, 1024, "oauth_callback=oob");
-		oauth_add_param_to_array(argcp, argvp, oarg)
+		oauth_add_param_to_array(argcp, argvp, oarg);
 	}
 #endif
 
