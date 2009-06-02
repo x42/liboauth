@@ -275,7 +275,7 @@ void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
  * @param argcp pointer to array length int
  * @param argvp pointer to array values to be free()d
  */
-void oauth_free_array(int *argcp, char **argv);
+void oauth_free_array(int *argcp, char ***argvp);
 
 /**
  * calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens.

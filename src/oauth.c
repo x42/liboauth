@@ -809,7 +809,6 @@ char *oauth_sign_array (int *argcp, char***argvp,
   char *query;
   char *okey, *odat, *sign;
   char *result;
-	int i;
 
 	// add OAuth protocol parameters
 	oauth_add_protocol(argcp, argvp, method, c_key, t_key);
@@ -864,10 +863,12 @@ char *oauth_sign_array (int *argcp, char***argvp,
 
 /**
  * free array args
+ *
  * @param argcp pointer to array length int
  * @param argvp pointer to array values to be free()d
  */
-void oauth_free_array(int *argcp, char **argv) {
+void oauth_free_array(int *argcp, char ***argvp) {
+  int i;
 	for (i=0;i<(*argcp);i++) {
 		free((*argvp)[i]);
 	}
