@@ -270,6 +270,14 @@ int oauth_param_exists(char **argv, int argc, char *key);
 void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
 
 /**
+ * free array args
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values to be free()d
+ */
+void oauth_free_array(int *argcp, char **argv);
+
+/**
  * calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 

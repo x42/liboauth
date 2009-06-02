@@ -783,14 +783,18 @@ char *oauth_sign_url (const char *url, char **postargs,
   ) {
   int  argc;
   char **argv = NULL;
+  char *rv;
 
   if (postargs)
     argc = oauth_split_post_paramters(url, &argv, 0);
   else
     argc = oauth_split_url_parameters(url, &argv);
 
-  return oauth_sign_array(&argc, &argv, postargs, 
+  rv=oauth_sign_array(&argc, &argv, postargs, 
 		method, c_key, c_secret, t_key, t_secret);
+
+  oauth_free_array(&argc, &argv);
+	return(rv);
 }
 
 char *oauth_sign_array (int *argcp, char***argvp,
@@ -853,14 +857,21 @@ char *oauth_sign_array (int *argcp, char***argvp,
     result = xstrdup((*argvp)[0]);
   }
 
-	for (i=0;i<(*argcp);i++) {
-		free((*argvp)[i]);
-	}
-
-  if(*argvp) free(*argvp);
   if(query) free(query);
 
   return result;
+}
+
+/**
+ * free array args
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values to be free()d
+ */
+void oauth_free_array(int *argcp, char **argv) {
+	for (i=0;i<(*argcp);i++) {
+		free((*argvp)[i]);
+	}
+  if(*argvp) free(*argvp);
 }
 
 /**
