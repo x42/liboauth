@@ -1,3 +1,7 @@
+liboauth (0.5.1-1) unstable; urgency=low
+  *  new upstream release
+ -- Robin Gareus <robin@gareus.org>  Tue, 02 Jun 2009 13:33:16 +0200
+
 liboauth (0.5.0-1) unstable; urgency=low
   *  new upstream release
  -- Robin Gareus <robin@gareus.org>  Sun, 15 Feb 2009 00:06:47 +0100

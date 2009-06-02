@@ -1,3 +1,9 @@
+version 0.5.1
+ added oauth_sign_array() function - which allows to modify the parameters
+ before siging them.
+ fixed url-splitting to url-decode parameters when generating the parameter
+ array.
+
 version 0.5.0
  fixed debian package liboauth -> liboauth0
  minor fixes in the manual

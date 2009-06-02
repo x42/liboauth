@@ -1,8 +1,10 @@
-.TH "src/oauth.h" 3 "22 Feb 2009" "Version 0.5.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "2 Jun 2009" "Version 0.5.1" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-src/oauth.h \- oAuth.net implementation in POSIX-C. 
+src/oauth.h \- oAuth.net implementation in POSIX-C.  
+
+.PP
 .SH SYNOPSIS
 .br
 .PP
@@ -93,9 +95,25 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .br
 .RI "\fIstring compare function for oauth parameters. \fP"
 .ti -1c
+.RI "int \fBoauth_param_exists\fP (char **argv, int argc, char *key)"
+.br
+.RI "\fIsearch array for parameter key. \fP"
+.ti -1c
+.RI "void \fBoauth_add_param_to_array\fP (int *argcp, char ***argvp, const char *addparam)"
+.br
+.RI "\fIadd query parameter to array \fP"
+.ti -1c
+.RI "void \fBoauth_free_array\fP (int *argcp, char ***argvp)"
+.br
+.RI "\fIfree array args \fP"
+.ti -1c
 .RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
 .RI "\fIcalculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_array\fP (int *argcp, char ***argvp, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
+.br
+.RI "\fIsame as /ref oauth_sign_url with the url already split into parameter array \fP"
 .ti -1c
 .RI "char * \fBoauth_sign_xmpp\fP (const char *xml, \fBOAuthMethod\fP method, const char *c_secret, const char *t_secret)"
 .br
@@ -122,7 +140,7 @@ oAuth.net implementation in POSIX-C.
 Robin Gareus <robin@gareus.org>
 .RE
 .PP
-Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
+Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
 .PP
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 .PP
@@ -157,6 +175,20 @@ use plain text signature (for testing only)
 Definition at line 47 of file oauth.h.
 .SH "Function Documentation"
 .PP 
+.SS "void oauth_add_param_to_array (int * argcp, char *** argvp, const char * addparam)"
+.PP
+add query parameter to array 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargcp\fP pointer to array length int 
+.br
+\fIargvp\fP pointer to array values 
+.br
+\fIaddparam\fP parameter to add (eg. 'foo=bar') 
+.RE
+.PP
+
 .SS "char* oauth_catenc (int len,  ...)"
 .PP
 url-escape strings and concatenate with '&' separator. 
@@ -216,6 +248,18 @@ The caller must free the returned string.
 \fBReturns:\fP
 .RS 4
 encoded string otherwise NULL 
+.RE
+.PP
+
+.SS "void oauth_free_array (int * argcp, char *** argvp)"
+.PP
+free array args 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargcp\fP pointer to array length int 
+.br
+\fIargvp\fP pointer to array values to be free()d 
 .RE
 .PP
 
@@ -293,6 +337,25 @@ replied content from HTTP server. needs to be freed by caller.
 \fBExamples: \fP
 .in +1c
 \fBtests/oauthexample.c\fP, and \fBtests/oauthtest.c\fP.
+.SS "int oauth_param_exists (char ** argv, int argc, char * key)"
+.PP
+search array for parameter key. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargv\fP length of array to search 
+.br
+\fIargc\fP parameter array to search 
+.br
+\fIkey\fP key of parameter to check.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise. 
+.RE
+.PP
+
 .SS "char* oauth_post_file (const char * u, const char * fn, size_t len, const char * customheader)"
 .PP
 http post raw data from file. 
@@ -374,6 +437,35 @@ encode query parameters from an array.
 \fBReturns:\fP
 .RS 4
 url string needs to be freed by the caller. 
+.RE
+.PP
+
+.SS "char* oauth_sign_array (int * argcp, char *** argvp, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
+.PP
+same as /ref oauth_sign_url with the url already split into parameter array 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargcp\fP pointer to array length int 
+.br
+\fIargvp\fP pointer to array values (argv[0]='http://example.org:80/' argv[1]='first=QueryParamater' ..)
+.br
+\fIpostargs\fP This parameter points to an area where the return value is stored. If 'postargs' is NULL, no value is stored.
+.br
+\fImethod\fP specify the signature method to use. It is of type \fBOAuthMethod\fP and most likely \fBOA_HMAC\fP.
+.br
+\fIc_key\fP consumer key 
+.br
+\fIc_secret\fP consumer secret 
+.br
+\fIt_key\fP token key 
+.br
+\fIt_secret\fP token secret
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+the signed url or NULL if an error occurred. 
 .RE
 .PP
 

@@ -1,7 +1,7 @@
 /*
  * oAuth string functions in POSIX-C.
  *
- * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
+ * Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
  * 
  * The base64 functions are by Jan-Henrik Haukeland, <hauk@tildeslash.com>
  * and un/escape_url() was inspired by libcurl's curl_escape under ISC-license
@@ -478,7 +478,7 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     while (!(qesc&2) && (tmp=strchr(token,'\001'))) *tmp='&';
-    (*argv)[argc]=xstrdup(token);
+		(*argv)[argc]=oauth_url_unescape(token, NULL);
 	  if (argc==0 && strstr(token, ":/")) {
 			// HTTP does not allow empty absolute paths, so the URL 
 			// 'http://example.com' is equivalent to 'http://example.com/' and should
@@ -670,14 +670,80 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
 }
 
 /**
- * search array for parameter.
+ * search array for parameter key.
+ * @param argv length of array to search
+ * @param argc parameter array to search
+ * @param key key of parameter to check.
+ *
+ * @return FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise.
  */
-int oauth_param_exists(char **argv, int argc, char *param) {
+int oauth_param_exists(char **argv, int argc, char *key) {
 	int i;
-	size_t l= strlen(param);
+	size_t l= strlen(key);
 	for (i=0;i<argc;i++)
-		if (strlen(argv[i])>l && !strncmp(argv[i],param,l) && argv[i][l] == '=') return 1;
+		if (strlen(argv[i])>l && !strncmp(argv[i],key,l) && argv[i][l] == '=') return 1;
 	return 0;
+}
+
+/**
+ * add query parameter to array
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values 
+ * @param addparam parameter to add (eg. "foo=bar")
+ */
+void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam) {
+  (*argvp)=(char**) xrealloc(*argvp,sizeof(char*)*((*argcp)+1));
+  (*argvp)[(*argcp)++]= (char*) xstrdup(addparam);
+}
+
+/**
+ *
+ */
+void oauth_add_protocol(int *argcp, char ***argvp, 
+  OAuthMethod method, 
+  const char *c_key, //< consumer key - posted plain text
+  const char *t_key //< token key - posted plain text in URL
+ ){
+  char oarg[1024];
+
+  // add oAuth specific arguments
+	if (!oauth_param_exists(*argvp,*argcp,"oauth_nonce")) {
+		char *tmp;
+		snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
+		oauth_add_param_to_array(argcp, argvp, oarg);
+		free(tmp);
+	}
+
+	if (!oauth_param_exists(*argvp,*argcp,"oauth_timestamp")) {
+		snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
+		oauth_add_param_to_array(argcp, argvp, oarg);
+	}
+
+	if (t_key) {
+    snprintf(oarg, 1024, "oauth_token=%s", t_key);
+		oauth_add_param_to_array(argcp, argvp, oarg);
+  }
+
+  snprintf(oarg, 1024, "oauth_consumer_key=%s", c_key);
+	oauth_add_param_to_array(argcp, argvp, oarg);
+
+  snprintf(oarg, 1024, "oauth_signature_method=%s",
+      method==0?"HMAC-SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
+	oauth_add_param_to_array(argcp, argvp, oarg);
+
+	if (!oauth_param_exists(*argvp,*argcp,"oauth_version")) {
+		snprintf(oarg, 1024, "oauth_version=1.0");
+		oauth_add_param_to_array(argcp, argvp, oarg);
+	}
+
+#if 0 // oauth_version 1.0 Rev A
+	if (!oauth_param_exists(argv,argc,"oauth_callback")) {
+		snprintf(oarg, 1024, "oauth_callback=oob");
+		oauth_add_param_to_array(argcp, argvp, oarg);
+	}
+#endif
+
 }
 
 /**
@@ -715,62 +781,47 @@ char *oauth_sign_url (const char *url, char **postargs,
   const char *t_key, //< token key - posted plain text in URL
   const char *t_secret //< token secret - used as 2st part of secret-key
   ) {
-
-  // split url arguments
   int  argc;
   char **argv = NULL;
-  char *tmp;
-  char oarg[1024];
-  char *query;
-  char *okey, *odat, *sign;
-  char *result;
+  char *rv;
 
   if (postargs)
     argc = oauth_split_post_paramters(url, &argv, 0);
   else
     argc = oauth_split_url_parameters(url, &argv);
 
-#define ADD_TO_ARGV \
-  argv=(char**) xrealloc(argv,sizeof(char*)*(argc+1)); \
-  argv[argc++]=xstrdup(oarg); 
-  // add oAuth specific arguments
-	if (!oauth_param_exists(argv,argc,"oauth_nonce")) {
-		snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
-		ADD_TO_ARGV;
-		free(tmp);
-	}
+  rv=oauth_sign_array(&argc, &argv, postargs, 
+		method, c_key, c_secret, t_key, t_secret);
 
-	if (!oauth_param_exists(argv,argc,"oauth_timestamp")) {
-		snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
-		ADD_TO_ARGV;
-	}
+  oauth_free_array(&argc, &argv);
+	return(rv);
+}
 
-	if (t_key) {
-    snprintf(oarg, 1024, "oauth_token=%s", t_key);
-    ADD_TO_ARGV;
-  }
+char *oauth_sign_array (int *argcp, char***argvp,
+  char **postargs,
+  OAuthMethod method, 
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  ) {
+  char oarg[1024];
+  char *query;
+  char *okey, *odat, *sign;
+  char *result;
 
-  snprintf(oarg, 1024, "oauth_consumer_key=%s", c_key);
-  ADD_TO_ARGV;
-
-  snprintf(oarg, 1024, "oauth_signature_method=%s",
-      method==0?"HMAC-SHA1":method==1?"RSA-SHA1":"PLAINTEXT");
-  ADD_TO_ARGV;
-
-	if (!oauth_param_exists(argv,argc,"oauth_version")) {
-		snprintf(oarg, 1024, "oauth_version=1.0");
-		ADD_TO_ARGV;
-	}
+	// add OAuth protocol parameters
+	oauth_add_protocol(argcp, argvp, method, c_key, t_key);
 
   // sort parameters
-  qsort(&argv[1], argc-1, sizeof(char *), oauth_cmpstringp);
+  qsort(&(*argvp)[1], (*argcp)-1, sizeof(char *), oauth_cmpstringp);
 
   // serialize URL
-  query= oauth_serialize_url_parameters(argc, argv);
+  query= oauth_serialize_url_parameters(*argcp, *argvp);
 
   // generate signature
   okey = oauth_catenc(2, c_secret, t_secret);
-  odat = oauth_catenc(3, postargs?"POST":"GET", argv[0], query);
+  odat = oauth_catenc(3, postargs?"POST":"GET", (*argvp)[0], query);
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
   fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);
@@ -794,25 +845,38 @@ char *oauth_sign_url (const char *url, char **postargs,
 
   // append signature to query args.
   snprintf(oarg, 1024, "oauth_signature=%s",sign);
-  ADD_TO_ARGV;
+	oauth_add_param_to_array(argcp, argvp, oarg);
   free(sign);
 
   // build URL params
-  result = oauth_serialize_url(argc, (postargs?1:0), argv);
+  result = oauth_serialize_url(*argcp, (postargs?1:0), *argvp);
 
   if(postargs) { 
     *postargs = result;
-    result = xstrdup(argv[0]);
-    free(argv[0]);
+    result = xstrdup((*argvp)[0]);
   }
-  if(argv) free(argv);
+
   if(query) free(query);
 
   return result;
 }
 
 /**
- * xep-0235
+ * free array args
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values to be free()d
+ */
+void oauth_free_array(int *argcp, char ***argvp) {
+  int i;
+	for (i=0;i<(*argcp);i++) {
+		free((*argvp)[i]);
+	}
+  if(*argvp) free(*argvp);
+}
+
+/**
+ * xep-0235 - TODO
  */
 char *oauth_sign_xmpp (const char *xml,
   OAuthMethod method, 

@@ -3,7 +3,7 @@
  *  @file oauth.h
  *  @author Robin Gareus <robin@gareus.org>
  *
- * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
+ * Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.5.0"
+#define LIBOAUTH_VERSION "0.5.1"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  5
-#define LIBOAUTH_VERSION_MICRO  0
+#define LIBOAUTH_VERSION_MICRO  1
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 #define LIBOAUTH_CUR  1
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  0
+#define LIBOAUTH_AGE  1
 #endif
 
 /** \enum OAuthMethod
@@ -249,6 +249,34 @@ char *oauth_gen_nonce();
  */
 int oauth_cmpstringp(const void *p1, const void *p2);
 
+
+/**
+ * search array for parameter key.
+ * @param argv length of array to search
+ * @param argc parameter array to search
+ * @param key key of parameter to check.
+ *
+ * @return FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise.
+ */
+int oauth_param_exists(char **argv, int argc, char *key);
+
+/**
+ * add query parameter to array
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values 
+ * @param addparam parameter to add (eg. "foo=bar")
+ */
+void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
+
+/**
+ * free array args
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values to be free()d
+ */
+void oauth_free_array(int *argcp, char ***argvp);
+
 /**
  * calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
  *
@@ -278,6 +306,37 @@ int oauth_cmpstringp(const void *p1, const void *p2);
  *
  */
 char *oauth_sign_url (const char *url, char **postargs, 
+  OAuthMethod method, 
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  );
+
+
+/**
+ * same as /ref oauth_sign_url
+ * with the url already split into parameter array 
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values 
+ * (argv[0]="http://example.org:80/" argv[1]="first=QueryParamater" ..)
+ *
+ * @param postargs This parameter points to an area where the return value
+ * is stored. If 'postargs' is NULL, no value is stored.
+ *
+ * @param method specify the signature method to use. It is of type 
+ * \ref OAuthMethod and most likely \ref OA_HMAC.
+ *
+ * @param c_key consumer key
+ * @param c_secret consumer secret
+ * @param t_key token key
+ * @param t_secret token secret
+ *
+ * @return the signed url or NULL if an error occurred.
+ */
+char *oauth_sign_array (int *argcp, char***argvp,
+  char **postargs,
   OAuthMethod method, 
   const char *c_key, //< consumer key - posted plain text
   const char *c_secret, //< consumer secret - used as 1st part of secret-key 
