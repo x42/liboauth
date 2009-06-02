@@ -325,6 +325,14 @@ char *oauth_sign_url (const char *url, char **postargs,
  * @param postargs This parameter points to an area where the return value
  * is stored. If 'postargs' is NULL, no value is stored.
  *
+ * @param method specify the signature method to use. It is of type 
+ * \ref OAuthMethod and most likely \ref OA_HMAC.
+ *
+ * @param c_key consumer key
+ * @param c_secret consumer secret
+ * @param t_key token key
+ * @param t_secret token secret
+ *
  * @return the signed url or NULL if an error occurred.
  */
 char *oauth_sign_array (int *argcp, char***argvp,
