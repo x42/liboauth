@@ -73,10 +73,10 @@ int oauth_consumer_example(int use_post) {
 
   printf("Request token..\n");
   if (use_post) { // HTTP POST 
-    req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, c_key, c_secret, NULL, NULL);
+    req_url = oauth_sign_url2(request_token_uri, &postarg, OA_HMAC, NULL, c_key, c_secret, NULL, NULL);
     reply = oauth_http_post(req_url,postarg);
   } else { // HTTP GET
-    req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, c_key, c_secret, NULL, NULL);
+    req_url = oauth_sign_url2(request_token_uri, NULL, OA_HMAC, NULL, c_key, c_secret, NULL, NULL);
     reply = oauth_http_get(req_url,postarg);
   }
   if (req_url) free(req_url);
@@ -91,10 +91,10 @@ int oauth_consumer_example(int use_post) {
   printf("Access token..\n");
 
   if (use_post) {
-    req_url = oauth_sign_url(access_token_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    req_url = oauth_sign_url2(access_token_uri, &postarg, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     reply = oauth_http_post(req_url,postarg);
   } else {
-    req_url = oauth_sign_url(access_token_uri, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    req_url = oauth_sign_url2(access_token_uri, NULL, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     reply = oauth_http_get(req_url,postarg);
   }
   if (req_url) free(req_url);
@@ -108,10 +108,10 @@ int oauth_consumer_example(int use_post) {
   printf("make some request..\n");
 
   if (use_post) {
-    req_url = oauth_sign_url(test_call_uri, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    req_url = oauth_sign_url2(test_call_uri, &postarg, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     reply = oauth_http_post(req_url,postarg);
   } else {
-    req_url = oauth_sign_url(test_call_uri, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    req_url = oauth_sign_url2(test_call_uri, NULL, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     reply = oauth_http_get(req_url,postarg);
   }
   printf("query:'%s'\n",req_url);

@@ -1,3 +1,6 @@
+version 0.5.2
+ added support for HTTP request methods other than GET & POST.
+
 version 0.5.1
  added oauth_sign_array() function - which allows to modify the parameters
  before siging them.

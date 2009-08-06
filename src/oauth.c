@@ -746,36 +746,22 @@ void oauth_add_protocol(int *argcp, char ***argvp,
 
 }
 
-/**
- * calculate oAuth-signature for a given request URL, parameters and oauth-tokens.
- *
- * if 'postargs' is NULL a "GET" request is signed and the 
- * signed URL is returned. Else this fn will modify 'postargs' 
- * to point to memory that contains the signed POST-variables 
- * and returns the base URL.
- *
- * both, the return value and (if given) 'postargs' need to be freed
- * by the caller.
- *
- * @param url The request URL to be signed. append all GET or POST 
- * query-parameters separated by either '?' or '&' to this parameter.
- *
- * @param postargs This parameter points to an area where the return value
- * is stored. If 'postargs' is NULL, no value is stored.
- *
- * @param method specify the signature method to use. It is of type 
- * \ref OAuthMethod and most likely \ref OA_HMAC.
- *
- * @param c_key consumer key
- * @param c_secret consumer secret
- * @param t_key token key
- * @param t_secret token secret
- *
- * @return the signed url or NULL if an error occurred.
- *
- */
 char *oauth_sign_url (const char *url, char **postargs, 
   OAuthMethod method, 
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  ) {
+  return oauth_sign_url2(url, postargs, 
+    method, NULL,
+		c_key, c_secret,
+		t_key, t_secret);
+} 
+
+char *oauth_sign_url2 (const char *url, char **postargs, 
+  OAuthMethod method, 
+  const char *http_method, //< HTTP request method
   const char *c_key, //< consumer key - posted plain text
   const char *c_secret, //< consumer secret - used as 1st part of secret-key 
   const char *t_key, //< token key - posted plain text in URL
@@ -790,8 +776,9 @@ char *oauth_sign_url (const char *url, char **postargs,
   else
     argc = oauth_split_url_parameters(url, &argv);
 
-  rv=oauth_sign_array(&argc, &argv, postargs, 
-		method, c_key, c_secret, t_key, t_secret);
+  rv=oauth_sign_array2(&argc, &argv, postargs, 
+		method, http_method,
+    c_key, c_secret, t_key, t_secret);
 
   oauth_free_array(&argc, &argv);
 	return(rv);
@@ -805,10 +792,36 @@ char *oauth_sign_array (int *argcp, char***argvp,
   const char *t_key, //< token key - posted plain text in URL
   const char *t_secret //< token secret - used as 2st part of secret-key
   ) {
+  return oauth_sign_array2 (argcp, argvp, 
+                            postargs, method,
+                            NULL,
+                            c_key, c_secret,
+                            t_key, t_secret);
+}
+
+char *oauth_sign_array2 (int *argcp, char***argvp,
+  char **postargs,
+  OAuthMethod method, 
+  const char *http_method, //< HTTP request method
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  ) {
   char oarg[1024];
   char *query;
   char *okey, *odat, *sign;
   char *result;
+  char *http_request_method;
+
+  if (!http_method) {
+    http_request_method = xstrdup(postargs?"POST":"GET");
+  } else {
+    int i;
+    http_request_method = xstrdup(http_method);
+    for (i=0;i<strlen(http_request_method);i++) 
+      http_request_method[i]=toupper(http_request_method[i]);
+  }
 
 	// add OAuth protocol parameters
 	oauth_add_protocol(argcp, argvp, method, c_key, t_key);
@@ -821,7 +834,8 @@ char *oauth_sign_array (int *argcp, char***argvp,
 
   // generate signature
   okey = oauth_catenc(2, c_secret, t_secret);
-  odat = oauth_catenc(3, postargs?"POST":"GET", (*argvp)[0], query);
+  odat = oauth_catenc(3, http_request_method, (*argvp)[0], query);
+  free(http_request_method);
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
   fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);

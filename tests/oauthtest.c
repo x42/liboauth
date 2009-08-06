@@ -45,7 +45,7 @@ void request_token_example_get(void) {
   char *req_url = NULL;
   char *reply;
 
-  req_url = oauth_sign_url(request_token_uri, NULL, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
+  req_url = oauth_sign_url2(request_token_uri, NULL, OA_HMAC, NULL, req_c_key, req_c_secret, NULL, NULL);
 
   printf("request URL:%s\n\n", req_url);
   reply = oauth_http_get(req_url,NULL);
@@ -97,7 +97,7 @@ void request_token_example_post(void) {
   char *req_url;
   char *reply;
 
-  req_url = oauth_sign_url(request_token_uri, &postarg, OA_HMAC, req_c_key, req_c_secret, NULL, NULL);
+  req_url = oauth_sign_url2(request_token_uri, &postarg, OA_HMAC, NULL, req_c_key, req_c_secret, NULL, NULL);
 
   printf("request URL:%s\n\n", req_url);
   reply = oauth_http_post(req_url,postarg);
@@ -154,7 +154,7 @@ int main (int argc, char **argv) {
 #if 1 // example sign GET request and print the signed request URL
   {
     char *geturl = NULL;
-    geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    geturl = oauth_sign_url2(url, NULL, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     printf("GET: URL:%s\n\n", geturl);
     if(geturl) free(geturl);
   }
@@ -163,7 +163,7 @@ int main (int argc, char **argv) {
 #if 1 // sign POST ;) example 
   {
     char *postargs = NULL, *post = NULL;
-    post = oauth_sign_url(url, &postargs, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    post = oauth_sign_url2(url, &postargs, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     printf("POST: URL:%s\n      PARAM:%s\n\n", post, postargs);
     if(post) free(post);
     if(postargs) free(postargs);
