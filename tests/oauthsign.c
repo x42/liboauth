@@ -44,14 +44,14 @@ int main (int argc, char **argv) {
 
   if (mode==1) { // GET
     char *geturl = NULL;
-    geturl = oauth_sign_url(url, NULL, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    geturl = oauth_sign_url2(url, NULL, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     if(geturl) {
       printf("%s\n", geturl);
       free(geturl);
     }
   } else { // POST
     char *postargs = NULL, *post = NULL;
-    post = oauth_sign_url(url, &postargs, OA_HMAC, c_key, c_secret, t_key, t_secret);
+    post = oauth_sign_url2(url, &postargs, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
     if (!post || !postargs) {
     	return (1);
     }

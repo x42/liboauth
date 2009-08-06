@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "2 Jun 2009" "Version 0.5.1" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "6 Aug 2009" "Version 0.5.2" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,6 +13,9 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .in +1c
 .ti -1c
 .RI "#define \fB_OAUTH_H\fP   1"
+.br
+.ti -1c
+.RI "#define \fBOA_GCC_VERSION_AT_LEAST\fP(x, y)   0"
 .br
 .in -1c
 .SS "Enumerations"
@@ -107,13 +110,19 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .br
 .RI "\fIfree array args \fP"
 .ti -1c
-.RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
+.RI "char * \fBoauth_sign_url2\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *http_method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
 .RI "\fIcalculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. \fP"
 .ti -1c
-.RI "char * \fBoauth_sign_array\fP (int *argcp, char ***argvp, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
+.RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret) attribute_deprecated"
+.br
+.ti -1c
+.RI "char * \fBoauth_sign_array2\fP (int *argcp, char ***argvp, char **postargs, \fBOAuthMethod\fP method, const char *http_method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
 .RI "\fIsame as /ref oauth_sign_url with the url already split into parameter array \fP"
+.ti -1c
+.RI "char * \fBoauth_sign_array\fP (int *argcp, char ***argvp, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret) attribute_deprecated"
+.br
 .ti -1c
 .RI "char * \fBoauth_sign_xmpp\fP (const char *xml, \fBOAuthMethod\fP method, const char *c_secret, const char *t_secret)"
 .br
@@ -154,6 +163,9 @@ Definition in file \fBoauth.h\fP.
 .SS "#define _OAUTH_H   1"
 .PP
 Definition at line 28 of file oauth.h.
+.SS "#define OA_GCC_VERSION_AT_LEAST(x, y)   0"
+.PP
+Definition at line 47 of file oauth.h.
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBOAuthMethod\fP"
@@ -172,7 +184,7 @@ use RSA signature (not implemented)
 \fB\fIOA_PLAINTEXT \fP\fP
 use plain text signature (for testing only) 
 .PP
-Definition at line 47 of file oauth.h.
+Definition at line 61 of file oauth.h.
 .SH "Function Documentation"
 .PP 
 .SS "void oauth_add_param_to_array (int * argcp, char *** argvp, const char * addparam)"
@@ -442,6 +454,14 @@ url string needs to be freed by the caller.
 
 .SS "char* oauth_sign_array (int * argcp, char *** argvp, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
+\fBDeprecated\fP
+.RS 4
+Use \fBoauth_sign_array2()\fP instead. 
+.RE
+.PP
+
+.SS "char* oauth_sign_array2 (int * argcp, char *** argvp, char ** postargs, \fBOAuthMethod\fP method, const char * http_method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
+.PP
 same as /ref oauth_sign_url with the url already split into parameter array 
 .PP
 \fBParameters:\fP
@@ -453,6 +473,8 @@ same as /ref oauth_sign_url with the url already split into parameter array
 \fIpostargs\fP This parameter points to an area where the return value is stored. If 'postargs' is NULL, no value is stored.
 .br
 \fImethod\fP specify the signature method to use. It is of type \fBOAuthMethod\fP and most likely \fBOA_HMAC\fP.
+.br
+\fIhttp_method\fP The HTTP request method to use (ie 'GET', 'PUT',..) If NULL is given as 'http_method' this defaults to 'GET' when 'postargs' is also NULL and when postargs is not NULL 'POST' is used.
 .br
 \fIc_key\fP consumer key 
 .br
@@ -551,6 +573,14 @@ base64 encoded signature string.
 
 .SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
+\fBDeprecated\fP
+.RS 4
+Use \fBoauth_sign_url2()\fP instead. 
+.RE
+.PP
+
+.SS "char* oauth_sign_url2 (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * http_method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
+.PP
 calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. 
 .PP
 if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
@@ -564,6 +594,8 @@ both, the return value and (if given) 'postargs' need to be freed by the caller.
 \fIpostargs\fP This parameter points to an area where the return value is stored. If 'postargs' is NULL, no value is stored.
 .br
 \fImethod\fP specify the signature method to use. It is of type \fBOAuthMethod\fP and most likely \fBOA_HMAC\fP.
+.br
+\fIhttp_method\fP The HTTP request method to use (ie 'GET', 'PUT',..) If NULL is given as 'http_method' this defaults to 'GET' when 'postargs' is also NULL and when postargs is not NULL 'POST' is used.
 .br
 \fIc_key\fP consumer key 
 .br

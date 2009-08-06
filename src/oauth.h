@@ -29,16 +29,30 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.5.1"
+#define LIBOAUTH_VERSION "0.5.2"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  5
-#define LIBOAUTH_VERSION_MICRO  1
+#define LIBOAUTH_VERSION_MICRO  2
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  1
+#define LIBOAUTH_CUR  2
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  1
+#define LIBOAUTH_AGE  2
+#endif
+
+#ifdef __GNUC__
+#    define OA_GCC_VERSION_AT_LEAST(x,y) (__GNUC__ > x || __GNUC__ == x && __GNUC_MINOR__ >= y)
+#else
+#    define OA_GCC_VERSION_AT_LEAST(x,y) 0
+#endif
+
+#ifndef attribute_deprecated
+#if OA_GCC_VERSION_AT_LEAST(3,1)
+#    define attribute_deprecated __attribute__((deprecated))
+#else
+#    define attribute_deprecated
+#endif
 #endif
 
 /** \enum OAuthMethod
@@ -297,6 +311,10 @@ void oauth_free_array(int *argcp, char ***argvp);
  * @param method specify the signature method to use. It is of type 
  * \ref OAuthMethod and most likely \ref OA_HMAC.
  *
+ * @param http_method The HTTP request method to use (ie "GET", "PUT",..)
+ * If NULL is given as 'http_method' this defaults to "GET" when 
+ * 'postargs' is also NULL and when postargs is not NULL "POST" is used.
+ *
  * @param c_key consumer key
  * @param c_secret consumer secret
  * @param t_key token key
@@ -305,14 +323,25 @@ void oauth_free_array(int *argcp, char ***argvp);
  * @return the signed url or NULL if an error occurred.
  *
  */
-char *oauth_sign_url (const char *url, char **postargs, 
+char *oauth_sign_url2 (const char *url, char **postargs, 
   OAuthMethod method, 
+  const char *http_method, //< HTTP request method
   const char *c_key, //< consumer key - posted plain text
   const char *c_secret, //< consumer secret - used as 1st part of secret-key 
   const char *t_key, //< token key - posted plain text in URL
   const char *t_secret //< token secret - used as 2st part of secret-key
   );
 
+/**
+ * @deprecated Use oauth_sign_url2() instead.
+ */
+char *oauth_sign_url (const char *url, char **postargs, 
+  OAuthMethod method, 
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  ) attribute_deprecated;
 
 /**
  * same as /ref oauth_sign_url
@@ -328,12 +357,29 @@ char *oauth_sign_url (const char *url, char **postargs,
  * @param method specify the signature method to use. It is of type 
  * \ref OAuthMethod and most likely \ref OA_HMAC.
  *
+ * @param http_method The HTTP request method to use (ie "GET", "PUT",..)
+ * If NULL is given as 'http_method' this defaults to "GET" when 
+ * 'postargs' is also NULL and when postargs is not NULL "POST" is used.
+ *
  * @param c_key consumer key
  * @param c_secret consumer secret
  * @param t_key token key
  * @param t_secret token secret
  *
  * @return the signed url or NULL if an error occurred.
+ */
+char *oauth_sign_array2 (int *argcp, char***argvp,
+  char **postargs,
+  OAuthMethod method, 
+  const char *http_method, //< HTTP request method
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  );
+
+/**
+ * @deprecated Use oauth_sign_array2() instead.
  */
 char *oauth_sign_array (int *argcp, char***argvp,
   char **postargs,
@@ -342,7 +388,8 @@ char *oauth_sign_array (int *argcp, char***argvp,
   const char *c_secret, //< consumer secret - used as 1st part of secret-key 
   const char *t_key, //< token key - posted plain text in URL
   const char *t_secret //< token secret - used as 2st part of secret-key
-  );
+  ) attribute_deprecated;
+
 
 /**
  * xep-0235

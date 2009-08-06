@@ -88,7 +88,7 @@ int oauth_image_post(char *filename, char *url) {
   sprintf(sig_url,"%s&xoauth_body_signature=%s&xoauth_body_signature_method=HMAC_SHA1",url, sign);
 
   // sign a POST request
-  req_url = oauth_sign_url(sig_url, &postarg, OA_HMAC, c_key, c_secret, t_key, t_secret);
+  req_url = oauth_sign_url2(sig_url, &postarg, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
   free(sig_url);
 
   // append the oauth [post] parameters to the request-URL!!
