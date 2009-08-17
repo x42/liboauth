@@ -391,6 +391,14 @@ char *oauth_sign_array (int *argcp, char***argvp,
   ) attribute_deprecated;
 
 
+/** 
+ * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ */
+char *oauth_body_signature_file(char *filename);
+char *oauth_body_signature_smallfile(char *filename);
+char *oauth_body_signature_data(size_t length, const char *data);
+char *oauth_body_signature_encode(size_t len, unsigned char *digest);
+
 /**
  * xep-0235
  */
@@ -475,6 +483,21 @@ char *oauth_http_post (const char *u, const char *p);
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);
+
+/**
+ * http post raw data
+ * the returned string needs to be freed by the caller
+ * (requires libcurl)
+ *
+ * see dislaimer: /ref oauth_http_post
+ *
+ * @param u url to retrieve
+ * @param data data to post
+ * @param len length of the data in bytes. 
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_post_data (const char *u, const char *data, size_t len, const char *customheader);
 
 #endif
 /* vi:set ts=8 sts=2 sw=2: */

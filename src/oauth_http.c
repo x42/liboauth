@@ -184,6 +184,10 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   return (chunk.data);
 }
 
+char *oauth_curl_post_data (const char *u, const char *data, size_t len, const char *customheader) {
+  return NULL; // TODO
+}
+
 #endif // no cURL.
 
 // command line presets and ENV variable name
