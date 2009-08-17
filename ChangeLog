@@ -1,3 +1,7 @@
+version 0.5.3
+ added oauth_body_hash calulation
+ support for HTTP Posting data from memory.
+
 version 0.5.2
  added support for HTTP request methods other than GET & POST.
 

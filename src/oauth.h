@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.5.2"
+#define LIBOAUTH_VERSION "0.5.3"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  5
-#define LIBOAUTH_VERSION_MICRO  2
+#define LIBOAUTH_VERSION_MICRO  3
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  2
+#define LIBOAUTH_CUR  3
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  2
+#define LIBOAUTH_AGE  3
 #endif
 
 #ifdef __GNUC__
@@ -392,15 +392,51 @@ char *oauth_sign_array (int *argcp, char***argvp,
 
 
 /** 
+ * calculate body hash (sha1sum) of given file and return
+ * a oauth_body_hash=xxxx parameter to be added to the request.
+ * The returned string needs to be freed by the calling function.
+ *
+ * see
  * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ * 
+ * @param filename the filename to calculate the hash for
+ *
+ * @return URL oauth_body_hash parameter string
  */
-char *oauth_body_signature_file(char *filename);
-char *oauth_body_signature_smallfile(char *filename);
-char *oauth_body_signature_data(size_t length, const char *data);
-char *oauth_body_signature_encode(size_t len, unsigned char *digest);
+char *oauth_body_hash_file(char *filename);
+
+/** 
+ * calculate body hash (sha1sum) of given data and return
+ * a oauth_body_hash=xxxx parameter to be added to the request.
+ * The returned string needs to be freed by the calling function.
+ * The returned string is not yet url-escaped and suitable to be 
+ * passed as argument to \ref oauth_catenc.
+ *
+ * see
+ * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ * 
+ * @param length length of the data parameter in bytes
+ * @param data to calculate the hash for
+ *
+ * @return URL oauth_body_hash parameter string
+ */
+char *oauth_body_hash_data(size_t length, const char *data);
 
 /**
- * xep-0235
+ * base64 encode digest, free it and return a URL parameter
+ * with the oauth_body_hash. The returned hash needs to be freed by the
+ * calling function. The returned string is not yet url-escaped and 
+ * thus suitable to be passed to \ref oauth_catenc.
+ *
+ * @param len length of the digest to encode
+ * @param digest hash value to encode
+ *
+ * @return URL oauth_body_hash parameter string
+ */
+char *oauth_body_hash_encode(size_t len, unsigned char *digest);
+
+/**
+ * xep-0235 - TODO
  */
 char *oauth_sign_xmpp (const char *xml,
   OAuthMethod method, 

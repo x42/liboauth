@@ -410,7 +410,7 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
  * all arguments thereafter must be of type (char *) 
  *
  * @param len the number of arguments to follow this parameter
- * @param ... string to escape and added
+ * @param ... string to escape and added (may be NULL)
  *
  * @return pointer to memory holding the concatenated 
  * strings - needs to be free(d) by the caller. or NULL
@@ -892,7 +892,7 @@ void oauth_free_array(int *argcp, char ***argvp) {
 /** 
  * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
  */
-char *oauth_body_signature_file(char *filename) {
+char *oauth_body_hash_file(char *filename) {
   unsigned char fb[BUFSIZ];
   EVP_MD_CTX ctx;
   size_t len=0;
@@ -910,28 +910,10 @@ char *oauth_body_signature_file(char *filename) {
   md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
   EVP_DigestFinal(&ctx, md, &len);
   EVP_MD_CTX_cleanup(&ctx);
-  return oauth_body_signature_encode(len, md);
+  return oauth_body_hash_encode(len, md);
 }
 
-char *oauth_body_signature_smallfile(char *filename) {
-  char *filedata = NULL;
-  size_t filelen = 0;
-  FILE *F= fopen(filename, "r");
-  if (!F) return NULL;
-  fseek(F, 0L, SEEK_END);
-  filelen= ftell(F);
-  rewind(F);
-
-  filedata=malloc(filelen*sizeof(char));
-  if (filelen != fread(filedata,sizeof(char), filelen, F)) {
-        fclose(F);
-        return NULL;
-  }
-  fclose(F);
-  return oauth_body_signature_data(filelen, filedata);
-}
-
-char *oauth_body_signature_data(size_t length, const char *data) {
+char *oauth_body_hash_data(size_t length, const char *data) {
   EVP_MD_CTX ctx;
   size_t len=0;
   unsigned char *md;
@@ -941,17 +923,18 @@ char *oauth_body_signature_data(size_t length, const char *data) {
   EVP_DigestUpdate(&ctx, data, length);
   EVP_DigestFinal(&ctx, md, &len);
   EVP_MD_CTX_cleanup(&ctx);
-  return oauth_body_signature_encode(len, md);
+  return oauth_body_hash_encode(len, md);
 }
 
 /**
  * base64 encode digest, free it and return a URL parameter
- * with the oauth_body_signature
+ * with the oauth_body_hash
  */
-char *oauth_body_signature_encode(size_t len, unsigned char *digest) {
+char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
   char *sign=oauth_encode_base64(len,digest);
   char *sig_url = malloc(17+strlen(sign));
   sprintf(sig_url,"oauth_body_hash=%s", sign);
+  free(sign);
   free(digest);
   return sig_url;
 }

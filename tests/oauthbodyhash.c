@@ -29,21 +29,54 @@
 #include <stdlib.h>
 #include <oauth.h>
 
+int my_data_post(char *url, char *data) {
+  const char *c_key         = "key"; //< consumer key
+  const char *c_secret      = "secret"; //< consumer secret
+  char *t_key               = "tkey"; //< access token key
+  char *t_secret            = "tsecret"; //< access token secret
+
+  char *postarg = NULL;
+  char *req_url = NULL;
+  char *reply   = NULL;
+  char *bh;
+  char *uh;
+  char *sig_url;
+
+  bh=oauth_body_hash_data(strlen(data), data);
+  uh = oauth_catenc(2, url, bh);
+  req_url = oauth_sign_url2(uh, &postarg, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
+  printf("POST: %s?%s\n", req_url, postarg);
+  if (uh) free(uh);
+
+  sig_url = malloc(2+strlen(req_url)+strlen(postarg));
+  sprintf(sig_url,"%s?%s",req_url, postarg);
+  reply = oauth_post_data(sig_url, data, strlen(data), "Content-Type: application/json");
+  if(sig_url) free(sig_url);
+
+  printf("REPLY: %s\n", reply);
+  if(reply) free(reply);
+  return 0;
+}
+
 int main (int argc, char **argv) {
-  char *filename="/tmp/test";
+  char *base_url = "http://localhost/oauthtest.php";
+
   char *teststring="Hello World!";
-  char *us=NULL;
+  char *bh=NULL;
 
-  us=oauth_body_signature_file(filename);
-  if (us) printf("%s\n", us);
-  if (us) free(us);
+#if 0 // example hash file
+  char *filename="/tmp/test";
+  bh=oauth_body_hash_file(filename);
+  if (bh) printf("%s\n", bh);
+  if (bh) free(bh);
+#endif
 
-  us=oauth_body_signature_smallfile(filename);
-  if (us) printf("%s\n", us);
-  if (us) free(us);
+#if 0 // example hash data
+  bh=oauth_body_hash_data(strlen(teststring), teststring);
+  if (bh) printf("%s\n", bh);
+  if (bh) free(bh);
+#endif
 
-  us=oauth_body_signature_data(strlen(teststring), teststring);
-  if (us) printf("%s\n", us);
-  if (us) free(us);
+  my_data_post(base_url, teststring);
   return(0);
 }
