@@ -1,4 +1,4 @@
-noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthsign
+noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthsign oauthbodyhash
 
 OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
@@ -30,3 +30,7 @@ oauthsign_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
 oauthdatapost_SOURCES = oauthdatapost.c
 oauthdatapost_LDADD = $(OAUTHDIR)/liboauth.la -lssl
 oauthdatapost_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+
+oauthbodyhash_SOURCES = oauthbodyhash.c
+oauthbodyhash_LDADD = $(OAUTHDIR)/liboauth.la -lssl
+oauthbodyhash_CFLAGS = -Wall @LIBOAUTH_CFLAGS@

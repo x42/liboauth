@@ -893,7 +893,6 @@ void oauth_free_array(int *argcp, char ***argvp) {
  * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
  */
 char *oauth_body_signature_file(char *filename) {
-  size_t filelen = 0;
   unsigned char fb[BUFSIZ];
   EVP_MD_CTX ctx;
   size_t len=0;
