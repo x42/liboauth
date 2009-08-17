@@ -59,6 +59,17 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
   return realsize;
 }
 
+static size_t
+ReadMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
+  struct MemoryStruct *mem = (struct MemoryStruct *)data;
+  size_t realsize = size * nmemb;
+  if (realsize > mem->size) realsize = mem->size;
+  memcpy(ptr, mem->data, realsize);
+  mem->size -= realsize;
+  mem->data += realsize;
+  return realsize;
+}
+
 /**
  * cURL http post function.
  * the returned string (if not NULL) needs to be freed by the caller
@@ -147,7 +158,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   FILE *f;
 
   chunk.data=NULL;
-  chunk.size = 0;
+  chunk.size=0;
 
   if (customheader)
     slist = curl_slist_append(slist, customheader);
@@ -184,6 +195,55 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   return (chunk.data);
 }
 
+/**
+ * http post raw data.
+ * the returned string needs to be freed by the caller
+ *
+ * more documentation in oauth.h
+ *
+ * @param u url to retrieve
+ * @param data data to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_curl_post_data (const char *u, const char *data, size_t len, const char *customheader) {
+  CURL *curl;
+  CURLcode res;
+  struct curl_slist *slist=NULL;
+  struct MemoryStruct chunk;
+  struct MemoryStruct rdnfo;
+
+  chunk.data=NULL;
+  chunk.size=0;
+  rdnfo.data=(char *)data;
+  rdnfo.size=len;
+
+  if (customheader)
+    slist = curl_slist_append(slist, customheader);
+  else
+    slist = curl_slist_append(slist, "Content-Type: image/jpeg;");
+
+  curl = curl_easy_init();
+  if(!curl) return NULL;
+  curl_easy_setopt(curl, CURLOPT_URL, u);
+  curl_easy_setopt(curl, CURLOPT_POST, 1);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, len);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
+  curl_easy_setopt(curl, CURLOPT_READDATA, (void *)&rdnfo);
+  curl_easy_setopt(curl, CURLOPT_READFUNCTION, ReadMemoryCallback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+  res = curl_easy_perform(curl);
+  if (res) {
+    // error
+    return NULL;
+  }
+
+  curl_easy_cleanup(curl);
+  return (chunk.data);
+}
 #endif // no cURL.
 
 // command line presets and ENV variable name
@@ -412,11 +472,32 @@ char *oauth_http_post (const char *u, const char *p) {
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_post_file (const char *u, const char *fn, const size_t len, const char *contenttype){
+char *oauth_post_file (const char *u, const char *fn, const size_t len, const char *customheader){
 #ifdef HAVE_CURL
-  return oauth_curl_post_file (u, fn, len, contenttype);
+  return oauth_curl_post_file (u, fn, len, customheader);
 #else
   fprintf(stderr, "\nliboauth: oauth_post_file requires libcurl. libcurl is not available.\n\n");
+  return (NULL);
+#endif
+}
+
+/**
+ * http post raw data.
+ * the returned string needs to be freed by the caller
+ *
+ * more documentation in oauth.h
+ *
+ * @param u url to retrieve
+ * @param data data to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_post_data (const char *u, const char *data, size_t len, const char *customheader) {
+#ifdef HAVE_CURL
+  return oauth_curl_post_data (u, data, len, customheader);
+#else
+  fprintf(stderr, "\nliboauth: oauth_post_data requires libcurl. libcurl is not available.\n\n");
   return (NULL);
 #endif
 }

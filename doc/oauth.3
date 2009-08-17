@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "6 Aug 2009" "Version 0.5.2" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "17 Aug 2009" "Version 0.5.3" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -124,9 +124,21 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .RI "char * \fBoauth_sign_array\fP (int *argcp, char ***argvp, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret) attribute_deprecated"
 .br
 .ti -1c
+.RI "char * \fBoauth_body_hash_file\fP (char *filename)"
+.br
+.RI "\fIcalculate body hash (sha1sum) of given file and return a oauth_body_hash=xxxx parameter to be added to the request. \fP"
+.ti -1c
+.RI "char * \fBoauth_body_hash_data\fP (size_t length, const char *data)"
+.br
+.RI "\fIcalculate body hash (sha1sum) of given data and return a oauth_body_hash=xxxx parameter to be added to the request. \fP"
+.ti -1c
+.RI "char * \fBoauth_body_hash_encode\fP (size_t len, unsigned char *digest)"
+.br
+.RI "\fIbase64 encode digest, free it and return a URL parameter with the oauth_body_hash. \fP"
+.ti -1c
 .RI "char * \fBoauth_sign_xmpp\fP (const char *xml, \fBOAuthMethod\fP method, const char *c_secret, const char *t_secret)"
 .br
-.RI "\fIxep-0235 \fP"
+.RI "\fIxep-0235 - TODO \fP"
 .ti -1c
 .RI "char * \fBoauth_http_get\fP (const char *u, const char *q)"
 .br
@@ -139,6 +151,10 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .RI "char * \fBoauth_post_file\fP (const char *u, const char *fn, size_t len, const char *customheader)"
 .br
 .RI "\fIhttp post raw data from file. \fP"
+.ti -1c
+.RI "char * \fBoauth_post_data\fP (const char *u, const char *data, size_t len, const char *customheader)"
+.br
+.RI "\fIhttp post raw data the returned string needs to be freed by the caller (requires libcurl) \fP"
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -198,6 +214,65 @@ add query parameter to array
 \fIargvp\fP pointer to array values 
 .br
 \fIaddparam\fP parameter to add (eg. 'foo=bar') 
+.RE
+.PP
+
+.SS "char* oauth_body_hash_data (size_t length, const char * data)"
+.PP
+calculate body hash (sha1sum) of given data and return a oauth_body_hash=xxxx parameter to be added to the request. 
+.PP
+The returned string needs to be freed by the calling function. The returned string is not yet url-escaped and suitable to be passed as argument to \fBoauth_catenc\fP.
+.PP
+see http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlength\fP length of the data parameter in bytes 
+.br
+\fIdata\fP to calculate the hash for
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+URL oauth_body_hash parameter string 
+.RE
+.PP
+
+.SS "char* oauth_body_hash_encode (size_t len, unsigned char * digest)"
+.PP
+base64 encode digest, free it and return a URL parameter with the oauth_body_hash. 
+.PP
+The returned hash needs to be freed by the calling function. The returned string is not yet url-escaped and thus suitable to be passed to \fBoauth_catenc\fP.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlen\fP length of the digest to encode 
+.br
+\fIdigest\fP hash value to encode
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+URL oauth_body_hash parameter string 
+.RE
+.PP
+
+.SS "char* oauth_body_hash_file (char * filename)"
+.PP
+calculate body hash (sha1sum) of given file and return a oauth_body_hash=xxxx parameter to be added to the request. 
+.PP
+The returned string needs to be freed by the calling function.
+.PP
+see http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfilename\fP the filename to calculate the hash for
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+URL oauth_body_hash parameter string 
 .RE
 .PP
 
@@ -365,6 +440,29 @@ search array for parameter key.
 \fBReturns:\fP
 .RS 4
 FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise. 
+.RE
+.PP
+
+.SS "char* oauth_post_data (const char * u, const char * data, size_t len, const char * customheader)"
+.PP
+http post raw data the returned string needs to be freed by the caller (requires libcurl) 
+.PP
+see dislaimer: /ref oauth_http_post
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu\fP url to retrieve 
+.br
+\fIdata\fP data to post 
+.br
+\fIlen\fP length of the data in bytes. 
+.br
+\fIcustomheader\fP specify custom HTTP header (or NULL for default) 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+returned HTTP reply or NULL on error 
 .RE
 .PP
 
@@ -618,7 +716,7 @@ the signed url or NULL if an error occurred.
 \fBtests/oauthexample.c\fP, and \fBtests/oauthtest.c\fP.
 .SS "char* oauth_sign_xmpp (const char * xml, \fBOAuthMethod\fP method, const char * c_secret, const char * t_secret)"
 .PP
-xep-0235 
+xep-0235 - TODO 
 .PP
 .SS "int oauth_split_post_paramters (const char * url, char *** argv, short qesc)"
 .PP

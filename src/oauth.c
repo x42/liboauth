@@ -410,7 +410,7 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
  * all arguments thereafter must be of type (char *) 
  *
  * @param len the number of arguments to follow this parameter
- * @param ... string to escape and added
+ * @param ... string to escape and added (may be NULL)
  *
  * @return pointer to memory holding the concatenated 
  * strings - needs to be free(d) by the caller. or NULL
@@ -716,7 +716,7 @@ void oauth_add_protocol(int *argcp, char ***argvp,
 	}
 
 	if (!oauth_param_exists(*argvp,*argcp,"oauth_timestamp")) {
-		snprintf(oarg, 1024, "oauth_timestamp=%li", time(NULL));
+		snprintf(oarg, 1024, "oauth_timestamp=%li", (long int) time(NULL));
 		oauth_add_param_to_array(argcp, argvp, oarg);
 	}
 
@@ -888,6 +888,57 @@ void oauth_free_array(int *argcp, char ***argvp) {
 	}
   if(*argvp) free(*argvp);
 }
+
+/** 
+ * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ */
+char *oauth_body_hash_file(char *filename) {
+  unsigned char fb[BUFSIZ];
+  EVP_MD_CTX ctx;
+  size_t len=0;
+  unsigned char *md;
+  FILE *F= fopen(filename, "r");
+  if (!F) return NULL;
+
+  EVP_MD_CTX_init(&ctx);
+  EVP_DigestInit(&ctx,EVP_sha1());
+  while (!feof(F) && (len=fread(fb,sizeof(char),BUFSIZ, F))>0) {
+    EVP_DigestUpdate(&ctx, fb, len);
+  }
+  fclose(F);
+  len=0;
+  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
+  EVP_DigestFinal(&ctx, md, &len);
+  EVP_MD_CTX_cleanup(&ctx);
+  return oauth_body_hash_encode(len, md);
+}
+
+char *oauth_body_hash_data(size_t length, const char *data) {
+  EVP_MD_CTX ctx;
+  size_t len=0;
+  unsigned char *md;
+  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
+  EVP_MD_CTX_init(&ctx);
+  EVP_DigestInit(&ctx,EVP_sha1());
+  EVP_DigestUpdate(&ctx, data, length);
+  EVP_DigestFinal(&ctx, md, &len);
+  EVP_MD_CTX_cleanup(&ctx);
+  return oauth_body_hash_encode(len, md);
+}
+
+/**
+ * base64 encode digest, free it and return a URL parameter
+ * with the oauth_body_hash
+ */
+char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
+  char *sign=oauth_encode_base64(len,digest);
+  char *sig_url = malloc(17+strlen(sign));
+  sprintf(sig_url,"oauth_body_hash=%s", sign);
+  free(sign);
+  free(digest);
+  return sig_url;
+}
+
 
 /**
  * xep-0235 - TODO

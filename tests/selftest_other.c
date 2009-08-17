@@ -36,7 +36,7 @@ int loglevel = 1; //< report each successful test
 int main (int argc, char **argv) {
   int fail=0;
 
-  if (loglevel) printf("\n *** testing liboauth for unusual parameters\n");
+  if (loglevel) printf("\n *** Testing query parameter array encoding.\n");
 
   fail|=test_request("GET", "http://example.com" 
       "?k1=v1"
@@ -47,11 +47,23 @@ int main (int argc, char **argv) {
       "&a1[ak2]=av2",
   "GET&http%3A%2F%2Fexample.com%2F&a1%255Baa1%255D%255Baak1%255D%3Daav1%26a1%255Baa1%255D%255Baak2%255D%3Daav2%26a1%255Bak1%255D%3Dav1%26a1%255Bak2%255D%3Dav2%26k1%3Dv1%26k2%3Dv2");
 
+  if (loglevel) printf("\n *** Testing body hash calculation.\n");
+
+  char *bh;
+  const char *teststring="Hello World!";
+  bh=oauth_body_hash_data(strlen(teststring), teststring);
+  if (bh) { 
+    if (strcmp(bh,"oauth_body_hash=Lve95gjOVATpfV8EL5X4nxwjKHE=")) fail|=1;
+    free(bh);
+  } else { 
+    fail|=1;
+  }
+
   // report
   if (fail) {
-    printf("\n !!! One or more extended test cases failed.\n\n");
+    printf("\n !!! One or more test cases failed.\n\n");
   } else {
-    printf(" *** extended test cases verified sucessfully.\n");
+    printf(" *** Test cases verified sucessfully.\n");
   }
 
   return (fail?1:0);
