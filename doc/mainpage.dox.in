@@ -3,7 +3,7 @@
 
 @section intro Introduction
 
- liboauth is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> Core <a href="http://oauth.net/core/1.0/">1.0</a> standard API.
+ liboauth is a collection of c functions implementing the <a href="http://oauth.net/">oAuth</a> Core <a href="http://oauth.net/core/1.0a">1.0 Rev A</a> standard API.
  liboauth provides basic functions to escape and encode parameters according to oAuth specs and offers high-level functions to sign requests or verify signatures.
  
  liboauth depends on the <a href="http://openssl.org/">openssl</a> library, which is used for generating the hash signature, and optionally libcurl for issueing HTTP requests. 
@@ -69,4 +69,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 \example tests/oauthtest.c
 \example tests/oauthexample.c
+\example tests/oauthbodyhash.c
 */

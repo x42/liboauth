@@ -238,6 +238,10 @@ URL oauth_body_hash parameter string
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthbodyhash.c\fP.
 .SS "char* oauth_body_hash_encode (size_t len, unsigned char * digest)"
 .PP
 base64 encode digest, free it and return a URL parameter with the oauth_body_hash. 
@@ -276,6 +280,10 @@ URL oauth_body_hash parameter string
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthbodyhash.c\fP.
 .SS "char* oauth_catenc (int len,  ...)"
 .PP
 url-escape strings and concatenate with '&' separator. 
@@ -293,6 +301,10 @@ pointer to memory holding the concatenated strings - needs to be free(d) by the 
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthbodyhash.c\fP.
 .SS "int oauth_cmpstringp (const void * p1, const void * p2)"
 .PP
 string compare function for oauth parameters. 
@@ -466,6 +478,10 @@ returned HTTP reply or NULL on error
 .RE
 .PP
 
+.PP
+\fBExamples: \fP
+.in +1c
+\fBtests/oauthbodyhash.c\fP.
 .SS "char* oauth_post_file (const char * u, const char * fn, size_t len, const char * customheader)"
 .PP
 http post raw data from file. 
@@ -713,7 +729,7 @@ the signed url or NULL if an error occurred.
 .PP
 \fBExamples: \fP
 .in +1c
-\fBtests/oauthexample.c\fP, and \fBtests/oauthtest.c\fP.
+\fBtests/oauthbodyhash.c\fP, \fBtests/oauthexample.c\fP, and \fBtests/oauthtest.c\fP.
 .SS "char* oauth_sign_xmpp (const char * xml, \fBOAuthMethod\fP method, const char * c_secret, const char * t_secret)"
 .PP
 xep-0235 - TODO 
