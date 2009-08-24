@@ -44,9 +44,12 @@
 #include "xmalloc.h"
 #include "oauth.h"
 
-#ifndef WIN // getpid() on POSIX systems
+#ifndef WIN32 // getpid() on POSIX systems
 #include <sys/types.h>
 #include <unistd.h>
+#else
+#define snprintf _snprintf
+#define strncasecmp strnicmp
 #endif
 
 /**
@@ -343,7 +346,7 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   }
 
   len = EVP_PKEY_size(pkey);
-  sig = xmalloc((len+1)*sizeof(char));
+  sig = (unsigned char*)xmalloc((len+1)*sizeof(char));
 
   EVP_SignInit(&md_ctx, EVP_sha1());
   EVP_SignUpdate(&md_ctx, m, strlen(m));
@@ -615,7 +618,7 @@ char *oauth_gen_nonce() {
   int i, len;
 
   if(rndinit) {srand(time(NULL) 
-#ifndef WIN // quick windows check.
+#ifndef WIN32 // quick windows check.
   	* getpid()
 #endif
 	); rndinit=0;} // seed random number generator - FIXME: we can do better ;)
@@ -908,7 +911,7 @@ char *oauth_body_hash_file(char *filename) {
   fclose(F);
   len=0;
   md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
-  EVP_DigestFinal(&ctx, md, &len);
+  EVP_DigestFinal(&ctx, md,(unsigned int*) &len);
   EVP_MD_CTX_cleanup(&ctx);
   return oauth_body_hash_encode(len, md);
 }
@@ -921,7 +924,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
   EVP_MD_CTX_init(&ctx);
   EVP_DigestInit(&ctx,EVP_sha1());
   EVP_DigestUpdate(&ctx, data, length);
-  EVP_DigestFinal(&ctx, md, &len);
+  EVP_DigestFinal(&ctx, md,(unsigned int*) &len);
   EVP_MD_CTX_cleanup(&ctx);
   return oauth_body_hash_encode(len, md);
 }
@@ -932,7 +935,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
  */
 char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
   char *sign=oauth_encode_base64(len,digest);
-  char *sig_url = malloc(17+strlen(sign));
+  char *sig_url = (char*)malloc(17+strlen(sign));
   sprintf(sig_url,"oauth_body_hash=%s", sign);
   free(sign);
   free(digest);
