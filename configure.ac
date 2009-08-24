@@ -70,6 +70,12 @@ report_curl="no"
 PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ], [ report_curl="commandline http client" ] )
 AC_SUBST(CURL_LIBS)
 
+dnl ** check for commandline executable curl 
+AC_PATH_PROG(CURL, curl, no, $PATH:/bin:/usr/bin:/usr/local/bin)
+if test "$CURL" != "no"; then
+  AC_DEFINE(HAVE_SHELL_CURL, 1, [Define if you can invoke curl via a shell command.])
+  report_curl="shell command"
+fi
 
 dnl *** complier flags ***
 #LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
