@@ -305,14 +305,18 @@ char *oauth_curl_post_data (const char *u, const char *data, size_t len, const c
 #ifdef HAVE_SHELL_CURL /* HTTP requests via command-line curl  */
 
 // command line presets and ENV variable name
-// TODO: set these from configure 
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
-#define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
-// alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
-
 #define _OAUTH_ENV_HTTPGET "OAUTH_HTTP_GET_CMD"
-#define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' '%u' "
-// alternative: "wget -q -U 'liboauth-agent/0.1' '%u' "
+
+#ifndef _OAUTH_DEF_HTTPCMD
+# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
+//alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
+#endif
+
+#ifndef _OAUTH_DEF_HTTPGET 
+# define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' '%u' "
+//alternative: "wget -q -U 'liboauth-agent/0.1' '%u' "
+#endif
 
 #include <stdio.h>
 
