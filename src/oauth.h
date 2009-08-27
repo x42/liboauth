@@ -59,10 +59,10 @@
  * signature method to used for signing the request.
  */ 
 typedef enum { 
-	OA_HMAC=0, ///< use HMAC-SHA1 request signing method
-	OA_RSA, ///< use RSA signature (not implemented)
-	OA_PLAINTEXT ///< use plain text signature (for testing only)
-	} OAuthMethod;
+    OA_HMAC=0, ///< use HMAC-SHA1 request signing method
+    OA_RSA, ///< use RSA signature (not implemented)
+    OA_PLAINTEXT ///< use plain text signature (for testing only)
+  } OAuthMethod;
 
 /**
  * Base64 encode and return size data in 'src'. The caller must free the
@@ -556,11 +556,11 @@ char *oauth_post_data (const char *u, const char *data, size_t len, const char *
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_data_with_callback      (const char *u, 
-					  const char *data, 
-					  size_t len, 
-					  const char *customheader,
-					  void (*callback)(void*,int,size_t,size_t),
-					  void *callback_data);
+                                          const char *data, 
+                                          size_t len, 
+                                          const char *customheader,
+                                          void (*callback)(void*,int,size_t,size_t),
+                                          void *callback_data);
 
 #endif
 /* vi:set ts=8 sts=2 sw=2: */
