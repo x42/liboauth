@@ -153,6 +153,12 @@ char *oauth_curl_get (const char *u, const char *q) {
   curl_easy_setopt(curl, CURLOPT_URL, q?t1:u);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+#if 0 // TODO - support request methods..
+  if (0) 
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "HEAD");
+  else if (0) 
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+#endif
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
   res = curl_easy_perform(curl);
   if (q) free(t1);
