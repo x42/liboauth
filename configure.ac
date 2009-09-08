@@ -60,6 +60,9 @@ PC_LIB=""
 
 dnl *** configuration options ***
 AC_ARG_ENABLE(lgpl, AC_HELP_STRING([--enable-lgpl],[compile coder under LGPL]))
+AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
+AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
+
 report_license="MIT"
 if test "$enable_lgpl" == "yes"; then
   AC_DEFINE(USE_LGPL, 1, [Define if you agree with the GNU Lesser General Public License])
@@ -67,9 +70,21 @@ if test "$enable_lgpl" == "yes"; then
 fi
 
 report_curl="no"
-PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ], [ report_curl="commandline http client" ] )
-AC_SUBST(CURL_LIBS)
+dnl ** check for commandline executable curl 
+if test "${enable_curl}" != "no"; then
+  AC_PATH_PROG(CURL, curl, no, $PATH:/bin:/usr/bin:/usr/local/bin)
+  if test "$CURL" != "no"; then
+  AC_DEFINE(HAVE_SHELL_CURL, 1, [Define if you can invoke curl via a shell command.])
+  report_curl="shell command"
+  fi
+fi
 
+dnl ** check for libcurl
+if test "${enable_libcurl}" != "no"; then
+  PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
+fi
+
+AC_SUBST(CURL_LIBS)
 
 dnl *** complier flags ***
 #LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"

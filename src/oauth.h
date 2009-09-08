@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.5.3"
+#define LIBOAUTH_VERSION "0.6.0"
 #define LIBOAUTH_VERSION_MAJOR  0
-#define LIBOAUTH_VERSION_MINOR  5
-#define LIBOAUTH_VERSION_MICRO  3
+#define LIBOAUTH_VERSION_MINOR  6
+#define LIBOAUTH_VERSION_MICRO  0
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  3
+#define LIBOAUTH_CUR  4
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  3
+#define LIBOAUTH_AGE  4
 #endif
 
 #ifdef __GNUC__
@@ -59,10 +59,10 @@
  * signature method to used for signing the request.
  */ 
 typedef enum { 
-	OA_HMAC=0, ///< use HMAC-SHA1 request signing method
-	OA_RSA, ///< use RSA signature (not implemented)
-	OA_PLAINTEXT ///< use plain text signature (for testing only)
-	} OAuthMethod;
+    OA_HMAC=0, ///< use HMAC-SHA1 request signing method
+    OA_RSA, ///< use RSA signature (not implemented)
+    OA_PLAINTEXT ///< use plain text signature (for testing only)
+  } OAuthMethod;
 
 /**
  * Base64 encode and return size data in 'src'. The caller must free the
@@ -534,6 +534,33 @@ char *oauth_post_file (const char *u, const char *fn, size_t len, const char *cu
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_data (const char *u, const char *data, size_t len, const char *customheader);
+
+/**
+ * http post raw data, with callback.
+ * the returned string needs to be freed by the caller
+ * (requires libcurl)
+ *
+ * Invokes the callback - in no particular order - when HTTP-request status updates occur.
+ * The callback is called with:
+ *   void * callback_data: supplied on function call.
+ *   int type: 0=data received, 1=data sent.
+ *   size_t size: amount of data received or amount of data sent so far
+ *   size_t totalsize: original amount of data to send, or amount of data received
+ *
+ * @param u url to retrieve
+ * @param data data to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @param callback specify the callback function
+ * @param callback_data specify data to pass to the callback function
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_post_data_with_callback      (const char *u, 
+                                          const char *data, 
+                                          size_t len, 
+                                          const char *customheader,
+                                          void (*callback)(void*,int,size_t,size_t),
+                                          void *callback_data);
 
 #endif
 /* vi:set ts=8 sts=2 sw=2: */

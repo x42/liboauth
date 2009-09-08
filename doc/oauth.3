@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "17 Aug 2009" "Version 0.5.3" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "4 Sep 2009" "Version 0.6.0" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -155,6 +155,10 @@ src/oauth.h \- oAuth.net implementation in POSIX-C.
 .RI "char * \fBoauth_post_data\fP (const char *u, const char *data, size_t len, const char *customheader)"
 .br
 .RI "\fIhttp post raw data the returned string needs to be freed by the caller (requires libcurl) \fP"
+.ti -1c
+.RI "char * \fBoauth_post_data_with_callback\fP (const char *u, const char *data, size_t len, const char *customheader, void(*callback)(void *, int, size_t, size_t), void *callback_data)"
+.br
+.RI "\fIhttp post raw data, with callback. \fP"
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -482,6 +486,35 @@ returned HTTP reply or NULL on error
 \fBExamples: \fP
 .in +1c
 \fBtests/oauthbodyhash.c\fP.
+.SS "char* oauth_post_data_with_callback (const char * u, const char * data, size_t len, const char * customheader, void(*)(void *, int, size_t, size_t) callback, void * callback_data)"
+.PP
+http post raw data, with callback. 
+.PP
+the returned string needs to be freed by the caller (requires libcurl)
+.PP
+Invokes the callback - in no particular order - when HTTP-request status updates occur. The callback is called with: void * callback_data: supplied on function call. int type: 0=data received, 1=data sent. size_t size: amount of data received or amount of data sent so far size_t totalsize: original amount of data to send, or amount of data received
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu\fP url to retrieve 
+.br
+\fIdata\fP data to post along 
+.br
+\fIlen\fP length of the file in bytes. set to '0' for autodetection 
+.br
+\fIcustomheader\fP specify custom HTTP header (or NULL for default) 
+.br
+\fIcallback\fP specify the callback function 
+.br
+\fIcallback_data\fP specify data to pass to the callback function 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+returned HTTP reply or NULL on error 
+.RE
+.PP
+
 .SS "char* oauth_post_file (const char * u, const char * fn, size_t len, const char * customheader)"
 .PP
 http post raw data from file. 

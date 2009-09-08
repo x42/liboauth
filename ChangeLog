@@ -1,3 +1,12 @@
+version 0.6.0
+ configure options to disable curl & libcurl
+ replaced tabs with spaces in source
+
+version 0.5.4
+ added oauth_post_data_with_callback() and
+ fixes for MSVC/WIN32 platform
+ by Dave Gamble
+
 version 0.5.3
  added oauth_body_hash calulation
  support for HTTP Posting data from memory.
