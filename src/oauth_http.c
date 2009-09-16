@@ -226,7 +226,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
 }
 
 /**
- * http post raw data, with callback.
+ * http send raw data, with callback.
  * the returned string needs to be freed by the caller
  *
  * more documentation in oauth.h
@@ -239,7 +239,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
  * @param callback_data specify data to pass to the callback function
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data) {
+char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data,const char *httpMethod) {
   CURL *curl;
   CURLcode res;
   struct curl_slist *slist=NULL;
@@ -266,6 +266,7 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
   if(!curl) return NULL;
   curl_easy_setopt(curl, CURLOPT_URL, u);
   curl_easy_setopt(curl, CURLOPT_POST, 1);
+  if (httpMethod) curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, httpMethod);
   curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, len);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
   curl_easy_setopt(curl, CURLOPT_READDATA, (void *)&rdnfo);
@@ -301,10 +302,19 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_curl_post_data (const char *u, const char *data, size_t len, const char *customheader) {
-  return oauth_curl_post_data_with_callback(u, data, len, customheader,
-      NULL, NULL);
+char *oauth_curl_post_data(const char *u,const char *data,size_t len,const char *customheader) {
+	return oauth_curl_send_data_with_callback(u,data,len,customheader, NULL,NULL, NULL);
 }
+
+char *oauth_curl_send_data (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod) {
+  return oauth_curl_send_data_with_callback(u, data, len, customheader,
+      NULL, NULL, httpMethod);
+}
+
+char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data) {
+	return oauth_curl_send_data_with_callback(u,data,len,customheader,callback,callback_data,NULL);
+}
+
 #endif // libcURL.
 
 
