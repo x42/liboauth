@@ -303,16 +303,16 @@ char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_curl_post_data(const char *u,const char *data,size_t len,const char *customheader) {
-	return oauth_curl_send_data_with_callback(u,data,len,customheader, NULL,NULL, NULL);
+  return oauth_curl_send_data_with_callback(u,data,len,customheader, NULL,NULL, NULL);
 }
 
 char *oauth_curl_send_data (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod) {
   return oauth_curl_send_data_with_callback(u, data, len, customheader,
-      NULL, NULL, httpMethod);
+                                            NULL, NULL, httpMethod);
 }
 
 char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data) {
-	return oauth_curl_send_data_with_callback(u,data,len,customheader,callback,callback_data,NULL);
+  return oauth_curl_send_data_with_callback(u,data,len,customheader,callback,callback_data,NULL);
 }
 
 #endif // libcURL.
