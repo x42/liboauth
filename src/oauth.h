@@ -576,7 +576,11 @@ char *oauth_post_data_with_callback      (const char *u,
  * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used.
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_send_data (const char *u, const char *data, size_t len, const char *customheader,const char *httpMethod);
+char *oauth_send_data (const char *u,
+                       const char *data,
+                       size_t len,
+                       const char *customheader,
+                       const char *httpMethod);
 
 /**
  * http post raw data, with callback.
