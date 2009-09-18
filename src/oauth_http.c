@@ -591,6 +591,17 @@ char *oauth_post_data (const char *u, const char *data, size_t len, const char *
 #endif
 }
 
+char *oauth_send_data (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod) {
+#ifdef HAVE_CURL
+  return oauth_curl_send_data (u, data, len, customheader, httpMethod);
+#elif defined(HAVE_SHELL_CURL)
+  fprintf(stderr, "\nliboauth: oauth_send_file requires libcurl. libcurl is not available.\n\n");
+  return NULL;
+#else
+  return (NULL);
+#endif
+}
+
 char *oauth_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader, void (*callback)(void*,int,size_t,size_t), void *callback_data) {
 #ifdef HAVE_CURL
   return oauth_curl_post_data_with_callback(u, data, len, customheader, callback, callback_data);

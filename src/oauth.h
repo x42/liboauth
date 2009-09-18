@@ -563,7 +563,9 @@ char *oauth_post_data_with_callback      (const char *u,
                                           void *callback_data);
 
 /**
- * http send raw data
+ * http send raw data. similar to /ref oauth_http_post but provides
+ * for specifying the HTTP request method.
+ *
  * the returned string needs to be freed by the caller
  * (requires libcurl)
  *
@@ -573,7 +575,7 @@ char *oauth_post_data_with_callback      (const char *u,
  * @param data data to post
  * @param len length of the data in bytes. 
  * @param customheader specify custom HTTP header (or NULL for default)
- * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used.
+ * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used. if httpMethod is NULL, a POST is executed.
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_send_data (const char *u,
