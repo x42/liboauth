@@ -1,7 +1,7 @@
 /*
  * oAuth string functions in POSIX-C.
  *
- * Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
+ * Copyright 2007, 2008, 2009, 2010 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -117,6 +117,10 @@ char *oauth_curl_post (const char *u, const char *p) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     return NULL;
@@ -160,6 +164,10 @@ char *oauth_curl_get (const char *u, const char *q) {
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 #endif
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (q) free(t1);
   if (res) {
@@ -214,6 +222,10 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     // error
@@ -280,6 +292,10 @@ char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_
   else 
      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     // error
