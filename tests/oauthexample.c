@@ -119,7 +119,7 @@ int oauth_consumer_example(int use_post) {
   if(req_url) free(req_url);
   if(postarg) free(postarg);
 
-  if (strcmp(reply,"bar=baz&method=foo%2520bar")) return (5);
+  if (strcmp(reply,"bar=baz&method=foo+bar")) return (5);
 
   if(reply) free(reply);
   if(t_key) free(t_key);

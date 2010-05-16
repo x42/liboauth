@@ -117,8 +117,8 @@ char *oauth_curl_post (const char *u, const char *p) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
-#ifdef OAUTH_LIBCURL_TIMEOUT  
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+#ifdef OAUTH_CURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
@@ -164,8 +164,8 @@ char *oauth_curl_get (const char *u, const char *q) {
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 #endif
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
-#ifdef OAUTH_LIBCURL_TIMEOUT  
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+#ifdef OAUTH_CURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
@@ -222,8 +222,8 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
-#ifdef OAUTH_LIBCURL_TIMEOUT  
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+#ifdef OAUTH_CURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
@@ -292,8 +292,8 @@ char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_
   else 
      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
-#ifdef OAUTH_LIBCURL_TIMEOUT  
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+#ifdef OAUTH_CURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
@@ -339,6 +339,23 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
 #define _OAUTH_ENV_HTTPCMD "OAUTH_HTTP_CMD"
 #define _OAUTH_ENV_HTTPGET "OAUTH_HTTP_GET_CMD"
 
+#ifdef OAUTH_CURL_TIMEOUT  
+
+#define cpxstr(s) cpstr(s)
+#define cpstr(s) #s
+
+#ifndef _OAUTH_DEF_HTTPCMD
+# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -m "cpxstr(OAUTH_CURL_TIMEOUT)" -d '%p' '%u' "
+//alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
+#endif
+
+#ifndef _OAUTH_DEF_HTTPGET 
+# define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' -m "cpxstr(OAUTH_CURL_TIMEOUT)" '%u' "
+//alternative: "wget -q -U 'liboauth-agent/0.1' '%u' "
+#endif
+
+#else // no timeout
+
 #ifndef _OAUTH_DEF_HTTPCMD
 # define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
 //alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
@@ -347,6 +364,8 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
 #ifndef _OAUTH_DEF_HTTPGET 
 # define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' '%u' "
 //alternative: "wget -q -U 'liboauth-agent/0.1' '%u' "
+#endif
+
 #endif
 
 #include <stdio.h>

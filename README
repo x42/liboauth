@@ -31,6 +31,8 @@ but they are not run automatically.
 
  tests/oauthtest.c     - CONNECTS TO INTERNET
      walk-though http://oauth-sandbox.mediamatic.nl/
+     Note: The test-server is (currently not|no longer) available.
+     Code remains for inspiration/example purposes.
    
  tests/selftest_wiki.c
  tests/selftest_eran.c
@@ -41,4 +43,7 @@ but they are not run automatically.
 
  tests/oauthdatapost.c - CONNECTS TO INTERNET
      Experimental code to sign data uploads
+     Note: The example keys have since been deleted from the test-server.
+     Code remains for inspiration/example purposes.
+     
 
