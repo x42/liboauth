@@ -1,6 +1,10 @@
+version 0.6.3
+ also use curl timeout for commandline curl
+ renamed --with-libcurl-timeout to --with-curl-timeout
+
 version 0.6.2
  added CURLOPT_TIMEOUT option.
- available at compile time with configure -with-libcurl-timeout=<int>
+ available at compile time with configure --with-libcurl-timeout=<int>
 
 version 0.6.1
  added oauth_curl_send_data_with_callback
