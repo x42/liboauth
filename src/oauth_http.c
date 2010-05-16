@@ -341,20 +341,23 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
 
 #ifdef OAUTH_CURL_TIMEOUT  
 
+#define cpxstr(s) cpstr(s)
+#define cpstr(s) #s
+
 #ifndef _OAUTH_DEF_HTTPCMD
-# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
+# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -m "cpxstr(OAUTH_CURL_TIMEOUT)" -d '%p' '%u' "
 //alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
 #endif
 
 #ifndef _OAUTH_DEF_HTTPGET 
-# define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' -m OAUTH_CURL_TIMEOUT '%u' "
+# define _OAUTH_DEF_HTTPGET "curl -sA '"OAUTH_USER_AGENT"' -m "cpxstr(OAUTH_CURL_TIMEOUT)" '%u' "
 //alternative: "wget -q -U 'liboauth-agent/0.1' '%u' "
 #endif
 
 #else // no timeout
 
 #ifndef _OAUTH_DEF_HTTPCMD
-# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -m OAUTH_CURL_TIMEOUT -d '%p' '%u' "
+# define _OAUTH_DEF_HTTPCMD "curl -sA '"OAUTH_USER_AGENT"' -d '%p' '%u' "
 //alternative: "wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "
 #endif
 
