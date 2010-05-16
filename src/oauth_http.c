@@ -1,7 +1,7 @@
 /*
  * oAuth string functions in POSIX-C.
  *
- * Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
+ * Copyright 2007, 2008, 2009, 2010 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ ReadMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
 }
 
 static size_t
-WriteMemoryCallbackAndCall(void *ptr,size_t size,size_t nmemb,void *data) {
+WriteMemoryCallbackAndCall(void *ptr, size_t size, size_t nmemb, void *data) {
   struct MemoryStruct *mem = (struct MemoryStruct *)data;
   size_t ret=WriteMemoryCallback(ptr,size,nmemb,data);
   mem->callback(mem->callback_data,0,mem->size,mem->size);
@@ -87,7 +87,7 @@ WriteMemoryCallbackAndCall(void *ptr,size_t size,size_t nmemb,void *data) {
 }
 
 static size_t
-ReadMemoryCallbackAndCall(void *ptr,size_t size,size_t nmemb,void *data) {
+ReadMemoryCallbackAndCall(void *ptr, size_t size, size_t nmemb, void *data) {
   struct MemoryStruct *mem = (struct MemoryStruct *)data;
   size_t ret=ReadMemoryCallback(ptr,size,nmemb,data);
   mem->callback(mem->callback_data,1,mem->start_size-mem->size,mem->start_size);
@@ -117,6 +117,10 @@ char *oauth_curl_post (const char *u, const char *p) {
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     return NULL;
@@ -160,6 +164,10 @@ char *oauth_curl_get (const char *u, const char *q) {
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 #endif
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (q) free(t1);
   if (res) {
@@ -214,6 +222,10 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     // error
@@ -226,7 +238,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
 }
 
 /**
- * http post raw data, with callback.
+ * http send raw data, with callback.
  * the returned string needs to be freed by the caller
  *
  * more documentation in oauth.h
@@ -239,7 +251,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
  * @param callback_data specify data to pass to the callback function
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data) {
+char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_t len, const char *customheader, void (*callback)(void*,int,size_t,size_t), void *callback_data, const char *httpMethod) {
   CURL *curl;
   CURLcode res;
   struct curl_slist *slist=NULL;
@@ -266,6 +278,7 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
   if(!curl) return NULL;
   curl_easy_setopt(curl, CURLOPT_URL, u);
   curl_easy_setopt(curl, CURLOPT_POST, 1);
+  if (httpMethod) curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, httpMethod);
   curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, len);
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
   curl_easy_setopt(curl, CURLOPT_READDATA, (void *)&rdnfo);
@@ -279,6 +292,10 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
   else 
      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
+#ifdef OAUTH_LIBCURL_TIMEOUT  
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_LIBCURL_TIMEOUT);
+  curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+#endif
   res = curl_easy_perform(curl);
   if (res) {
     // error
@@ -301,10 +318,18 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_curl_post_data (const char *u, const char *data, size_t len, const char *customheader) {
-  return oauth_curl_post_data_with_callback(u, data, len, customheader,
-      NULL, NULL);
+char *oauth_curl_post_data(const char *u, const char *data, size_t len, const char *customheader) {
+  return oauth_curl_send_data_with_callback(u, data, len, customheader, NULL, NULL, NULL);
 }
+
+char *oauth_curl_send_data (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod) {
+  return oauth_curl_send_data_with_callback(u, data, len, customheader, NULL, NULL, httpMethod);
+}
+
+char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader, void (*callback)(void*,int,size_t,size_t), void *callback_data) {
+  return oauth_curl_send_data_with_callback(u, data, len, customheader, callback, callback_data, NULL);
+}
+
 #endif // libcURL.
 
 
@@ -582,7 +607,18 @@ char *oauth_post_data (const char *u, const char *data, size_t len, const char *
 #endif
 }
 
-char *oauth_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader,void (*callback)(void*,int,size_t,size_t),void *callback_data) {
+char *oauth_send_data (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod) {
+#ifdef HAVE_CURL
+  return oauth_curl_send_data (u, data, len, customheader, httpMethod);
+#elif defined(HAVE_SHELL_CURL)
+  fprintf(stderr, "\nliboauth: oauth_send_file requires libcurl. libcurl is not available.\n\n");
+  return NULL;
+#else
+  return (NULL);
+#endif
+}
+
+char *oauth_post_data_with_callback (const char *u, const char *data, size_t len, const char *customheader, void (*callback)(void*,int,size_t,size_t), void *callback_data) {
 #ifdef HAVE_CURL
   return oauth_curl_post_data_with_callback(u, data, len, customheader, callback, callback_data);
 #elif defined(HAVE_SHELL_CURL)

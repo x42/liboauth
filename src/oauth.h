@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.6.0"
+#define LIBOAUTH_VERSION "0.6.2"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  6
-#define LIBOAUTH_VERSION_MICRO  0
+#define LIBOAUTH_VERSION_MICRO  2
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  4
-#define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  4
+#define LIBOAUTH_CUR  5
+#define LIBOAUTH_REV  1
+#define LIBOAUTH_AGE  5
 #endif
 
 #ifdef __GNUC__
@@ -561,6 +561,57 @@ char *oauth_post_data_with_callback      (const char *u,
                                           const char *customheader,
                                           void (*callback)(void*,int,size_t,size_t),
                                           void *callback_data);
+
+/**
+ * http send raw data. similar to /ref oauth_http_post but provides
+ * for specifying the HTTP request method.
+ *
+ * the returned string needs to be freed by the caller
+ * (requires libcurl)
+ *
+ * see dislaimer: /ref oauth_http_post
+ *
+ * @param u url to retrieve
+ * @param data data to post
+ * @param len length of the data in bytes. 
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used. if httpMethod is NULL, a POST is executed.
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_send_data (const char *u,
+                       const char *data,
+                       size_t len,
+                       const char *customheader,
+                       const char *httpMethod);
+
+/**
+ * http post raw data, with callback.
+ * the returned string needs to be freed by the caller
+ * (requires libcurl)
+ *
+ * Invokes the callback - in no particular order - when HTTP-request status updates occur.
+ * The callback is called with:
+ *   void * callback_data: supplied on function call.
+ *   int type: 0=data received, 1=data sent.
+ *   size_t size: amount of data received or amount of data sent so far
+ *   size_t totalsize: original amount of data to send, or amount of data received
+ *
+ * @param u url to retrieve
+ * @param data data to post along
+ * @param len length of the file in bytes. set to '0' for autodetection
+ * @param customheader specify custom HTTP header (or NULL for default)
+ * @param callback specify the callback function
+ * @param callback_data specify data to pass to the callback function
+ * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used.
+ * @return returned HTTP reply or NULL on error
+ */
+char *oauth_send_data_with_callback      (const char *u, 
+                                          const char *data, 
+                                          size_t len, 
+                                          const char *customheader,
+                                          void (*callback)(void*,int,size_t,size_t),
+                                          void *callback_data,
+                                          const char *httpMethod);
 
 #endif
 /* vi:set ts=8 sts=2 sw=2: */
