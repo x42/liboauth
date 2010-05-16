@@ -62,6 +62,7 @@ dnl *** configuration options ***
 AC_ARG_ENABLE(lgpl, AC_HELP_STRING([--enable-lgpl],[compile coder under LGPL]))
 AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
 AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
+AC_ARG_WITH([libcurltimeout], AC_HELP_STRING([--with-libcurltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
 
 report_license="MIT"
 if test "$enable_lgpl" == "yes"; then
@@ -82,6 +83,19 @@ fi
 dnl ** check for libcurl
 if test "${enable_libcurl}" != "no"; then
   PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
+fi
+
+report_libcurltimeout="-"
+if test -n "${with_libcurltimeout}"; then
+  if test "${with_libcurltimeout}" == "yes"; then
+    AC_DEFINE(OAUTH_LIBCURL_TIMEOUT, 60, [Define the number of seconds to use libcurl timeout.])
+    report_libcurltimeout="60"
+  else 
+    if test "${with_libcurltimeout}" -gt 0; then
+    AC_DEFINE_UNQUOTED(OAUTH_LIBCURL_TIMEOUT, [${with_libcurltimeout}], [Define the number of seconds to use libcurl timeout.])
+    report_libcurltimeout=${with_libcurltimeout}
+    fi
+  fi
 fi
 
 AC_SUBST(CURL_LIBS)
@@ -142,6 +156,7 @@ AC_MSG_NOTICE([
   interface revision:     $VERSION_INFO
   license:                $report_license
   http integration:       $report_curl
+  libcurl-timeout:        $report_libcurltimeout
   generate documentation: $DOXYGEN
   installation prefix:    $prefix
 
