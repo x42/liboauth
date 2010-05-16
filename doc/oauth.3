@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "18 Sep 2009" "Version 0.6.1" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "16 May 2010" "Version 0.6.2" "oAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,10 +13,10 @@ oAuth.net implementation in POSIX-C.
 
 .in +1c
 .ti -1c
-.RI "#define \fB_OAUTH_H\fP   1"
+.RI "#define \fBOA_GCC_VERSION_AT_LEAST\fP(x, y)   0"
 .br
 .ti -1c
-.RI "#define \fBOA_GCC_VERSION_AT_LEAST\fP(x, y)   0"
+.RI "#define \fBattribute_deprecated\fP"
 .br
 .in -1c
 .SS "Enumerations"
@@ -163,7 +163,7 @@ oAuth.net implementation in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_send_data\fP (const char *u, const char *data, size_t len, const char *customheader, const char *httpMethod)"
 .br
-.RI "\fIhttp send raw data the returned string needs to be freed by the caller (requires libcurl) \fP"
+.RI "\fIhttp send raw data. \fP"
 .ti -1c
 .RI "char * \fBoauth_send_data_with_callback\fP (const char *u, const char *data, size_t len, const char *customheader, void(*callback)(void *, int, size_t, size_t), void *callback_data, const char *httpMethod)"
 .br
@@ -189,9 +189,9 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Definition in file \fBoauth.h\fP.
 .SH "Define Documentation"
 .PP 
-.SS "#define _OAUTH_H   1"
+.SS "#define attribute_deprecated"
 .PP
-Definition at line 28 of file oauth.h.
+Definition at line 54 of file oauth.h.
 .SS "#define OA_GCC_VERSION_AT_LEAST(x, y)   0"
 .PP
 Definition at line 47 of file oauth.h.
@@ -519,7 +519,11 @@ returned HTTP reply or NULL on error
 
 .SS "char* oauth_send_data (const char * u, const char * data, size_t len, const char * customheader, const char * httpMethod)"
 .PP
-http send raw data the returned string needs to be freed by the caller (requires libcurl) see dislaimer: /ref oauth_http_post
+http send raw data. similar to /ref oauth_http_post but provides for specifying the HTTP request method.
+.PP
+the returned string needs to be freed by the caller (requires libcurl)
+.PP
+see dislaimer: /ref oauth_http_post
 .PP
 \fBParameters:\fP
 .RS 4
@@ -531,7 +535,7 @@ http send raw data the returned string needs to be freed by the caller (requires
 .br
 \fIcustomheader\fP specify custom HTTP header (or NULL for default) 
 .br
-\fIhttpMethod\fP specify http verb ('GET'/'POST'/'PUT'/'DELETE') to be used. 
+\fIhttpMethod\fP specify http verb ('GET'/'POST'/'PUT'/'DELETE') to be used. if httpMethod is NULL, a POST is executed. 
 .RE
 .PP
 \fBReturns:\fP

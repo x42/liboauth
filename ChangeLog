@@ -1,3 +1,7 @@
+version 0.6.2
+ added CURLOPT_TIMEOUT option.
+ available at compile time with configure -with-libcurl-timeout=<int>
+
 version 0.6.1
  added oauth_curl_send_data_with_callback
  to use HTTP-methods other than GET&POST with libcurl.
