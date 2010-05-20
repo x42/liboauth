@@ -52,22 +52,22 @@ AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
-AH_TEMPLATE([USE_LGPL], [Define as 1 if you agree with the GNU Lesser General Public License])
+AH_TEMPLATE([USE_GPL], [Define as 1 if you agree with the GNU General Public License (xmalloc)])
 
 # PKGconfig oauth.pc.in
 PC_REQ=""
 PC_LIB=""
 
 dnl *** configuration options ***
-AC_ARG_ENABLE(lgpl, AC_HELP_STRING([--enable-lgpl],[compile coder under LGPL]))
+AC_ARG_ENABLE(gpl, AC_HELP_STRING([--enable-gpl],[compile coder under GPL (adds xmalloc.c)]))
 AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
 AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
 AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
 
 report_license="MIT"
-if test "$enable_lgpl" == "yes"; then
-  AC_DEFINE(USE_LGPL, 1, [Define if you agree with the GNU Lesser General Public License])
-  USE_LGPL=1 report_license="LGPL"
+if test "$enable_gpl" == "yes"; then
+  AC_DEFINE(USE_GPL, 1, [Define if you agree with the GNU General Public License (adds xmalloc.c)])
+  USE_GPL=1 report_license="GPL"
 fi
 
 report_curl="no"
