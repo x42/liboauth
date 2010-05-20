@@ -130,7 +130,7 @@ char *oauth_encode_base64(int size, const unsigned char *src) {
  * 'dest'. 
  *
  * @param dest Pointer to memory for holding the decoded string.
- * Must be large enough to recieve the decoded string.
+ * Must be large enough to receive the decoded string.
  * @param src A base64 encoded string.
  * @return the length of the decoded string if decode
  * succeeded otherwise 0.
@@ -560,7 +560,7 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
  * @param argc parameter array to search
  * @param key key of parameter to check.
  *
- * @return FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise.
+ * @return FALSE (0) if array does not contain a parameter with given key, TRUE (1) otherwise.
  */
 int oauth_param_exists(char **argv, int argc, char *key) {
   int i;
