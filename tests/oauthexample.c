@@ -52,7 +52,7 @@ int parse_reply(const char *reply, char **token, char **secret) {
 }
 
 /** 
- * an example requesting a request-token from an oAuth service-provider
+ * an example requesting a request-token from an OAuth service-provider
  * exchaning it with an access token
  * and make an example request.
  * exercising either the oauth-HTTP GET or POST function.

@@ -1,5 +1,5 @@
 /*
- * hash algorithms used in oAuth 
+ * hash algorithms used in OAuth 
  *
  * Copyright 2007-2010 Robin Gareus <robin@gareus.org>
  * 
