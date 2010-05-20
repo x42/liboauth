@@ -60,18 +60,26 @@ int my_data_post(char *url, char *data) {
 
 int main (int argc, char **argv) {
   char *base_url = "http://localhost/oauthtest.php";
-
   char *teststring="Hello World!";
-  char *bh=NULL;
 
-#if 0 // example hash file
+  /* TEST_BODY_HASH_FILE and TEST_BODY_HASH_DATA are only
+   * here as examples and for testing during development.
+   *
+   * the my_data_post() function above uses oauth_body_hash_data() 
+   */
+
+#if defined TEST_BODY_HASH_FILE || defined TEST_BODY_HASH_DATA
+  char *bh=NULL;
+#endif
+
+#ifdef TEST_BODY_HASH_FILE // example hash file
   char *filename="/tmp/test";
   bh=oauth_body_hash_file(filename);
   if (bh) printf("%s\n", bh);
   if (bh) free(bh);
 #endif
 
-#if 0 // example hash data
+#ifdef TEST_BODY_HASH_DATA // example hash data
   bh=oauth_body_hash_data(strlen(teststring), teststring);
   if (bh) printf("%s\n", bh);
   if (bh) free(bh);

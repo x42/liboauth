@@ -50,7 +50,7 @@
  Ask the <a href="http://oauth.net/community/">oauth-community</a> or join the <a href="http://groups.google.com/group/oauth/">mailing list</a> for discussion.
 
 @section license License
-While the oauth source-code itself is under MIT license, the debian package integrated with xmalloc (and possibly libcurl) is licensed under GPL.
+While the oauth source-code itself is under <a href="http://en.wikipedia.org/wiki/MIT_License">MIT license</a>, the debian package integrated with xmalloc (and possibly libcurl) is licensed under GPL (use <tt>configure --enable-gpl</tt>).
 
 Note: openSSL is not strictly compatible with GPL licensed code.
 The functions using openSSL are in src/hash.c and an exemption is provided in with that source file. see LICENSE.OpenSSL and
