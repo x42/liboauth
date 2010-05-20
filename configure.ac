@@ -41,9 +41,10 @@ AC_PROG_LN_S
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 AM_PROG_CC_C_O
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(unistd.h time.h string.h alloca.h stdio.h stdarg.h math.h openssl/hmac.h)
+AC_CHECK_HEADERS(unistd.h time.h string.h alloca.h stdio.h stdarg.h math.h)
 
 AC_HEADER_MAJOR
 AC_FUNC_ALLOCA
@@ -99,6 +100,9 @@ if test -n "${with_curltimeout}"; then
 fi
 
 AC_SUBST(CURL_LIBS)
+
+dnl ** OpenSSL
+AC_CHECK_HEADERS(openssl/hmac.h)
 
 dnl *** complier flags ***
 #LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
