@@ -12,11 +12,16 @@ or inquire information at http://groups.google.com/group/oauth/
 
  == License and Notes ==
 
-If configured with '--enable-lgpl' the GNU Lesser General Public License 
+If configured with '--enable-gpl' the GNU General Public License 
 applies otherwise the code can be distributed under MIT license.
 
-The difference is xmalloc - which is under LGPL. The MIT licensed code
+The difference is xmalloc - which is under GPL. The MIT licensed code
 may segfault when it encounters an out-of-memory error.
+
+Note: openSSL is not strictly compatible with GPL licensed code.
+The functions using openSSL are in src/hash.c and an exemption is provided
+in with that source file. see LICENSE.OpenSSL and
+http://lists.debian.org/debian-legal/2004/05/msg00595.html
 
  == Test and Example Code ==
 

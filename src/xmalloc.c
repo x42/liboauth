@@ -15,20 +15,9 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
 
-#ifndef USE_LGPL
-// TODO better use #define in header file?!
-#include <string.h>
-#include <stdlib.h>
-void *xmalloc (size_t n) {return malloc(n);}
-void *xcalloc (size_t n, size_t s) {return calloc(n,s);}
-void *xrealloc (void *p, size_t n) {return realloc(p,n);}
-char *xstrdup (const char *p) {return strdup(p);}
+#ifdef USE_GPL
 
-#else // LGPL LICENSED CODE 
 #if __STDC__
 # define VOID void
 #else

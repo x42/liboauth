@@ -1,7 +1,7 @@
 /*
  * oAuth string functions in POSIX-C.
  *
- * Copyright 2007, 2008, 2009 Robin Gareus <robin@gareus.org>
+ * Copyright 2007-2010 Robin Gareus <robin@gareus.org>
  * 
  * The base64 functions are by Jan-Henrik Haukeland, <hauk@tildeslash.com>
  * and un/escape_url() was inspired by libcurl's curl_escape under ISC-license
@@ -39,7 +39,6 @@
 #include <time.h>
 #include <math.h>
 #include <ctype.h> // isxdigit
-#include <openssl/hmac.h>
 
 #include "xmalloc.h"
 #include "oauth.h"
@@ -277,32 +276,6 @@ char *oauth_url_unescape(const char *string, size_t *olen) {
 }
 
 /**
- * returns base64 encoded HMAC-SHA1 signature for
- * given message and key.
- * both data and key need to be urlencoded.
- *
- * the returned string needs to be freed by the caller
- *
- * @param m message to be signed
- * @param k key used for signing
- * @return signature string.
- */
-char *oauth_sign_hmac_sha1 (const char *m, const char *k) {
-  return(oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k)));
-}
-
-char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, const size_t kl) {
-  unsigned char result[EVP_MAX_MD_SIZE];
-  unsigned int resultlen = 0;
-  
-  HMAC(EVP_sha1(), k, kl, 
-      (unsigned char*) m, ml,
-      result, &resultlen);
-
-  return(oauth_encode_base64(resultlen, result));
-}
-
-/**
  * returns plaintext signature for the given key.
  *
  * the returned string needs to be freed by the caller
@@ -313,97 +286,6 @@ char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, c
  */
 char *oauth_sign_plaintext (const char *m, const char *k) {
   return(oauth_url_escape(k));
-}
-
-#include <openssl/evp.h>
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
-#include <openssl/ssl.h>
-
-/**
- * returns RSA-SHA1 signature for given data.
- * the returned signature needs to be freed by the caller.
- *
- * @param m message to be signed
- * @param k private-key PKCS and Base64-encoded 
- * @return base64 encoded signature string.
- */
-char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
-  unsigned char *sig = NULL;
-  unsigned char *passphrase = NULL;
-  unsigned int len=0;
-  EVP_MD_CTX md_ctx;
-
-  EVP_PKEY *pkey;
-  BIO *in;
-  in = BIO_new_mem_buf((unsigned char*) k, strlen(k));
-  pkey = PEM_read_bio_PrivateKey(in, NULL, 0, passphrase); // generate sign
-  BIO_free(in);
-
-  if (pkey == NULL) {
-  //fprintf(stderr, "liboauth/ssl: can not read private key\n");
-    return xstrdup("liboauth/ssl: can not read private key");
-  }
-
-  len = EVP_PKEY_size(pkey);
-  sig = (unsigned char*)xmalloc((len+1)*sizeof(char));
-
-  EVP_SignInit(&md_ctx, EVP_sha1());
-  EVP_SignUpdate(&md_ctx, m, strlen(m));
-  if (EVP_SignFinal (&md_ctx, sig, &len, pkey)) {
-    char *tmp;
-    sig[len] = '\0';
-    tmp = oauth_encode_base64(len,sig);
-    OPENSSL_free(sig);
-    EVP_PKEY_free(pkey);
-    return tmp;
-  }
-  return xstrdup("liboauth/ssl: rsa-sha1 signing failed");
-}
-
-/**
- * verify RSA-SHA1 signature.
- *
- * returns the output of EVP_VerifyFinal() for a given message,
- * cert/pubkey and signature
- *
- * @param m message to be verified
- * @param c public-key or x509 certificate
- * @param s base64 encoded signature
- * @return 1 for a correct signature, 0 for failure and -1 if some other error occurred
- */
-int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
-  EVP_MD_CTX md_ctx;
-  EVP_PKEY *pkey;
-  BIO *in;
-  X509 *cert = NULL;
-  unsigned char *b64d;
-  int slen, err;
-
-  in = BIO_new_mem_buf((unsigned char*)c, strlen(c));
-  cert = PEM_read_bio_X509(in, NULL, 0, NULL);
-  if (cert)  {
-    pkey = (EVP_PKEY *) X509_get_pubkey(cert); 
-    X509_free(cert);
-  } else {
-    pkey = PEM_read_bio_PUBKEY(in, NULL, 0, NULL);
-  }
-  BIO_free(in);
-  if (pkey == NULL) {
-  //fprintf(stderr, "could not read cert/pubkey.\n");
-    return -2;
-  }
-
-  b64d= (unsigned char*) xmalloc(sizeof(char)*strlen(s));
-  slen = oauth_decode_base64(b64d, s);
-
-  EVP_VerifyInit(&md_ctx, EVP_sha1());
-  EVP_VerifyUpdate(&md_ctx, m, strlen(m));
-  err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
-  EVP_MD_CTX_cleanup(&md_ctx);
-  EVP_PKEY_free(pkey);
-  free(b64d);
-  return (err);
 }
 
 /**
@@ -890,43 +772,6 @@ void oauth_free_array(int *argcp, char ***argvp) {
     free((*argvp)[i]);
   }
   if(*argvp) free(*argvp);
-}
-
-/** 
- * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
- */
-char *oauth_body_hash_file(char *filename) {
-  unsigned char fb[BUFSIZ];
-  EVP_MD_CTX ctx;
-  size_t len=0;
-  unsigned char *md;
-  FILE *F= fopen(filename, "r");
-  if (!F) return NULL;
-
-  EVP_MD_CTX_init(&ctx);
-  EVP_DigestInit(&ctx,EVP_sha1());
-  while (!feof(F) && (len=fread(fb,sizeof(char),BUFSIZ, F))>0) {
-    EVP_DigestUpdate(&ctx, fb, len);
-  }
-  fclose(F);
-  len=0;
-  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
-  EVP_DigestFinal(&ctx, md,(unsigned int*) &len);
-  EVP_MD_CTX_cleanup(&ctx);
-  return oauth_body_hash_encode(len, md);
-}
-
-char *oauth_body_hash_data(size_t length, const char *data) {
-  EVP_MD_CTX ctx;
-  size_t len=0;
-  unsigned char *md;
-  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
-  EVP_MD_CTX_init(&ctx);
-  EVP_DigestInit(&ctx,EVP_sha1());
-  EVP_DigestUpdate(&ctx, data, length);
-  EVP_DigestFinal(&ctx, md,(unsigned int*) &len);
-  EVP_MD_CTX_cleanup(&ctx);
-  return oauth_body_hash_encode(len, md);
 }
 
 /**
