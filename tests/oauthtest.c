@@ -31,7 +31,7 @@
 #include <oauth.h>
 
 /* 
- * a example requesting and parsing a request-token from an oAuth service-provider
+ * a example requesting and parsing a request-token from an OAuth service-provider
  * excercising the oauth-HTTP GET function. - it is almost the same as 
  * \ref request_token_example_post below. 
  */
@@ -77,7 +77,7 @@ void request_token_example_get(void) {
 }
 
 /*
- * a example requesting and parsing a request-token from an oAuth service-provider
+ * a example requesting and parsing a request-token from an OAuth service-provider
  * using the oauth-HTTP POST function.
  */
 void request_token_example_post(void) {

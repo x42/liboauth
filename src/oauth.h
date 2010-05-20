@@ -1,5 +1,5 @@
 /**
- *  @brief oAuth.net implementation in POSIX-C.
+ *  @brief OAuth.net implementation in POSIX-C.
  *  @file oauth.h
  *  @author Robin Gareus <robin@gareus.org>
  *
@@ -29,10 +29,10 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.7.0"
+#define LIBOAUTH_VERSION "0.7.1"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  7
-#define LIBOAUTH_VERSION_MICRO  0
+#define LIBOAUTH_VERSION_MICRO  1
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
@@ -292,7 +292,7 @@ void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
 void oauth_free_array(int *argcp, char ***argvp);
 
 /**
- * calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
+ * calculate OAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
  *
  * if 'postargs' is NULL a "GET" request is signed and the 
  * signed URL is returned. Else this fn will modify 'postargs' 
@@ -459,7 +459,7 @@ char *oauth_sign_xmpp (const char *xml,
  * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' '%%u' "</tt>
  *
  * WARNING: this is a tentative function. it's convenient and handy for testing
- * or developing oAuth code. But don't rely on this function
+ * or developing OAuth code. But don't rely on this function
  * to become a stable part of this API. It does not do 
  * much error checking or handling for one thing..
  *
@@ -495,7 +495,7 @@ char *oauth_http_get (const char *u, const char *q);
  * to transmit custom HTTP headers or parameters.
  *
  * WARNING: this is a tentative function. it's convenient and handy for testing
- * or developing oAuth code. But don't rely on this function
+ * or developing OAuth code. But don't rely on this function
  * to become a stable part of this API. It does not do 
  * much error checking for one thing..
  *

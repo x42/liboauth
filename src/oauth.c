@@ -1,5 +1,5 @@
 /*
- * oAuth string functions in POSIX-C.
+ * OAuth string functions in POSIX-C.
  *
  * Copyright 2007-2010 Robin Gareus <robin@gareus.org>
  * 
@@ -592,7 +592,7 @@ void oauth_add_protocol(int *argcp, char ***argvp,
  ){
   char oarg[1024];
 
-  // add oAuth specific arguments
+  // add OAuth specific arguments
   if (!oauth_param_exists(*argvp,*argcp,"oauth_nonce")) {
     char *tmp;
     snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));

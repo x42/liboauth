@@ -9,18 +9,18 @@ Package: liboauth-dev
 Section: libdevel
 Architecture: any
 Depends: liboauth0 (= ${Source-Version})
-Description: oAuth - secure authentication for desktop and web applications
+Description: OAuth - secure authentication for desktop and web applications
  http://liboauth.sf.net/ is a collection of c functions implementing the
- oAuth Core 1.0 standard API. liboauth provides basic functions to escape
- and encode parameters according to oAuth specs and offers high-level
+ OAuth Core 1.0 standard API. liboauth provides basic functions to escape
+ and encode parameters according to OAuth specs and offers high-level
  functions to sign requests or verify signatures.
 
 Package: liboauth0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: oAuth - secure authentication for desktop and web applications
+Description: OAuth - secure authentication for desktop and web applications
  http://liboauth.sf.net/ is a collection of c functions implementing the
- oAuth Core 1.0 standard API. liboauth provides basic functions to escape
- and encode parameters according to oAuth specs and offers high-level
+ OAuth Core 1.0 standard API. liboauth provides basic functions to escape
+ and encode parameters according to OAuth specs and offers high-level
  functions to sign requests or verify signatures.

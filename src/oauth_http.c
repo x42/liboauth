@@ -1,5 +1,5 @@
 /*
- * oAuth string functions in POSIX-C.
+ * OAuth http functions in POSIX-C.
  *
  * Copyright 2007, 2008, 2009, 2010 Robin Gareus <robin@gareus.org>
  *

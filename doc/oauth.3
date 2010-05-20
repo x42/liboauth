@@ -1,10 +1,10 @@
-.TH "src/oauth.h" 3 "20 May 2010" "Version 0.7.0" "oAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "20 May 2010" "Version 0.7.1" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
 src/oauth.h \- 
 .PP
-oAuth.net implementation in POSIX-C.  
+OAuth.net implementation in POSIX-C.  
 
 .SH SYNOPSIS
 .br
@@ -113,7 +113,7 @@ oAuth.net implementation in POSIX-C.
 .ti -1c
 .RI "char * \fBoauth_sign_url2\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *http_method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
-.RI "\fIcalculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. \fP"
+.RI "\fIcalculate OAuth-signature for a given HTTP request URL, parameters and oauth-tokens. \fP"
 .ti -1c
 .RI "char * \fBoauth_sign_url\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret) attribute_deprecated"
 .br
@@ -171,7 +171,7 @@ oAuth.net implementation in POSIX-C.
 .in -1c
 .SH "Detailed Description"
 .PP 
-oAuth.net implementation in POSIX-C. 
+OAuth.net implementation in POSIX-C. 
 
 \fBAuthor:\fP
 .RS 4
@@ -319,7 +319,7 @@ string compare function for oauth parameters. used with qsort. needed to normali
 .PP
 Decode the base64 encoded string 'src' into the memory pointed to by 'dest'. \fBParameters:\fP
 .RS 4
-\fIdest\fP Pointer to memory for holding the decoded string. Must be large enough to recieve the decoded string. 
+\fIdest\fP Pointer to memory for holding the decoded string. Must be large enough to receive the decoded string. 
 .br
 \fIsrc\fP A base64 encoded string. 
 .RE
@@ -375,7 +375,7 @@ If compiled \fBwithout\fP libcurl this function calls a command-line executable 
 .PP
 bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' '%%u' '\fP
 .PP
-WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handling for one thing..
+WARNING: this is a tentative function. it's convenient and handy for testing or developing OAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handling for one thing..
 .PP
 NOTE: \fIu\fP and \fIq\fP are just concatenated with a '?' in between, unless \fIq\fP is NULL. in which case only \fIu\fP will be used.
 .PP
@@ -406,7 +406,7 @@ bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' -
 .PP
 NOTE: This function uses the curl's default HTTP-POST Content-Type: application/x-www-form-urlencoded which is the only option allowed by oauth core 1.0 spec. Experimental code can use the Environment variable to transmit custom HTTP headers or parameters.
 .PP
-WARNING: this is a tentative function. it's convenient and handy for testing or developing oAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking for one thing..
+WARNING: this is a tentative function. it's convenient and handy for testing or developing OAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking for one thing..
 .PP
 \fBParameters:\fP
 .RS 4
@@ -438,7 +438,7 @@ search array for parameter key. \fBParameters:\fP
 .PP
 \fBReturns:\fP
 .RS 4
-FALSE (0) if array does not contain a paramater with given key, TRUE (1) otherwise. 
+FALSE (0) if array does not contain a parameter with given key, TRUE (1) otherwise. 
 .RE
 .PP
 
@@ -741,7 +741,7 @@ Use \fBoauth_sign_url2()\fP instead.
 
 .SS "char* oauth_sign_url2 (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * http_method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"
 .PP
-calculate oAuth-signature for a given HTTP request URL, parameters and oauth-tokens. if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
+calculate OAuth-signature for a given HTTP request URL, parameters and oauth-tokens. if 'postargs' is NULL a 'GET' request is signed and the signed URL is returned. Else this fn will modify 'postargs' to point to memory that contains the signed POST-variables and returns the base URL.
 .PP
 both, the return value and (if given) 'postargs' need to be freed by the caller.
 .PP
@@ -866,4 +866,4 @@ verify RSA-SHA1 signature. returns the output of EVP_VerifyFinal() for a given m
 
 .SH "Author"
 .PP 
-Generated automatically by Doxygen for oAuth library functions from the source code.
+Generated automatically by Doxygen for OAuth library functions from the source code.
