@@ -468,7 +468,7 @@ char *oauth_exec_post (const char *u, const char *p) {
   t1=strstr(cmdtpl, "%p");
   t2=strstr(cmdtpl, "%u");
   if (!t1 || !t2) {
-    fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environement variable.\n\n",_OAUTH_ENV_HTTPCMD);
+    fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environment variable.\n\n",_OAUTH_ENV_HTTPCMD);
     return(NULL);
   }
   // TODO: check if there are exactly two '%' in cmdtpl
@@ -513,7 +513,7 @@ char *oauth_exec_get (const char *u, const char *q) {
   // add URL and post param - error if no '%p' or '%u' present in definition
   t1=strstr(cmdtpl, "%u");
   if (!t1) {
-    fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environement variable.\n\n",_OAUTH_ENV_HTTPGET);
+    fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environment variable.\n\n",_OAUTH_ENV_HTTPGET);
     return(NULL);
   }
   *(++t1)= 's';

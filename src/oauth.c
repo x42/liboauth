@@ -522,6 +522,10 @@ char *oauth_gen_nonce() {
 #  define MY_RAND PK11_GenerateRandom
 #  define MY_SRAND  oauth_init_nss();
 #else
+#  ifdef _GNU_SOURCE
+/* Note: the OpenSSL/GPL exemption stated 
+ * verbosely in hash.c applies to this code as well. */
+#  endif
 #  include <openssl/rand.h>
 #  define MY_RAND RAND_bytes
 #  define MY_SRAND ;

@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT([liboauth], [-], [robin AT gareus DOT org])
+AC_INIT([liboauth], [-], [robin AT gareus DOT org], [], [http://liboauth.sourceforge.net/])
 #AM_MAINTAINER_MODE
 
 AC_PATH_PROG(SED, sed, "", $PATH:/bin:/usr/bin:/usr/local/bin)
@@ -22,7 +22,7 @@ VERSION_INFO=${VERSION_CUR}:${VERSION_REV}:${VERSION_AGE}
 AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CONFIG_TESTDIR([tests])
 AC_CANONICAL_TARGET([])
-AC_COPYRIGHT([Copyright (C) Robin Gareus 2007, 2008, 2009])
+AC_COPYRIGHT([Copyright (C) Robin Gareus 2007-2010])
 AM_INIT_AUTOMAKE(liboauth,$VERSION)
 
 AM_CONFIG_HEADER(src/config.h)
@@ -53,48 +53,43 @@ AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
-AH_TEMPLATE([USE_GPL], [Define as 1 if you agree with the GNU General Public License (xmalloc)])
+AH_TEMPLATE([USE_NSS], [Define to use NSS instead of OpenSSL])
+AH_TEMPLATE([HAVE_SHELL_CURL], [Define if you can invoke curl via a shell command. This is only used if HAVE_CURL is not defined.])
+AH_TEMPLATE([OAUTH_CURL_TIMEOUT], [Define the number of seconds for the HTTP request to timeout; if not defined no timeout (or libcurl default) is used.])
 
 # PKGconfig oauth.pc.in
 PC_REQ=""
 PC_LIB=""
 
 dnl *** configuration options ***
-AC_ARG_ENABLE(gpl, AC_HELP_STRING([--enable-gpl],[compile coder under GPL (adds xmalloc.c)]))
 AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
 AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
 AC_ARG_ENABLE(nss, AC_HELP_STRING([--enable-nss],[use NSS instead of OpenSSL]))
 AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
-
-report_license="MIT"
-if test "$enable_gpl" == "yes"; then
-  AC_DEFINE(USE_GPL, 1, [Define if you agree with the GNU General Public License (adds xmalloc.c)])
-  USE_GPL=1 report_license="GPL"
-fi
 
 report_curl="no"
 dnl ** check for commandline executable curl 
 if test "${enable_curl}" != "no"; then
   AC_PATH_PROG(CURL, curl, no, $PATH:/bin:/usr/bin:/usr/local/bin)
   if test "$CURL" != "no"; then
-  AC_DEFINE(HAVE_SHELL_CURL, 1, [Define if you can invoke curl via a shell command.])
+  AC_DEFINE(HAVE_SHELL_CURL, 1)
   report_curl="shell command"
   fi
 fi
 
 dnl ** check for libcurl
 if test "${enable_libcurl}" != "no"; then
-  PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1, [Define if you have libcurl]) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
+  PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
 fi
 
 report_curltimeout="-"
 if test -n "${with_curltimeout}"; then
   if test "${with_curltimeout}" == "yes"; then
-    AC_DEFINE(OAUTH_CURL_TIMEOUT, 60, [Define the number of seconds for the HTTP request to timeout.])
+    AC_DEFINE(OAUTH_CURL_TIMEOUT, 60)
     report_curltimeout="60"
   else 
     if test "${with_curltimeout}" -gt 0; then
-    AC_DEFINE_UNQUOTED(OAUTH_CURL_TIMEOUT, [${with_curltimeout}], [Define the number of seconds for the HTTP request to timeout.])
+    AC_DEFINE_UNQUOTED(OAUTH_CURL_TIMEOUT, [${with_curltimeout}])
     report_curltimeout=${with_curltimeout}
     fi
   fi
@@ -104,7 +99,7 @@ AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
 if test "${enable_nss}" == "yes"; then
-  PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1, [Define to use NSS instead of OpenSSL]) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
+  PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
   HASH_LIBS=${NSS_LIBS}
   HASH_CFLAGS=${NSS_CFLAGS}
   report_hash="NSS"
@@ -119,10 +114,12 @@ fi
 AC_SUBST(HASH_LIBS)
 AC_SUBST(HASH_CFLAGS)
 
-dnl *** complier flags ***
-#LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
-LIBOAUTH_CFLAGS=""
+dnl *** other complier/linker flags ***
+#LIBOAUTH_CFLAGS="-Wall -g -posix -std=c99 -pedantic"
+LIBOAUTH_CFLAGS="-Wall"
+LIBOAUTH_LDFLAGS="-Wall -export-symbols-regex '^oauth_.*'"
 AC_SUBST(LIBOAUTH_CFLAGS)
+AC_SUBST(LIBOAUTH_LDFLAGS)
 
 
 dnl *** doxygen ***
@@ -174,7 +171,6 @@ AC_MSG_NOTICE([
   version:                $VERSION
   interface revision:     $VERSION_INFO
   hash/signature:         $report_hash
-  license:                $report_license
   http integration:       $report_curl
   libcurl-timeout:        $report_curltimeout
   generate documentation: $DOXYGEN

@@ -279,7 +279,7 @@ looser:
 #else 
 /* use http://www.openssl.org/ for hash/sign */
 
-#ifdef USE_GPL
+#ifdef _GNU_SOURCE
 /*
  * In addition, as a special exception, the copyright holders give
  * permission to link the code of portions of this program with the
