@@ -233,7 +233,7 @@ char *oauth_body_hash_file(char *filename) {
   s = PK11_DigestFinal(context, digest, &len, sizeof digest);
   if (s != SECSuccess) goto looser;
 
-  unsigned char *dgst = malloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
+  unsigned char *dgst = xmalloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
   memcpy(dgst, digest, len);
   rv=oauth_body_hash_encode(len, dgst);
 
@@ -266,7 +266,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
   s = PK11_DigestFinal(context, digest, &len, sizeof digest);
   if (s != SECSuccess) goto looser;
 
-  unsigned char *dgst = malloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
+  unsigned char *dgst = xmalloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
   memcpy(dgst, digest, len);
   rv=oauth_body_hash_encode(len, dgst);
 
@@ -409,7 +409,7 @@ char *oauth_body_hash_file(char *filename) {
   }
   fclose(F);
   len=0;
-  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
+  md=(unsigned char*) xcalloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
   EVP_DigestFinal(&ctx, md,(unsigned int*) &len);
   EVP_MD_CTX_cleanup(&ctx);
   return oauth_body_hash_encode(len, md);
@@ -419,7 +419,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
   EVP_MD_CTX ctx;
   size_t len=0;
   unsigned char *md;
-  md=(unsigned char*) calloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
+  md=(unsigned char*) xcalloc(EVP_MD_size(EVP_sha1()),sizeof(unsigned char));
   EVP_MD_CTX_init(&ctx);
   EVP_DigestInit(&ctx,EVP_sha1());
   EVP_DigestUpdate(&ctx, data, length);
