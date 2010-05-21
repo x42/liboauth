@@ -2,13 +2,13 @@ Source: liboauth
 Priority: extra
 Maintainer: Robin Gareus <robin@gareus.org>
 Build-Depends: debhelper (>= 5), autotools-dev, automake, libnss3-dev, libtool, autoconf, libtool
-Standards-Version: 3.7.2
+Standards-Version: 3.8.4
 Section: libs
 
 Package: liboauth-dev
 Section: libdevel
 Architecture: any
-Depends: liboauth0 (= ${Source-Version})
+Depends: liboauth0 (= ${binary:Version})
 Description: OAuth - secure authentication for desktop and web applications
  http://liboauth.sf.net/ is a collection of c functions implementing the
  OAuth Core 1.0 standard API. liboauth provides basic functions to escape
