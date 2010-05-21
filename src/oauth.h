@@ -29,15 +29,15 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.7.1"
+#define LIBOAUTH_VERSION "0.7.2"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  7
-#define LIBOAUTH_VERSION_MICRO  1
+#define LIBOAUTH_VERSION_MICRO  2
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 #define LIBOAUTH_CUR  5
-#define LIBOAUTH_REV  2
+#define LIBOAUTH_REV  3
 #define LIBOAUTH_AGE  5
 #endif
 
