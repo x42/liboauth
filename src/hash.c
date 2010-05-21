@@ -27,7 +27,8 @@
 # include <config.h>
 #endif
 
-#ifdef USE_NSS
+#ifdef USE_NSS 
+/* use http://www.mozilla.org/projects/security/pki/nss/ for hash/sign */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +45,7 @@
 #include "cert.h"
 
 #if 1 // work-around compiler-warning
-  // see http://bugzilla.mozilla.org/show_bug.cgi?id=243245#c3
+      // see http://bugzilla.mozilla.org/show_bug.cgi?id=243245#c3
   extern CERTCertificate *
   __CERT_DecodeDERCertificate (SECItem *derSignedCert, PRBool copyDER, char *nickname);
 #endif
@@ -53,9 +54,19 @@ static const char NS_CERT_HEADER[]  = "-----BEGIN CERTIFICATE-----";
 static const char NS_CERT_TRAILER[] = "-----END CERTIFICATE-----";
 static const char NS_PRIV_HEADER[]  = "-----BEGIN PRIVATE KEY-----";
 static const char NS_PRIV_TRAILER[] = "-----END PRIVATE KEY-----";
-static int nss_initialized = 0;
 
-char *strip_pkcs(const char *txt, const char *h, const char *t) {
+void oauth_init_nss() {
+  static short nss_initialized = 0;
+  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+}
+
+/**
+ * Removes heading & trailing strings; used only internally.
+ * similar to NSS-source/nss/lib/pkcs7/certread.c
+ *
+ * the returned string (if not NULL) needs to be freed by the caller
+ */
+char *oauth_strip_pkcs(const char *txt, const char *h, const char *t) {
   char *start, *end, *rv;
   size_t len;
   if ((start=strstr(txt, h))==NULL) return NULL;
@@ -93,7 +104,7 @@ char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, c
   noParams.data = NULL;
   noParams.len = 0;
 
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  oauth_init_nss();
 
   slot = PK11_GetInternalKeySlot();
   if (!slot) goto looser;
@@ -126,10 +137,10 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   SECItem            der;
   char              *rv=NULL;
 
-  char *key = strip_pkcs(k, NS_PRIV_HEADER, NS_PRIV_TRAILER); 
+  char *key = oauth_strip_pkcs(k, NS_PRIV_HEADER, NS_PRIV_TRAILER); 
   if (!key) return NULL;
 
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  oauth_init_nss();
 
   slot = PK11_GetInternalKeySlot();
   if (!slot) goto looser;
@@ -162,10 +173,10 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *sig) {
   SECItem            der;
   int                rv=0;
 
-  char *key = strip_pkcs(c, NS_CERT_HEADER, NS_CERT_TRAILER); 
+  char *key = oauth_strip_pkcs(c, NS_CERT_HEADER, NS_CERT_TRAILER); 
   if (!key) return 0;
 
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  oauth_init_nss();
 
   s = ATOB_ConvertAsciiToItem(&signature, (char*) sig); // XXX cast (const char*) -> (char*)
   if (s != SECSuccess) goto looser;
@@ -206,7 +217,7 @@ char *oauth_body_hash_file(char *filename) {
   FILE *F= fopen(filename, "r");
   if (!F) return NULL;
 
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  oauth_init_nss();
 
   slot = PK11_GetInternalKeySlot();
   if (!slot) goto looser;
@@ -241,7 +252,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
   SECStatus      s;
   char          *rv=NULL;
 
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  oauth_init_nss();
 
   slot = PK11_GetInternalKeySlot();
   if (!slot) goto looser;
@@ -265,7 +276,8 @@ looser:
   return rv;
 }
 
-#else  // no NSS -> OPENSSL
+#else 
+/* use http://www.openssl.org/ for hash/sign */
 
 #ifdef USE_GPL
 /*
