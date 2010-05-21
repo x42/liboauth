@@ -27,6 +27,258 @@
 # include <config.h>
 #endif
 
+#ifdef USE_NSS 
+/* use http://www.mozilla.org/projects/security/pki/nss/ for hash/sign */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "xmalloc.h"
+#include "oauth.h" // oauth base64 encode fn's.
+
+// NSS includes
+#include "pk11pub.h"
+#include "nss.h"
+#include "base64.h"
+#include "keyhi.h"
+#include "cryptohi.h"
+#include "cert.h"
+
+#if 1 // work-around compiler-warning
+      // see http://bugzilla.mozilla.org/show_bug.cgi?id=243245#c3
+  extern CERTCertificate *
+  __CERT_DecodeDERCertificate (SECItem *derSignedCert, PRBool copyDER, char *nickname);
+#endif
+
+static const char NS_CERT_HEADER[]  = "-----BEGIN CERTIFICATE-----";
+static const char NS_CERT_TRAILER[] = "-----END CERTIFICATE-----";
+static const char NS_PRIV_HEADER[]  = "-----BEGIN PRIVATE KEY-----";
+static const char NS_PRIV_TRAILER[] = "-----END PRIVATE KEY-----";
+
+void oauth_init_nss() {
+  static short nss_initialized = 0;
+  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+}
+
+/**
+ * Removes heading & trailing strings; used only internally.
+ * similar to NSS-source/nss/lib/pkcs7/certread.c
+ *
+ * the returned string (if not NULL) needs to be freed by the caller
+ */
+char *oauth_strip_pkcs(const char *txt, const char *h, const char *t) {
+  char *start, *end, *rv;
+  size_t len;
+  if ((start=strstr(txt, h))==NULL) return NULL;
+  start+=strlen(h);
+  while (*start=='\r' || *start=='\n') start++;
+  if ((end=strstr(start, t))==NULL) return NULL;
+  end--;
+  while (*end=='\r' || *end=='\n') end--;
+  len = end-start+2;
+  rv = xmalloc(len*sizeof(char));
+  memcpy(rv,start,len);
+  rv[len-1]='\0';
+  return rv;
+}
+
+char *oauth_sign_hmac_sha1 (const char *m, const char *k) {
+  return(oauth_sign_hmac_sha1_raw (m, strlen(m), k, strlen(k)));
+}
+
+char *oauth_sign_hmac_sha1_raw (const char *m, const size_t ml, const char *k, const size_t kl) {
+  PK11SlotInfo  *slot = NULL;
+  PK11SymKey    *pkey = NULL;
+  PK11Context   *context = NULL;
+  unsigned char  digest[20]; // Is there a way to tell how large the output is?
+  unsigned int   len;
+  SECStatus      s;
+  SECItem        keyItem, noParams;
+  char          *rv=NULL;
+
+  keyItem.type = siBuffer;
+  keyItem.data = (unsigned char*) k;
+  keyItem.len = kl;
+
+  noParams.type = siBuffer;
+  noParams.data = NULL;
+  noParams.len = 0;
+
+  oauth_init_nss();
+
+  slot = PK11_GetInternalKeySlot();
+  if (!slot) goto looser;
+  pkey = PK11_ImportSymKey(slot, CKM_SHA_1_HMAC, PK11_OriginUnwrap, CKA_SIGN, &keyItem, NULL);
+  if (!pkey)  goto looser;
+  context = PK11_CreateContextBySymKey(CKM_SHA_1_HMAC, CKA_SIGN, pkey, &noParams);
+  if (!context) goto looser;
+
+  s = PK11_DigestBegin(context);
+  if (s != SECSuccess) goto looser;
+  s = PK11_DigestOp(context, (unsigned char*) m, ml);
+  if (s != SECSuccess) goto looser;
+  s = PK11_DigestFinal(context, digest, &len, sizeof digest);
+  if (s != SECSuccess) goto looser;
+
+  rv=oauth_encode_base64(len, digest);
+
+looser:
+  if (context) PK11_DestroyContext(context, PR_TRUE);
+  if (pkey) PK11_FreeSymKey(pkey);
+  if (slot) PK11_FreeSlot(slot);
+  return rv;
+}
+
+char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
+  PK11SlotInfo      *slot = NULL;
+  SECKEYPrivateKey  *pkey = NULL;
+  SECItem            signature;
+  SECStatus          s;
+  SECItem            der;
+  char              *rv=NULL;
+
+  char *key = oauth_strip_pkcs(k, NS_PRIV_HEADER, NS_PRIV_TRAILER); 
+  if (!key) return NULL;
+
+  oauth_init_nss();
+
+  slot = PK11_GetInternalKeySlot();
+  if (!slot) goto looser;
+  s = ATOB_ConvertAsciiToItem(&der, key);
+  if (s != SECSuccess) goto looser;
+  s = PK11_ImportDERPrivateKeyInfoAndReturnKey(slot, &der, NULL, NULL, PR_FALSE, PR_TRUE, KU_ALL, &pkey, NULL);
+  SECITEM_FreeItem(&der, PR_FALSE);
+  if (s != SECSuccess) goto looser;
+  if (!pkey) goto looser;
+  if (pkey->keyType != rsaKey) goto looser;
+  s = SEC_SignData(&signature, (unsigned char*) m, strlen(m), pkey, SEC_OID_ISO_SHA1_WITH_RSA_SIGNATURE);
+  if (s != SECSuccess) goto looser;
+
+  rv=oauth_encode_base64(signature.len, signature.data);
+  SECITEM_FreeItem(&signature, PR_FALSE);
+
+looser:
+  if (pkey) SECKEY_DestroyPrivateKey(pkey);
+  if (slot) PK11_FreeSlot(slot);
+  free(key);
+  return rv;
+}
+
+int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *sig) {
+  PK11SlotInfo      *slot = NULL;
+  SECKEYPublicKey   *pkey = NULL;
+  CERTCertificate   *cert = NULL;
+  SECItem            signature;
+  SECStatus          s;
+  SECItem            der;
+  int                rv=0;
+
+  char *key = oauth_strip_pkcs(c, NS_CERT_HEADER, NS_CERT_TRAILER); 
+  if (!key) return 0;
+
+  oauth_init_nss();
+
+  s = ATOB_ConvertAsciiToItem(&signature, (char*) sig); // XXX cast (const char*) -> (char*)
+  if (s != SECSuccess) goto looser;
+  slot = PK11_GetInternalKeySlot();
+  if (!slot) goto looser;
+  s = ATOB_ConvertAsciiToItem(&der, key);
+  if (s != SECSuccess) goto looser;
+  cert = __CERT_DecodeDERCertificate(&der, PR_TRUE, NULL);
+  SECITEM_FreeItem(&der, PR_FALSE); 
+  if (!cert) goto looser;
+  pkey = CERT_ExtractPublicKey(cert);
+  if (!pkey) goto looser;
+  if (pkey->keyType != rsaKey) goto looser;
+
+  s = VFY_VerifyData((unsigned char*) m, strlen(m), pkey, &signature, SEC_OID_ISO_SHA1_WITH_RSA_SIGNATURE, NULL);
+  if (s == SECSuccess) rv=1;
+#if 0
+  else if (PR_GetError()!= SEC_ERROR_BAD_SIGNATURE) rv=-1;
+#endif
+
+looser:
+  if (pkey) SECKEY_DestroyPublicKey(pkey);
+  if (slot) PK11_FreeSlot(slot);
+  free(key);
+  return rv;
+}
+
+char *oauth_body_hash_file(char *filename) {
+  PK11SlotInfo  *slot = NULL;
+  PK11Context   *context = NULL;
+  unsigned char  digest[20]; // Is there a way to tell how large the output is?
+  unsigned int   len;
+  SECStatus      s;
+  char          *rv=NULL;
+  size_t         bl;
+  unsigned char  fb[BUFSIZ];
+
+  FILE *F= fopen(filename, "r");
+  if (!F) return NULL;
+
+  oauth_init_nss();
+
+  slot = PK11_GetInternalKeySlot();
+  if (!slot) goto looser;
+  context = PK11_CreateDigestContext(SEC_OID_SHA1);
+  if (!context) goto looser;
+
+  s = PK11_DigestBegin(context);
+  if (s != SECSuccess) goto looser;
+  while (!feof(F) && (bl=fread(fb,sizeof(char),BUFSIZ, F))>0) {
+    s = PK11_DigestOp(context, (unsigned char*) fb, bl);
+    if (s != SECSuccess) goto looser;
+  }
+  s = PK11_DigestFinal(context, digest, &len, sizeof digest);
+  if (s != SECSuccess) goto looser;
+
+  unsigned char *dgst = malloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
+  memcpy(dgst, digest, len);
+  rv=oauth_body_hash_encode(len, dgst);
+
+looser:
+  fclose(F);
+  if (context) PK11_DestroyContext(context, PR_TRUE);
+  if (slot) PK11_FreeSlot(slot);
+  return rv;
+}
+
+char *oauth_body_hash_data(size_t length, const char *data) {
+  PK11SlotInfo  *slot = NULL;
+  PK11Context   *context = NULL;
+  unsigned char  digest[20]; // Is there a way to tell how large the output is?
+  unsigned int   len;
+  SECStatus      s;
+  char          *rv=NULL;
+
+  oauth_init_nss();
+
+  slot = PK11_GetInternalKeySlot();
+  if (!slot) goto looser;
+  context = PK11_CreateDigestContext(SEC_OID_SHA1);
+  if (!context) goto looser;
+
+  s = PK11_DigestBegin(context);
+  if (s != SECSuccess) goto looser;
+  s = PK11_DigestOp(context, (unsigned char*) data, length);
+  if (s != SECSuccess) goto looser;
+  s = PK11_DigestFinal(context, digest, &len, sizeof digest);
+  if (s != SECSuccess) goto looser;
+
+  unsigned char *dgst = malloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
+  memcpy(dgst, digest, len);
+  rv=oauth_body_hash_encode(len, dgst);
+
+looser:
+  if (context) PK11_DestroyContext(context, PR_TRUE);
+  if (slot) PK11_FreeSlot(slot);
+  return rv;
+}
+
+#else 
+/* use http://www.openssl.org/ for hash/sign */
+
 #ifdef USE_GPL
 /*
  * In addition, as a special exception, the copyright holders give
@@ -84,8 +336,8 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
   BIO_free(in);
 
   if (pkey == NULL) {
-  //fprintf(stderr, "liboauth/ssl: can not read private key\n");
-    return xstrdup("liboauth/ssl: can not read private key");
+  //fprintf(stderr, "liboauth/OpenSSL: can not read private key\n");
+    return xstrdup("liboauth/OpenSSL: can not read private key");
   }
 
   len = EVP_PKEY_size(pkey);
@@ -101,7 +353,7 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
     EVP_PKEY_free(pkey);
     return tmp;
   }
-  return xstrdup("liboauth/ssl: rsa-sha1 signing failed");
+  return xstrdup("liboauth/OpenSSL: rsa-sha1 signing failed");
 }
 
 int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
@@ -175,5 +427,7 @@ char *oauth_body_hash_data(size_t length, const char *data) {
   EVP_MD_CTX_cleanup(&ctx);
   return oauth_body_hash_encode(len, md);
 }
+
+#endif
 
 // vi: sts=2 sw=2 ts=2

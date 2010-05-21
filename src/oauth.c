@@ -491,6 +491,8 @@ char *oauth_serialize_url_parameters (int argc, char **argv) {
  *
  * @return zero terminated random string.
  */
+#if !defined HAVE_OPENSSL_HMAC_H && !defined USE_NSS
+/* pre liboauth-0.7.2 and possible future versions that don't use OpenSSL or NSS */
 char *oauth_gen_nonce() {
   char *nc;
   static int rndinit = 1;
@@ -513,6 +515,37 @@ char *oauth_gen_nonce() {
   nc[i]='\0';
   return (nc);
 }
+#else // OpenSSL or NSS random number generator
+#ifdef USE_NSS
+  void oauth_init_nss(); //decladed in hash.c
+#  include "pk11pub.h"
+#  define MY_RAND PK11_GenerateRandom
+#  define MY_SRAND  oauth_init_nss();
+#else
+#  include <openssl/rand.h>
+#  define MY_RAND RAND_bytes
+#  define MY_SRAND ;
+#endif
+char *oauth_gen_nonce() {
+  char *nc;
+  unsigned char buf;
+  const char *chars = "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789_";
+  unsigned int max = strlen(chars);
+  int i, len;
+
+  MY_SRAND
+  MY_RAND(&buf, 1);
+  len=15+(((short)buf)&0x0f);
+  nc = (char*) xmalloc((len+1)*sizeof(char));
+  for(i=0;i<len; i++) {
+    MY_RAND(&buf, 1);
+    nc[i] = chars[ ((short)buf) % max ];
+  }
+  nc[i]='\0';
+  return (nc);
+}
+#endif
 
 /**
  * string compare function for oauth parameters.

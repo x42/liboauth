@@ -63,6 +63,7 @@ dnl *** configuration options ***
 AC_ARG_ENABLE(gpl, AC_HELP_STRING([--enable-gpl],[compile coder under GPL (adds xmalloc.c)]))
 AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
 AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
+AC_ARG_ENABLE(nss, AC_HELP_STRING([--enable-nss],[use NSS instead of OpenSSL]))
 AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
 
 report_license="MIT"
@@ -101,8 +102,22 @@ fi
 
 AC_SUBST(CURL_LIBS)
 
-dnl ** OpenSSL
-AC_CHECK_HEADERS(openssl/hmac.h)
+dnl ** crypto/hash lib (OpenSSL or NSS)
+if test "${enable_nss}" == "yes"; then
+  PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1, [Define to use NSS instead of OpenSSL]) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
+  HASH_LIBS=${NSS_LIBS}
+  HASH_CFLAGS=${NSS_CFLAGS}
+  report_hash="NSS"
+else
+  AC_CHECK_HEADERS(openssl/hmac.h)
+  HASH_LIBS="-lcrypto"
+  HASH_CFLAGS=""
+  report_hash="OpenSSL"
+  PC_LIB="$PC_LIB -lssl"
+fi
+
+AC_SUBST(HASH_LIBS)
+AC_SUBST(HASH_CFLAGS)
 
 dnl *** complier flags ***
 #LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
@@ -158,6 +173,7 @@ AC_MSG_NOTICE([
 
   version:                $VERSION
   interface revision:     $VERSION_INFO
+  hash/signature:         $report_hash
   license:                $report_license
   http integration:       $report_curl
   libcurl-timeout:        $report_curltimeout
