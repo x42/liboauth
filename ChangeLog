@@ -1,3 +1,8 @@
+version 0.8.0
+ replaced xmalloc with custom MIT-licensed version.
+ removed --enable-gpl configure option.
+ minor updates to README, documentation, etc.
+
 version 0.7.2
  added NSS as alternative to OpenSSL.
  use OpenSSL or NSS random number generator for nonce.
