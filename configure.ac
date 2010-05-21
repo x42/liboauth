@@ -114,10 +114,12 @@ fi
 AC_SUBST(HASH_LIBS)
 AC_SUBST(HASH_CFLAGS)
 
-dnl *** complier flags ***
-#LIBOAUTH_CFLAGS="-g -posix -std=c99 -pedantic"
-LIBOAUTH_CFLAGS=""
+dnl *** other complier/linker flags ***
+#LIBOAUTH_CFLAGS="-Wall -g -posix -std=c99 -pedantic"
+LIBOAUTH_CFLAGS="-Wall"
+LIBOAUTH_LDFLAGS="-Wall -export-symbols-regex '^oauth_.*'"
 AC_SUBST(LIBOAUTH_CFLAGS)
+AC_SUBST(LIBOAUTH_LDFLAGS)
 
 
 dnl *** doxygen ***
