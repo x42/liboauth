@@ -1,14 +1,16 @@
 Source: liboauth
-Priority: extra
+Section: libs
+Priority: optional
 Maintainer: Robin Gareus <robin@gareus.org>
 Build-Depends: debhelper (>= 5), autotools-dev, automake, libnss3-dev, libtool, autoconf
 Standards-Version: 3.8.4
-Section: libs
+Homepage: http://liboauth.sourceforge.net/
+Vcs-Git: git://rg42.org/liboauth
 
 Package: liboauth-dev
 Section: libdevel
 Architecture: any
-Depends: liboauth0 (= ${binary:Version})
+Depends: liboauth0 (= ${binary:Version}), ${misc:Depends}
 Description: Development files for liboauth
  OAuth - secure authentication for desktop and web applications.
  http://liboauth.sf.net/ is a collection of c functions implementing the
