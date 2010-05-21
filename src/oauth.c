@@ -817,7 +817,7 @@ void oauth_free_array(int *argcp, char ***argvp) {
  */
 char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
   char *sign=oauth_encode_base64(len,digest);
-  char *sig_url = (char*)malloc(17+strlen(sign));
+  char *sig_url = (char*)xmalloc(17+strlen(sign));
   sprintf(sig_url,"oauth_body_hash=%s", sign);
   free(sign);
   free(digest);
