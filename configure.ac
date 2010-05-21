@@ -104,7 +104,10 @@ AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
 if test "${enable_nss}" == "yes"; then
-  PKG_CHECK_MODULES(HASH, nss, [ AC_DEFINE(USE_NSS, 1, [Define to use NSS instead of OpenSSL]) USE_NSS=1 PC_REQ="$PC_REQ nss" report_hash="NSS" ])
+  PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1, [Define to use NSS instead of OpenSSL]) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
+  HASH_LIBS=${NSS_LIBS}
+  HASH_CFLAGS=${NSS_CFLAGS}
+  report_hash="NSS"
 else
   AC_CHECK_HEADERS(openssl/hmac.h)
   HASH_LIBS="-lcrypto"
@@ -170,7 +173,7 @@ AC_MSG_NOTICE([
 
   version:                $VERSION
   interface revision:     $VERSION_INFO
-  crypto/hash:            $report_hash
+  hash/signature:         $report_hash
   license:                $report_license
   http integration:       $report_curl
   libcurl-timeout:        $report_curltimeout
