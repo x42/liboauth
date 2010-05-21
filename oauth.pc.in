@@ -7,5 +7,5 @@ Name: oauth
 Description: OAuth - server to server secure API authentication  
 Requires: libssl @PC_REQ@
 Version: @VERSION@
-Libs: -L${libdir} -loauth -lm -lssl @PC_LIB@
+Libs: -L${libdir} -loauth -lm @PC_LIB@
 Cflags: -I${includedir} 
