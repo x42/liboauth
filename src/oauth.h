@@ -60,7 +60,7 @@
  */ 
 typedef enum { 
     OA_HMAC=0, ///< use HMAC-SHA1 request signing method
-    OA_RSA, ///< use RSA signature (not implemented)
+    OA_RSA, ///< use RSA signature 
     OA_PLAINTEXT ///< use plain text signature (for testing only)
   } OAuthMethod;
 
