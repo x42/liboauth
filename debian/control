@@ -18,7 +18,7 @@ Description: OAuth - secure authentication for desktop and web applications
 Package: liboauth0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends} 
 Description: OAuth - secure authentication for desktop and web applications
  http://liboauth.sf.net/ is a collection of c functions implementing the
  OAuth Core 1.0 standard API. liboauth provides basic functions to escape
