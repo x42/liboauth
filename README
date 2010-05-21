@@ -1,8 +1,9 @@
 liboauth is a collection of c functions implementing the http://oauth.net API.
 
-liboauth provides basic functions to escape and encode stings according to
-OAuth specifications and offers high-level functions built on top to sign
-requests or verify signatures.
+liboauth provides functions to escape and encode stings according to
+OAuth specifications and offers high-level functionality built on top to sign
+requests or verify signatures using either NSS or OpenSSL for calculating
+the hash/signatures.
 
 The included documentation in the doc/ folder and example code from tests/ 
 can also be found online at http://liboauth.sourceforge.net/
@@ -12,20 +13,25 @@ or inquire information at http://groups.google.com/group/oauth/
 
  == License and Notes ==
 
-If configured with '--enable-gpl' the GNU General Public License 
-applies otherwise the code can be distributed under MIT license.
+The source-code of liboauth can be distributed under MIT License,
+or at your option: in terms of the the GNU General Public License.
+see COPYING.MIT or COPYING.GPL for details.
 
-The difference is xmalloc - which is under GPL. The MIT licensed code
-may segfault when it encounters an out-of-memory error.
-
-Note: openSSL is not strictly compatible with GPL licensed code.
-The functions using openSSL are in src/hash.c and an exemption is provided
-in with that source file. see LICENSE.OpenSSL and
+Note: OpenSSL is not strictly compatible with the GPL license.
+An exemption (to the GPL) allowing to link and redistribute
+liboauth with the OpenSSL library is is included in the source files.
+for more information, see LICENSE.OpenSSL and
 http://lists.debian.org/debian-legal/2004/05/msg00595.html
+
+You can avoid this whole issue by using NSS instead of OpenSSL;
+configure with '--enable-nss'.
+
+The Debian packaging that comes with the source-code is licensed under
+the GNU General Public License.
 
  == Test and Example Code ==
 
-After Complilation `make check` can be used to perform a offline selftest.
+After compilation `make check` can be used to perform a off-line self-test.
 
 There is also example code to perform and verify OAuth requests online,
 but they are not run automatically.
@@ -44,7 +50,7 @@ but they are not run automatically.
      Test-Cases for parameter encoding, signatures, etc
 
  tests/commontest.c
-     Common Test-Case functions exercising the low-level API used by selftests.
+     Common Test-Case functions exercising the low-level API used by self-tests.
 
  tests/oauthdatapost.c - CONNECTS TO INTERNET
      Experimental code to sign data uploads
