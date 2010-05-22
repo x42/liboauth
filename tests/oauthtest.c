@@ -1,6 +1,5 @@
 /**
- *  @brief self-test and example code for liboauth using
- *         http://oauth-sandbox.mediamatic.nl/
+ *  @brief self-test and example code for liboauth 
  *  @file oauthtest.c
  *  @author Robin Gareus <robin@gareus.org>
  *
@@ -176,10 +175,10 @@ int main (int argc, char **argv) {
   }
 #endif
 
-  printf(" *** sending request to http://oauth-sandbox.mediamatic.nl/ *** \n\n");
+  printf(" *** sending HTTP request *** \n\n");
 
-// These two will make a request to http://oauth-sandbox.mediamatic.nl/
-// requesting an access token. - it's intended both as test (verify signature) 
+// These two will perform a HTTP request, requesting an access token. 
+// it's intended both as test (verify signature) 
 // and example code.
 #if 1 // POST a request-token request
   request_token_example_post();
