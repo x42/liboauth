@@ -1,3 +1,6 @@
+version 0.8.4
+ fixed pkgconfig dependencies (OpenSSL vs NSS)
+
 version 0.8.3
  added an interface to generate an OAuth HTTP Authorization header
  and oauth_http_[get|post]2 to preform such requests,

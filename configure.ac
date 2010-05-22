@@ -109,6 +109,7 @@ else
   HASH_CFLAGS=""
   report_hash="OpenSSL"
   PC_LIB="$PC_LIB -lssl"
+  PC_REQ="$PC_REQ libssl"
 fi
 
 AC_SUBST(HASH_LIBS)

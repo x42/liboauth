@@ -29,10 +29,10 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.8.3"
+#define LIBOAUTH_VERSION "0.8.4"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  8
-#define LIBOAUTH_VERSION_MICRO  3
+#define LIBOAUTH_VERSION_MICRO  4
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
@@ -452,7 +452,7 @@ char *oauth_sign_array (int *argcp, char***argvp,
  * The returned string needs to be freed by the calling function.
  *
  * see
- * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/oauth-bodyhash.html
  * 
  * @param filename the filename to calculate the hash for
  *
@@ -468,7 +468,7 @@ char *oauth_body_hash_file(char *filename);
  * passed as argument to \ref oauth_catenc.
  *
  * see
- * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/drafts/4/spec.html
+ * http://oauth.googlecode.com/svn/spec/ext/body_hash/1.0/oauth-bodyhash.html
  * 
  * @param length length of the data parameter in bytes
  * @param data to calculate the hash for

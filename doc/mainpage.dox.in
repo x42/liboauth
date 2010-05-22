@@ -85,7 +85,7 @@ MIT License (source-code):
   THE SOFTWARE.
 </pre>
 
-GPL (Debian packaging and optional source-code license):
+GPL (Debian packaging and alternative source-code license):
 <pre>
   This package is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public
@@ -106,4 +106,5 @@ GPL (Debian packaging and optional source-code license):
 \example tests/oauthtest2.c
 \example tests/oauthexample.c
 \example tests/oauthbodyhash.c
+\example tests/selftest_wiki.c
 */
