@@ -585,7 +585,11 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   // if parameter names are equal, sort by value.
   if (t1) t1[0]='='; 
   if (t2) t2[0]='='; 
-  rv=strcmp(t1,t2);
+  if (t1 && t2)        rv=strcmp(t1,t2);
+  else if (!t1 && !t2) rv=0;
+  else if (!t1)        rv=-1;
+  else                 rv=1;
+
   if (v1) free(v1);
   if (v2) free(v2);
   return rv;

@@ -45,7 +45,7 @@ int parse_reply(const char *reply, char **token, char **secret) {
     ok=0;
     if (token)  *token =strdup(&(rv[0][12]));
     if (secret) *secret=strdup(&(rv[1][19]));
-    printf("key:    '%s'\nsecret: '%s'\n",*token, *secret); // XXX 
+    printf("key:    '%s'\nsecret: '%s'\n",*token, *secret); // XXX token&secret may be NULL.
   }
   if(rv) free(rv);
   return ok;
