@@ -575,6 +575,25 @@ char *oauth_http_get (const char *u, const char *q) {
 }
 
 /**
+ * do a HTTP GET request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl)
+ * 
+ * @param u base url to get
+ * @param q query string to send along with the HTTP request or NULL.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_get2 (const char *u, const char *q, const char *customheader) {
+#ifdef HAVE_CURL
+  return oauth_curl_get(u,q,customheader);
+#else 
+  return NULL;
+#endif
+}
+
+/**
  * do a HTTP POST request, wait for it to finish 
  * and return the content of the reply.
  * (requires libcurl or a command-line HTTP client)
@@ -592,6 +611,28 @@ char *oauth_http_post (const char *u, const char *p) {
 #elif defined(HAVE_SHELL_CURL)
   return oauth_exec_post(u,p);
 #else 
+  return NULL;
+#endif
+}
+
+
+/**
+ * do a HTTP POST request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl)
+ *
+ * more documentation in oauth.h
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_post2 (const char *u, const char *p, const char *customheader) {
+#ifdef HAVE_CURL
+  return oauth_curl_post(u,p,customheader);
+#else
   return NULL;
 #endif
 }
