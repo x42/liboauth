@@ -1,4 +1,5 @@
-noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthsign oauthbodyhash
+noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthtest2 oauthsign oauthbodyhash
+ACLOCAL_AMFLAGS= -I m4
 
 OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
@@ -18,6 +19,10 @@ tcother_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
 oauthtest_SOURCES = oauthtest.c
 oauthtest_LDADD = $(OAUTHDIR)/liboauth.la -lssl
 oauthtest_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+
+oauthtest2_SOURCES = oauthtest2.c
+oauthtest2_LDADD = $(OAUTHDIR)/liboauth.la -lssl
+oauthtest2_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
 
 oauthexample_SOURCES = oauthexample.c
 oauthexample_LDADD = $(OAUTHDIR)/liboauth.la -lssl
