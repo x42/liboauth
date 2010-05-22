@@ -1,6 +1,8 @@
 /**
 @mainpage OAuth library functions
 
+\image html libOAuth.png "libOAuth"
+
 @section intro Introduction
 
  liboauth is a collection of POSIX-c functions implementing the <a href="http://oauth.net/">OAuth</a> Core <a href="http://tools.ietf.org/html/rfc5849">RFC 5849</a> standard.
