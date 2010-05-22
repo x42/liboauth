@@ -1,6 +1,5 @@
 /**
- *  @brief self-test and example code for liboauth using
- *         http://oauth-sandbox.mediamatic.nl/
+ *  @brief self-test and example code for liboauth 
  *  @file oauthtest.c
  *  @author Robin Gareus <robin@gareus.org>
  *
@@ -36,9 +35,15 @@
  * \ref request_token_example_post below. 
  */
 void request_token_example_get(void) {
+#if 0
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
+#else
+  const char *request_token_uri = "http://term.ie/oauth/example/request_token.php";
+  const char *req_c_key         = "key"; //< consumer key
+  const char *req_c_secret      = "secret"; //< consumer secret
+#endif
   char *res_t_key    = NULL; //< replied key
   char *res_t_secret = NULL; //< replied secret
 
@@ -81,7 +86,7 @@ void request_token_example_get(void) {
  * using the oauth-HTTP POST function.
  */
 void request_token_example_post(void) {
-#if 1
+#if 0
   const char *request_token_uri = "http://oauth-sandbox.mediamatic.nl/module/OAuth/request_token";
   const char *req_c_key         = "17b09ea4c9a4121145936f0d7d8daa28047583796"; //< consumer key
   const char *req_c_secret      = "942295b08ffce77b399419ee96ac65be"; //< consumer secret
@@ -170,10 +175,10 @@ int main (int argc, char **argv) {
   }
 #endif
 
-  printf(" *** sending request to http://oauth-sandbox.mediamatic.nl/ *** \n\n");
+  printf(" *** sending HTTP request *** \n\n");
 
-// These two will make a request to http://oauth-sandbox.mediamatic.nl/
-// requesting an access token. - it's intended both as test (verify signature) 
+// These two will perform a HTTP request, requesting an access token. 
+// it's intended both as test (verify signature) 
 // and example code.
 #if 1 // POST a request-token request
   request_token_example_post();

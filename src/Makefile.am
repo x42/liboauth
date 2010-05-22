@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS= -I m4
 lib_LTLIBRARIES = liboauth.la
 include_HEADERS = oauth.h 
 

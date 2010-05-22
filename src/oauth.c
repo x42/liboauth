@@ -411,7 +411,7 @@ int oauth_split_url_parameters(const char *url, char ***argv) {
  *
  */
 char *oauth_serialize_url (int argc, int start, char **argv) {
-  return oauth_serialize_url_sep( argc, start, argv, "&");
+  return oauth_serialize_url_sep( argc, start, argv, "&", 0);
 }
 
 /**
@@ -421,9 +421,13 @@ char *oauth_serialize_url (int argc, int start, char **argv) {
  * @param start element in the array at which to start concatenating.
  * @param argv parameter-array to concatenate.
  * @param sep separator for parameters (usually "&") 
+ * @param mod - bitwise modifiers: 
+ *   1: skip all values that start with "oauth_"
+ *   2: skip all values that don't start with "oauth_"
+ *   4: add double quotation marks around values (use with sep=", " to generate HTTP Authorization header).
  * @return url string needs to be freed by the caller.
  */
-char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep) {
+char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int mod) {
   char  *tmp, *t1;
   int i;
   int  first=0;
@@ -432,6 +436,9 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep) {
   *query='\0';
   for(i=start; i< argc; i++) {
     int len = 0;
+    if ((mod&1)==1 && (strncmp(argv[i],"oauth_",6) == 0 || strncmp(argv[i],"x_oauth_",8) == 0) ) continue;
+    if ((mod&2)==2 && (strncmp(argv[i],"oauth_",6) != 0 && strncmp(argv[i],"x_oauth_",8) != 0) && i!=0) continue;
+
     if (query) len+=strlen(query);
 
     if (i==start && i==0 && strstr(argv[i], ":/")) {
@@ -449,9 +456,11 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep) {
       tmp = oauth_url_escape(argv[i]);
       *t1='=';
       t1 = oauth_url_escape((t1+1));
-      tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2)*sizeof(char));
+      tmp=(char*) xrealloc(tmp,(strlen(tmp)+strlen(t1)+2+(mod&4?2:0))*sizeof(char));
       strcat(tmp,"=");
+      if (mod&4) strcat(tmp,"\"");
       strcat(tmp,t1);
+      if (mod&4) strcat(tmp,"\"");
       free(t1);
       len+=strlen(tmp);
     }
@@ -725,7 +734,7 @@ char *oauth_sign_array (int *argcp, char***argvp,
                             t_key, t_secret);
 }
 
-char *oauth_sign_array2 (int *argcp, char***argvp,
+void oauth_sign_array2_process (int *argcp, char***argvp,
   char **postargs,
   OAuthMethod method, 
   const char *http_method, //< HTTP request method
@@ -737,7 +746,6 @@ char *oauth_sign_array2 (int *argcp, char***argvp,
   char oarg[1024];
   char *query;
   char *okey, *odat, *sign;
-  char *result;
   char *http_request_method;
 
   if (!http_method) {
@@ -749,18 +757,18 @@ char *oauth_sign_array2 (int *argcp, char***argvp,
       http_request_method[i]=toupper(http_request_method[i]);
   }
 
-  // add OAuth protocol parameters
+  // add required OAuth protocol parameters
   oauth_add_protocol(argcp, argvp, method, c_key, t_key);
 
   // sort parameters
   qsort(&(*argvp)[1], (*argcp)-1, sizeof(char *), oauth_cmpstringp);
 
-  // serialize URL
+  // serialize URL - base-url 
   query= oauth_serialize_url_parameters(*argcp, *argvp);
 
   // generate signature
   okey = oauth_catenc(2, c_secret, t_secret);
-  odat = oauth_catenc(3, http_request_method, (*argvp)[0], query);
+  odat = oauth_catenc(3, http_request_method, (*argvp)[0], query); // base-string
   free(http_request_method);
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
@@ -787,6 +795,21 @@ char *oauth_sign_array2 (int *argcp, char***argvp,
   snprintf(oarg, 1024, "oauth_signature=%s",sign);
   oauth_add_param_to_array(argcp, argvp, oarg);
   free(sign);
+  if(query) free(query);
+}
+
+char *oauth_sign_array2 (int *argcp, char***argvp,
+  char **postargs,
+  OAuthMethod method, 
+  const char *http_method, //< HTTP request method
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  ) {
+
+  char *result;
+  oauth_sign_array2_process(argcp, argvp, postargs, method, http_method, c_key, c_secret, t_key, t_secret);
 
   // build URL params
   result = oauth_serialize_url(*argcp, (postargs?1:0), *argvp);
@@ -796,10 +819,9 @@ char *oauth_sign_array2 (int *argcp, char***argvp,
     result = xstrdup((*argvp)[0]);
   }
 
-  if(query) free(query);
-
   return result;
 }
+
 
 /**
  * free array args

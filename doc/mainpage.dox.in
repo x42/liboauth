@@ -103,6 +103,7 @@ GPL (Debian packaging and optional source-code license):
 </pre>
 
 \example tests/oauthtest.c
+\example tests/oauthtest2.c
 \example tests/oauthexample.c
 \example tests/oauthbodyhash.c
 */

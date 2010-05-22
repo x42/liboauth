@@ -1,6 +1,14 @@
+version 0.8.3
+ added an interface to generate an OAuth HTTP Authorization header
+ and oauth_http_[get|post]2 to preform such requests,
+ as well as example code 'oauthtest2' to do so.
+
 version 0.8.2
  fixed potential NULL pointer exception when sorting
- duplicate URL parameters without value.
+ duplicate URL parameters without value. 
+ It's a extremly rare edge-case - there's no practial
+ use for duplicate empty URL parameters - but it could
+ be used as a DOS attack-vector.
 
 version 0.8.1
  replaced a few forgotten mallocs with xmalloc.

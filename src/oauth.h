@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.8.2"
+#define LIBOAUTH_VERSION "0.8.3"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  8
-#define LIBOAUTH_VERSION_MICRO  2
+#define LIBOAUTH_VERSION_MICRO  3
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  5
-#define LIBOAUTH_REV  6
-#define LIBOAUTH_AGE  5
+#define LIBOAUTH_CUR  6
+#define LIBOAUTH_REV  0
+#define LIBOAUTH_AGE  6
 #endif
 
 #ifdef __GNUC__
@@ -229,9 +229,13 @@ char *oauth_serialize_url (int argc, int start, char **argv);
  * @param start element in the array at which to start concatenating.
  * @param argv parameter-array to concatenate.
  * @param sep separator for parameters (usually "&") 
+ * @param mod - bitwise modifiers: 
+ *   1: skip all values that start with "oauth_"
+ *   2: skip all values that don't start with "oauth_"
+ *   4: double quotation marks are added around values (use with sep ", " for HTTP Authorization header).
  * @return url string needs to be freed by the caller.
  */
-char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep);
+char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int mod);
 
 /**
  * build a query parameter string from an array.
@@ -343,13 +347,64 @@ char *oauth_sign_url (const char *url, char **postargs,
   const char *t_secret //< token secret - used as 2st part of secret-key
   ) attribute_deprecated;
 
+
+/**
+ * the back-end behind by /ref oauth_sign_array2.
+ * however it does not serialize the signed URL again.
+ * The user needs to call /ref oauth_serialize_url (oA)
+ * and /ref oauth_free_array to do so.
+ *
+ * This allows to split parts of the URL to be used for
+ * OAuth HTTP Authorization header:
+ * see http://oauth.net/core/1.0a/#consumer_req_param
+ * the oauthtest2 example code does so.
+ * 
+ *
+ * @param argcp pointer to array length int
+ * @param argvp pointer to array values  
+ * (argv[0]="http://example.org:80/" argv[1]="first=QueryParamater" ..
+ *  the array is modified: fi. oauth_ parameters are added)
+ *  These arrays can be generated with /ref oauth_split_url_parameters
+ *  or /ref oauth_split_post_paramters.
+ *
+ * @param postargs This parameter points to an area where the return value
+ * is stored. If 'postargs' is NULL, no value is stored.
+ *
+ * @param method specify the signature method to use. It is of type 
+ * \ref OAuthMethod and most likely \ref OA_HMAC.
+ *
+ * @param http_method The HTTP request method to use (ie "GET", "PUT",..)
+ * If NULL is given as 'http_method' this defaults to "GET" when 
+ * 'postargs' is also NULL and when postargs is not NULL "POST" is used.
+ *
+ * @param c_key consumer key
+ * @param c_secret consumer secret
+ * @param t_key token key
+ * @param t_secret token secret
+ *
+ * @return void
+ *
+ */
+void oauth_sign_array2_process (int *argcp, char***argvp,
+  char **postargs,
+  OAuthMethod method, 
+  const char *http_method, //< HTTP request method
+  const char *c_key, //< consumer key - posted plain text
+  const char *c_secret, //< consumer secret - used as 1st part of secret-key 
+  const char *t_key, //< token key - posted plain text in URL
+  const char *t_secret //< token secret - used as 2st part of secret-key
+  );
+
 /**
  * same as /ref oauth_sign_url
  * with the url already split into parameter array 
  *
  * @param argcp pointer to array length int
- * @param argvp pointer to array values 
- * (argv[0]="http://example.org:80/" argv[1]="first=QueryParamater" ..)
+ * @param argvp pointer to array values  
+ * (argv[0]="http://example.org:80/" argv[1]="first=QueryParamater" ..
+ *  the array is modified: fi. oauth_ parameters are added)
+ *  These arrays can be generated with /ref oauth_split_url_parameters
+ *  or /ref oauth_split_post_paramters.
  *
  * @param postargs This parameter points to an area where the return value
  * is stored. If 'postargs' is NULL, no value is stored.
@@ -473,6 +528,28 @@ char *oauth_sign_xmpp (const char *xml,
  */
 char *oauth_http_get (const char *u, const char *q);
 
+/**
+ * do a HTTP GET request, wait for it to finish 
+ * and return the content of the reply.
+ *
+ * (requires libcurl)
+ *
+ * This is equivalent to /ref oauth_http_get but allows to
+ * specifiy a custom HTTP header and has
+ * has no support for commandline-curl.
+ *
+ * If liboauth is compiled <b>without</b> libcurl this function
+ * always returns NULL.
+ *
+ * @param u base url to get
+ * @param q query string to send along with the HTTP request or NULL.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * Multiple header elements can be passed separating them with "\r\n"
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_get2 (const char *u, const char *q, const char *customheader);
+
 
 /**
  * do a HTTP POST request, wait for it to finish 
@@ -506,6 +583,27 @@ char *oauth_http_get (const char *u, const char *q);
 char *oauth_http_post (const char *u, const char *p);
 
 /**
+ * do a HTTP POST request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl)
+ *
+ * It's equivalent to /ref oauth_http_post, but offers
+ * the possibility to specify a custom HTTP header and
+ * has no support for commandline-curl.
+ *
+ * If liboauth is compiled <b>without</b> libcurl this function
+ * always returns NULL.
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * Multiple header elements can be passed separating them with "\r\n"
+ * @return replied content from HTTP server. needs to be freed by caller.
+ */
+char *oauth_http_post2 (const char *u, const char *p, const char *customheader);
+
+
+/**
  * http post raw data from file.
  * the returned string needs to be freed by the caller
  * (requires libcurl)
@@ -515,7 +613,8 @@ char *oauth_http_post (const char *u, const char *p);
  * @param u url to retrieve
  * @param fn filename of the file to post along
  * @param len length of the file in bytes. set to '0' for autodetection
- * @param customheader specify custom HTTP header (or NULL for default)
+ * @param customheader specify custom HTTP header (or NULL for default).
+ * Multiple header elements can be passed separating them with "\r\n"
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);
@@ -531,6 +630,7 @@ char *oauth_post_file (const char *u, const char *fn, size_t len, const char *cu
  * @param data data to post
  * @param len length of the data in bytes. 
  * @param customheader specify custom HTTP header (or NULL for default)
+ * Multiple header elements can be passed separating them with "\r\n"
  * @return returned HTTP reply or NULL on error
  */
 char *oauth_post_data (const char *u, const char *data, size_t len, const char *customheader);
@@ -551,6 +651,7 @@ char *oauth_post_data (const char *u, const char *data, size_t len, const char *
  * @param data data to post along
  * @param len length of the file in bytes. set to '0' for autodetection
  * @param customheader specify custom HTTP header (or NULL for default)
+ * Multiple header elements can be passed separating them with "\r\n"
  * @param callback specify the callback function
  * @param callback_data specify data to pass to the callback function
  * @return returned HTTP reply or NULL on error
@@ -575,6 +676,7 @@ char *oauth_post_data_with_callback      (const char *u,
  * @param data data to post
  * @param len length of the data in bytes. 
  * @param customheader specify custom HTTP header (or NULL for default)
+ * Multiple header elements can be passed separating them with "\r\n"
  * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used. if httpMethod is NULL, a POST is executed.
  * @return returned HTTP reply or NULL on error
  */
@@ -600,6 +702,7 @@ char *oauth_send_data (const char *u,
  * @param data data to post along
  * @param len length of the file in bytes. set to '0' for autodetection
  * @param customheader specify custom HTTP header (or NULL for default)
+ * Multiple header elements can be passed separating them with "\r\n"
  * @param callback specify the callback function
  * @param callback_data specify data to pass to the callback function
  * @param httpMethod specify http verb ("GET"/"POST"/"PUT"/"DELETE") to be used.

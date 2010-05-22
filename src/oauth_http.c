@@ -100,11 +100,13 @@ ReadMemoryCallbackAndCall(void *ptr, size_t size, size_t nmemb, void *data) {
  *
  * @param u url to retrieve
  * @param p post parameters 
+ * @param customheader specify custom HTTP header (or NULL for none)
  * @return returned HTTP
  */
-char *oauth_curl_post (const char *u, const char *p) {
+char *oauth_curl_post (const char *u, const char *p, const char *customheader) {
   CURL *curl;
   CURLcode res;
+  struct curl_slist *slist=NULL;
 
   struct MemoryStruct chunk;
   chunk.data=NULL;
@@ -116,12 +118,17 @@ char *oauth_curl_post (const char *u, const char *p) {
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, p);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  if (customheader) {
+    slist = curl_slist_append(slist, customheader);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
+  }
   curl_easy_setopt(curl, CURLOPT_USERAGENT, OAUTH_USER_AGENT);
 #ifdef OAUTH_CURL_TIMEOUT  
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
+  curl_slist_free_all(slist);
   if (res) {
     return NULL;
   }
@@ -136,11 +143,13 @@ char *oauth_curl_post (const char *u, const char *p) {
  *
  * @param u url to retrieve
  * @param q optional query parameters 
+ * @param customheader specify custom HTTP header (or NULL for none)
  * @return returned HTTP
  */
-char *oauth_curl_get (const char *u, const char *q) {
+char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   CURL *curl;
   CURLcode res;
+  struct curl_slist *slist=NULL;
   char *t1=NULL;
   struct MemoryStruct chunk;
 
@@ -157,6 +166,10 @@ char *oauth_curl_get (const char *u, const char *q) {
   curl_easy_setopt(curl, CURLOPT_URL, q?t1:u);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  if (customheader) {
+    slist = curl_slist_append(slist, customheader);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
+  }
 #if 0 // TODO - support request methods..
   if (0) 
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "HEAD");
@@ -169,6 +182,7 @@ char *oauth_curl_get (const char *u, const char *q) {
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
+  curl_slist_free_all(slist);
   if (q) free(t1);
   if (res) {
     return NULL;
@@ -227,6 +241,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
+  curl_slist_free_all(slist);
   if (res) {
     // error
     return NULL;
@@ -297,6 +312,7 @@ char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
   res = curl_easy_perform(curl);
+  curl_slist_free_all(slist);
   if (res) {
     // error
     return NULL;
@@ -550,9 +566,28 @@ char *oauth_exec_get (const char *u, const char *q) {
  */
 char *oauth_http_get (const char *u, const char *q) {
 #ifdef HAVE_CURL
-  return oauth_curl_get(u,q);
+  return oauth_curl_get(u,q,NULL);
 #elif defined(HAVE_SHELL_CURL)
   return oauth_exec_get(u,q);
+#else 
+  return NULL;
+#endif
+}
+
+/**
+ * do a HTTP GET request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl)
+ * 
+ * @param u base url to get
+ * @param q query string to send along with the HTTP request or NULL.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_get2 (const char *u, const char *q, const char *customheader) {
+#ifdef HAVE_CURL
+  return oauth_curl_get(u,q,customheader);
 #else 
   return NULL;
 #endif
@@ -572,10 +607,32 @@ char *oauth_http_get (const char *u, const char *q) {
  */
 char *oauth_http_post (const char *u, const char *p) {
 #ifdef HAVE_CURL
-  return oauth_curl_post(u,p);
+  return oauth_curl_post(u,p,NULL);
 #elif defined(HAVE_SHELL_CURL)
   return oauth_exec_post(u,p);
 #else 
+  return NULL;
+#endif
+}
+
+
+/**
+ * do a HTTP POST request, wait for it to finish 
+ * and return the content of the reply.
+ * (requires libcurl)
+ *
+ * more documentation in oauth.h
+ *
+ * @param u url to query
+ * @param p postargs to send along with the HTTP request.
+ * @param customheader specify custom HTTP header (or NULL for none)
+ * @return  In case of an error NULL is returned; otherwise a pointer to the
+ * replied content from HTTP server. latter needs to be freed by caller.
+ */
+char *oauth_http_post2 (const char *u, const char *p, const char *customheader) {
+#ifdef HAVE_CURL
+  return oauth_curl_post(u,p,customheader);
+#else
   return NULL;
 #endif
 }

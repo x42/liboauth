@@ -41,10 +41,14 @@ but they are not run automatically.
      walk-though http://term.ie/oauth/example
 
  tests/oauthtest.c     - CONNECTS TO INTERNET
-     walk-though http://oauth-sandbox.mediamatic.nl/
-     Note: The test-server is (currently not|no longer) available.
-     Code remains for inspiration/example purposes.
+     gets a request-token from http://term.ie test-server
    
+ tests/oauthtest2.c    - CONNECTS TO INTERNET
+     gets a request-token from http://term.ie test-server
+     using OAuth HTTP Authorization header:
+     see http://oauth.net/core/1.0a/#auth_header
+     and http://oauth.net/core/1.0a/#consumer_req_param
+
  tests/selftest_wiki.c
  tests/selftest_eran.c
      Test-Cases for parameter encoding, signatures, etc
@@ -57,4 +61,3 @@ but they are not run automatically.
      Note: The example keys have since been deleted from the test-server.
      Code remains for inspiration/example purposes.
      
-
