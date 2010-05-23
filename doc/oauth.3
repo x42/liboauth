@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "22 May 2010" "Version 0.8.4" "OAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "23 May 2010" "Version 0.8.5" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -387,9 +387,9 @@ zero terminated random string.
 .PP
 do a HTTP GET request, wait for it to finish and return the content of the reply. (requires libcurl or a command-line HTTP client)
 .PP
-If compiled \fBwithout\fP libcurl this function calls a command-line executable defined in the environment variable OAUTH_HTTP_GET_CMD - it defaults to \fCcurl -sA 'liboauth-agent/0.1' '%u'\fP where %u is replaced with the URL and query parameters.
+If compiled \fBwithout\fP libcurl this function calls a command-line executable defined in the environment variable OAUTH_HTTP_GET_CMD - it defaults to \fCcurl \-sA 'liboauth-agent/0.1' '%u'\fP where %u is replaced with the URL and query parameters.
 .PP
-bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' '%%u' '\fP
+bash & wget example: \fCexport OAUTH_HTTP_CMD='wget \-q \-U 'liboauth-agent/0.1' '%u' '\fP
 .PP
 WARNING: this is a tentative function. it's convenient and handy for testing or developing OAuth code. But don't rely on this function to become a stable part of this API. It does not do much error checking or handling for one thing..
 .PP
@@ -443,9 +443,9 @@ In case of an error NULL is returned; otherwise a pointer to the replied content
 .PP
 do a HTTP POST request, wait for it to finish and return the content of the reply. (requires libcurl or a command-line HTTP client)
 .PP
-If compiled \fBwithout\fP libcurl this function calls a command-line executable defined in the environment variable OAUTH_HTTP_CMD - it defaults to \fCcurl -sA 'liboauth-agent/0.1' -d '%p' '%u'\fP where %p is replaced with the postargs and %u is replaced with the URL.
+If compiled \fBwithout\fP libcurl this function calls a command-line executable defined in the environment variable OAUTH_HTTP_CMD - it defaults to \fCcurl \-sA 'liboauth-agent/0.1' \-d '%p' '%u'\fP where %p is replaced with the postargs and %u is replaced with the URL.
 .PP
-bash & wget example: \fCexport OAUTH_HTTP_CMD='wget -q -U 'liboauth-agent/0.1' --post-data='%%p' '%%u' '\fP
+bash & wget example: \fCexport OAUTH_HTTP_CMD='wget \-q \-U 'liboauth-agent/0.1' \-\-post-data='%p' '%u' '\fP
 .PP
 NOTE: This function uses the curl's default HTTP-POST Content-Type: application/x-www-form-urlencoded which is the only option allowed by oauth core 1.0 spec. Experimental code can use the Environment variable to transmit custom HTTP headers or parameters.
 .PP
@@ -977,7 +977,7 @@ verify RSA-SHA1 signature. returns the output of EVP_VerifyFinal() for a given m
 .PP
 \fBReturns:\fP
 .RS 4
-1 for a correct signature, 0 for failure and -1 if some other error occurred 
+1 for a correct signature, 0 for failure and \-1 if some other error occurred 
 .RE
 .PP
 

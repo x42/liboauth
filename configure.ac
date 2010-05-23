@@ -110,6 +110,20 @@ else
   report_hash="OpenSSL"
   PC_LIB="$PC_LIB -lssl"
   PC_REQ="$PC_REQ libssl"
+  AC_MSG_NOTICE([
+
+  NOTE: OpenSSL is not compatible with GPL applications.
+  Even if only linked with GPL code you are not allowed to distibute your app.
+  However liboauth provides an exeption (to the GPL) to circumvent this issue
+  (see README, src/hash.c). Nevertheless, double-check your licensing.
+ 
+  liboauth is licensed under MIT license but it is comatible with the GPL. 
+
+  Either way, you are probably better off using NSS (configure --enable-nss);
+  future versions of liboauth will default to the Mozilla NSS.
+   
+  see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
+  ])
 fi
 
 AC_SUBST(HASH_LIBS)

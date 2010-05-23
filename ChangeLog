@@ -1,3 +1,6 @@
+version 0.8.5
+ cleaned up man-page & added logo to html doc.
+
 version 0.8.4
  fixed pkgconfig dependencies (OpenSSL vs NSS)
 
