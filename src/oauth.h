@@ -511,7 +511,7 @@ char *oauth_sign_xmpp (const char *xml,
  * where %%u is replaced with the URL and query parameters.
  *
  * bash & wget example:
- * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' '%%u' "</tt>
+ * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' '%u' "</tt>
  *
  * WARNING: this is a tentative function. it's convenient and handy for testing
  * or developing OAuth code. But don't rely on this function
@@ -564,7 +564,7 @@ char *oauth_http_get2 (const char *u, const char *q, const char *customheader);
  * the URL. 
  *
  * bash & wget example:
- * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%%p' '%%u' "</tt>
+ * <tt>export OAUTH_HTTP_CMD="wget -q -U 'liboauth-agent/0.1' --post-data='%p' '%u' "</tt>
  *
  * NOTE: This function uses the curl's default HTTP-POST Content-Type:
  * application/x-www-form-urlencoded which is the only option allowed
