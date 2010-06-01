@@ -1,3 +1,6 @@
+version 0.8.6
+ removed non-posix prototypes
+
 version 0.8.5
  cleaned up man-page & added logo to html doc.
 
