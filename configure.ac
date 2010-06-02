@@ -14,9 +14,9 @@ if test -z "$VERSION"; then
   AC_MSG_ERROR([version number can not be retrieved from src/oauth.h])
 fi
 
-VERSION_CUR=`$SED -ne 's/^#define LIBOAUTH_CUR\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
-VERSION_REV=`$SED -ne 's/^#define LIBOAUTH_REV\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
-VERSION_AGE=`$SED -ne 's/^#define LIBOAUTH_AGE\s*\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_CUR=`$SED -ne 's/^#define LIBOAUTH_CUR *\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_REV=`$SED -ne 's/^#define LIBOAUTH_REV *\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
+VERSION_AGE=`$SED -ne 's/^#define LIBOAUTH_AGE *\([0-9]*\)/\1/p' ${srcdir}/src/oauth.h 2>/dev/null`
 VERSION_INFO=${VERSION_CUR}:${VERSION_REV}:${VERSION_AGE}
 
 AC_CONFIG_SRCDIR([src/oauth.c])
@@ -95,6 +95,7 @@ if test -n "${with_curltimeout}"; then
   fi
 fi
 
+AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)

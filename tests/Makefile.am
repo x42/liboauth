@@ -3,39 +3,41 @@ ACLOCAL_AMFLAGS= -I m4
 
 OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
+MYCFLAGS = @LIBOAUTH_CFLAGS@ @HASH_CFLAGS@ @CURL_CFLAGS@ 
+MYLDADD  = $(OAUTHDIR)/liboauth.la @HASH_LIBS@ @CURL_LIBS@
 
 tcwiki_SOURCES = selftest_wiki.c commontest.c commontest.h
-tcwiki_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-tcwiki_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
+tcwiki_LDADD = $(MYLDADD)
+tcwiki_CFLAGS = -Wall -DTEST_UNICODE
 
 tceran_SOURCES = selftest_eran.c commontest.c commontest.h
-tceran_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-tceran_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
+tceran_LDADD = $(MYLDADD)
+tceran_CFLAGS = -Wall $(MYCFLAGS)
 
 tcother_SOURCES = selftest_other.c commontest.c commontest.h
-tcother_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-tcother_CFLAGS = -Wall @LIBOAUTH_CFLAGS@ -DTEST_UNICODE
+tcother_LDADD = $(MYLDADD)
+tcother_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthtest_SOURCES = oauthtest.c
-oauthtest_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthtest_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthtest_LDADD = $(MYLDADD)
+oauthtest_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthtest2_SOURCES = oauthtest2.c
-oauthtest2_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthtest2_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthtest2_LDADD = $(MYLDADD)
+oauthtest2_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthexample_SOURCES = oauthexample.c
-oauthexample_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthexample_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthexample_LDADD = $(MYLDADD)
+oauthexample_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthsign_SOURCES = oauthsign.c
-oauthsign_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthsign_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthsign_LDADD = $(MYLDADD)
+oauthsign_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthdatapost_SOURCES = oauthdatapost.c
-oauthdatapost_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthdatapost_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthdatapost_LDADD = $(MYLDADD)
+oauthdatapost_CFLAGS = -Wall $(MYCFLAGS)
 
 oauthbodyhash_SOURCES = oauthbodyhash.c
-oauthbodyhash_LDADD = $(OAUTHDIR)/liboauth.la -lssl
-oauthbodyhash_CFLAGS = -Wall @LIBOAUTH_CFLAGS@
+oauthbodyhash_LDADD = $(MYLDADD)
+oauthbodyhash_CFLAGS = -Wall $(MYCFLAGS)
