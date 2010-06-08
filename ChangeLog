@@ -1,3 +1,8 @@
+version 0.8.8
+ minor changes to the build-system 
+ - allow to overrice HASH_LIBS/CFLAGS (NSS, SpenSSL)
+ - fixes for static linking in src/Makefile.am
+
 version 0.8.7
  fixed whitespace in interface revision number
  fixed test-build system:

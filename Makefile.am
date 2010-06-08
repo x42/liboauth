@@ -1,7 +1,9 @@
 ACLOCAL_AMFLAGS= -I m4
 SUBDIRS = @subdirs@
 
-EXTRA_DIST=liboauth.lsm.in oauth.pc.in Doxyfile.in COPYING.GPL COPYING.MIT LICENSE.OpenSSL
+EXTRA_DIST=liboauth.lsm.in oauth.pc.in Doxyfile.in \
+					 COPYING.GPL COPYING.MIT LICENSE.OpenSSL \
+					 m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = oauth.pc

@@ -70,8 +70,8 @@ AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[us
 report_curl="no"
 dnl ** check for commandline executable curl 
 if test "${enable_curl}" != "no"; then
-  AC_PATH_PROG(CURL, curl, no, $PATH:/bin:/usr/bin:/usr/local/bin)
-  if test "$CURL" != "no"; then
+  AC_PATH_PROG(CURLCMD, curl, no, $PATH:/bin:/usr/bin:/usr/local/bin)
+  if test "$CURLCMD" != "no"; then
   AC_DEFINE(HAVE_SHELL_CURL, 1)
   report_curl="shell command"
   fi
@@ -106,8 +106,12 @@ if test "${enable_nss}" == "yes"; then
   report_hash="NSS"
 else
   AC_CHECK_HEADERS(openssl/hmac.h)
+  if test -z "${HASH_LIBS}"; then
   HASH_LIBS="-lcrypto"
+  fi
+  if test -z "${HASH_CFLAGS}"; then
   HASH_CFLAGS=""
+  fi
   report_hash="OpenSSL"
   PC_LIB="$PC_LIB -lssl"
   PC_REQ="$PC_REQ libssl"
