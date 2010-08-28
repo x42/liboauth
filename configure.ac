@@ -79,9 +79,9 @@ if test "${enable_curl}" != "no"; then
 fi
 
 dnl ** check for libcurl
-if test "${enable_libcurl}" != "no"; then
+AS_IF([test "${enable_libcurl}" != "no"], [
   PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
-fi
+])
 
 report_curltimeout="-"
 if test -n "${with_curltimeout}"; then
@@ -100,12 +100,12 @@ AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
-if test "${enable_nss}" == "yes"; then
+AS_IF([test "${enable_nss}" == "yes"], [
   PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
   HASH_LIBS=${NSS_LIBS}
   HASH_CFLAGS=${NSS_CFLAGS}
   report_hash="NSS"
-else
+], [
   AC_CHECK_HEADERS(openssl/hmac.h)
   if test -z "${HASH_LIBS}"; then
   HASH_LIBS="-lcrypto"
@@ -130,7 +130,7 @@ else
    
   see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
   ])
-fi
+])
 
 AC_SUBST(HASH_LIBS)
 AC_SUBST(HASH_CFLAGS)
