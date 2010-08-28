@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS= -I m4
 OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
 MYCFLAGS = @LIBOAUTH_CFLAGS@ @HASH_CFLAGS@ @CURL_CFLAGS@ 
-MYLDADD  = $(OAUTHDIR)/liboauth.la @HASH_LIBS@ @CURL_LIBS@
+MYLDADD  = $(OAUTHDIR)/liboauth.la
 
 tcwiki_SOURCES = selftest_wiki.c commontest.c commontest.h
 tcwiki_LDADD = $(MYLDADD)

@@ -114,8 +114,8 @@ AS_IF([test "${enable_nss}" == "yes"], [
   HASH_CFLAGS=""
   fi
   report_hash="OpenSSL"
-  PC_LIB="$PC_LIB -lssl"
-  PC_REQ="$PC_REQ libssl"
+  PC_LIB="$PC_LIB -lcrypto"
+  PC_REQ="$PC_REQ libcrypto"
   AC_MSG_NOTICE([
 
   NOTE: OpenSSL is not compatible with GPL applications.
