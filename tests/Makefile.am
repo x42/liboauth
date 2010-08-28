@@ -1,4 +1,4 @@
-noinst_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthtest2 oauthsign oauthbodyhash
+check_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oauthtest2 oauthsign oauthbodyhash
 ACLOCAL_AMFLAGS= -I m4
 
 OAUTHDIR =../src
