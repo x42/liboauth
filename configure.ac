@@ -58,6 +58,23 @@ AH_TEMPLATE([USE_NSS], [Define to use NSS instead of OpenSSL])
 AH_TEMPLATE([HAVE_SHELL_CURL], [Define if you can invoke curl via a shell command. This is only used if HAVE_CURL is not defined.])
 AH_TEMPLATE([OAUTH_CURL_TIMEOUT], [Define the number of seconds for the HTTP request to timeout; if not defined no timeout (or libcurl default) is used.])
 
+EXESUF=
+TEST_UNICODE=-DTEST_UNICODE
+
+# Target specific settings
+case $target_os in
+	*mingw32*|*win*)
+		EXESUF=.exe
+		TEST_UNICODE=
+	;;
+	*)    
+	;;
+esac
+AC_SUBST(TEST_UNICODE)
+AC_SUBST(EXESUF)
+
+
+
 # PKGconfig oauth.pc.in
 PC_REQ=""
 PC_LIB=""

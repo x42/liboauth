@@ -8,11 +8,11 @@ MYLDADD  = $(OAUTHDIR)/liboauth.la
 
 tcwiki_SOURCES = selftest_wiki.c commontest.c commontest.h
 tcwiki_LDADD = $(MYLDADD)
-tcwiki_CFLAGS = $(MYCFLAGS) -DTEST_UNICODE
+tcwiki_CFLAGS = $(MYCFLAGS) @TEST_UNICODE@
 
 tceran_SOURCES = selftest_eran.c commontest.c commontest.h
 tceran_LDADD = $(MYLDADD)
-tceran_CFLAGS = $(MYCFLAGS) -DTEST_UNICODE
+tceran_CFLAGS = $(MYCFLAGS) @TEST_UNICODE@
 
 tcother_SOURCES = selftest_other.c commontest.c commontest.h
 tcother_LDADD = $(MYLDADD)
