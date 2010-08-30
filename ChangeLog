@@ -1,3 +1,11 @@
+version 0.8.9
+ - added  constant-time string compare function motivated by
+   http://rdist.root.org/2010/01/07/timing-independent-array-comparison/ 
+ -  updated the build-system
+   - avoid indirect linking (curl, ssl)
+   - AS_IF expansion for PKG_PROG_PKG_CONFIG
+   - only build tests when running `make check`
+
 version 0.8.8
  minor changes to the build-system 
  - allow to overrice HASH_LIBS/CFLAGS (NSS, SpenSSL)
