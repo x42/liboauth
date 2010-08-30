@@ -8,7 +8,7 @@ EXTRA_DIST=liboauth.lsm.in oauth.pc.in Doxyfile.in \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = oauth.pc
 
-TESTS=tests/tcwiki tests/tceran tests/tcother
+TESTS=tests/tcwiki@EXESUF@ tests/tceran@EXESUF@ tests/tcother@EXESUF@
 
 CLEANFILES = stamp-doxygen stamp-doc
 

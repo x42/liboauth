@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.8.8"
+#define LIBOAUTH_VERSION "0.8.9"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  8
-#define LIBOAUTH_VERSION_MICRO  8
+#define LIBOAUTH_VERSION_MICRO  9
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  6
+#define LIBOAUTH_CUR  7
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  6
+#define LIBOAUTH_AGE  7
 #endif
 
 #ifdef __GNUC__
@@ -294,6 +294,32 @@ void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
  * @param argvp pointer to array values to be free()d
  */
 void oauth_free_array(int *argcp, char ***argvp);
+
+/**
+ * compare two strings in constant-time (as to not let an
+ * attacker guess how many leading chars are correct:
+ * http://rdist.root.org/2010/01/07/timing-independent-array-comparison/ )
+ *
+ * @param a string to compare 
+ * @param b string to compare
+ * @param len_a length of string a
+ * @param len_b length of string b
+ *
+ * returns 0 (false) if strings are not equal, and 1 (true) if strings are equal.
+ */
+int oauth_time_indepenent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b);
+
+/**
+ * compare two strings in constant-time.
+ * wrapper to \ref oauth_time_indepenent_equals_n 
+ * which calls strlen() for each argument.
+ *
+ * @param a string to compare 
+ * @param b string to compare
+ *
+ * returns 0 (false) if strings are not equal, and 1 (true) if strings are equal.
+ */
+int oauth_time_indepenent_equals(const char* a, const char* b);
 
 /**
  * calculate OAuth-signature for a given HTTP request URL, parameters and oauth-tokens.

@@ -41,6 +41,7 @@ AC_PROG_LN_S
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 AM_PROG_CC_C_O
+AC_LIBTOOL_WIN32_DLL
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_HEADER_STDC
@@ -56,6 +57,23 @@ AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
 AH_TEMPLATE([USE_NSS], [Define to use NSS instead of OpenSSL])
 AH_TEMPLATE([HAVE_SHELL_CURL], [Define if you can invoke curl via a shell command. This is only used if HAVE_CURL is not defined.])
 AH_TEMPLATE([OAUTH_CURL_TIMEOUT], [Define the number of seconds for the HTTP request to timeout; if not defined no timeout (or libcurl default) is used.])
+
+EXESUF=
+TEST_UNICODE=-DTEST_UNICODE
+
+# Target specific settings
+case $target_os in
+	*mingw32*|*win*)
+		EXESUF=.exe
+		TEST_UNICODE=
+	;;
+	*)    
+	;;
+esac
+AC_SUBST(TEST_UNICODE)
+AC_SUBST(EXESUF)
+
+
 
 # PKGconfig oauth.pc.in
 PC_REQ=""
@@ -78,9 +96,9 @@ if test "${enable_curl}" != "no"; then
 fi
 
 dnl ** check for libcurl
-if test "${enable_libcurl}" != "no"; then
+AS_IF([test "${enable_libcurl}" != "no"], [
   PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
-fi
+])
 
 report_curltimeout="-"
 if test -n "${with_curltimeout}"; then
@@ -99,12 +117,12 @@ AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
-if test "${enable_nss}" == "yes"; then
+AS_IF([test "${enable_nss}" == "yes"], [
   PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
   HASH_LIBS=${NSS_LIBS}
   HASH_CFLAGS=${NSS_CFLAGS}
   report_hash="NSS"
-else
+], [
   AC_CHECK_HEADERS(openssl/hmac.h)
   if test -z "${HASH_LIBS}"; then
   HASH_LIBS="-lcrypto"
@@ -113,8 +131,8 @@ else
   HASH_CFLAGS=""
   fi
   report_hash="OpenSSL"
-  PC_LIB="$PC_LIB -lssl"
-  PC_REQ="$PC_REQ libssl"
+  PC_LIB="$PC_LIB -lcrypto"
+  PC_REQ="$PC_REQ libcrypto"
   AC_MSG_NOTICE([
 
   NOTE: OpenSSL is not compatible with GPL applications.
@@ -129,7 +147,7 @@ else
    
   see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
   ])
-fi
+])
 
 AC_SUBST(HASH_LIBS)
 AC_SUBST(HASH_CFLAGS)
