@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: oauth
 Description: OAuth - server to server secure API authentication  
-Requires.private:: @PC_REQ@
+Requires.private: @PC_REQ@
 Version: @VERSION@
 Libs: -L${libdir} -loauth
 Libs.private: -lm @PC_LIB@
