@@ -61,21 +61,39 @@ AH_TEMPLATE([OAUTH_CURL_TIMEOUT], [Define the number of seconds for the HTTP req
 EXESUF=
 TEST_UNICODE=-DTEST_UNICODE
 
-# Target specific settings
+dnl *** Target specific settings ***
 case $target_os in
-	*mingw32*|*win*)
-		EXESUF=.exe
-		TEST_UNICODE=
-	;;
-	*)    
-	;;
+  *mingw32*|*win*)
+    EXESUF=.exe
+    TEST_UNICODE=
+  ;;
+  *)    
+  ;;
 esac
 AC_SUBST(TEST_UNICODE)
 AC_SUBST(EXESUF)
 
+dnl *** misc complier/linker flags ***
+LIBOAUTH_CFLAGS="-Wall"
+LIBOAUTH_LDFLAGS="${LIBOAUTH_CFLAGS} -export-symbols-regex '^oauth_.*'"
+#LIBOAUTH_CFLAGS="${LIBOAUTH_CFLAGS} -g -posix -std=c99 -pedantic"
+
+AC_MSG_CHECKING([if -Wl,--as-needed works])
+LFDLAGS_save=$LDFLAGS
+LDFLAGS="$LDFLAGS -Wl,--as-needed"
+AC_TRY_LINK([], [],
+            [
+             AC_MSG_RESULT([yes])
+             LIBOAUTH_LDFLAGS="$LIBOAUTH_LDFLAGS -Wl,--as-needed"
+            ], 
+            [AC_MSG_RESULT([no])])
+LDFLAGS=$LDFLAGS_save
+
+AC_SUBST(LIBOAUTH_CFLAGS)
+AC_SUBST(LIBOAUTH_LDFLAGS)
 
 
-# PKGconfig oauth.pc.in
+dnl *** PKGconfig oauth.pc.in ***
 PC_REQ=""
 PC_LIB=""
 
@@ -140,7 +158,7 @@ AS_IF([test "${enable_nss}" == "yes"], [
   However liboauth provides an exeption (to the GPL) to circumvent this issue
   (see README, src/hash.c). Nevertheless, double-check your licensing.
  
-  liboauth is licensed under MIT license but it is comatible with the GPL. 
+  liboauth itself is licensed under MIT license and comatible with the GPL. 
 
   Either way, you are probably better off using NSS (configure --enable-nss);
   future versions of liboauth will default to the Mozilla NSS.
@@ -151,14 +169,6 @@ AS_IF([test "${enable_nss}" == "yes"], [
 
 AC_SUBST(HASH_LIBS)
 AC_SUBST(HASH_CFLAGS)
-
-dnl *** other complier/linker flags ***
-#LIBOAUTH_CFLAGS="-Wall -g -posix -std=c99 -pedantic"
-LIBOAUTH_CFLAGS="-Wall"
-LIBOAUTH_LDFLAGS="-Wall -export-symbols-regex '^oauth_.*'"
-AC_SUBST(LIBOAUTH_CFLAGS)
-AC_SUBST(LIBOAUTH_LDFLAGS)
-
 
 dnl *** doxygen ***
 AC_ARG_VAR(DOXYGEN, Doxygen)
@@ -213,6 +223,8 @@ AC_MSG_NOTICE([
   libcurl-timeout:        $report_curltimeout
   generate documentation: $DOXYGEN
   installation prefix:    $prefix
+  CFLAGS:                 $LIBOAUTH_CFLAGS $CFLAGS
+  LDFLAGS:                $LIBOAUTH_LDFLAGS $LDFLAGS
 
  type "make" followed my "make install" as root.
  $DOXMAKE
