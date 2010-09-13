@@ -29,16 +29,16 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "0.9.0"
+#define LIBOAUTH_VERSION "0.9.1"
 #define LIBOAUTH_VERSION_MAJOR  0
 #define LIBOAUTH_VERSION_MINOR  9
-#define LIBOAUTH_VERSION_MICRO  0
+#define LIBOAUTH_VERSION_MICRO  1
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-#define LIBOAUTH_CUR  7
+#define LIBOAUTH_CUR  8
 #define LIBOAUTH_REV  0
-#define LIBOAUTH_AGE  7
+#define LIBOAUTH_AGE  8
 #endif
 
 #ifdef __GNUC__
@@ -307,11 +307,16 @@ void oauth_free_array(int *argcp, char ***argvp);
  *
  * returns 0 (false) if strings are not equal, and 1 (true) if strings are equal.
  */
-int oauth_time_indepenent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b);
+int oauth_time_independent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b);
+
+/**
+ * @deprecated Use oauth_time_independent_equals_n() instead.
+ */
+int oauth_time_indepenent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b) attribute_deprecated;
 
 /**
  * compare two strings in constant-time.
- * wrapper to \ref oauth_time_indepenent_equals_n 
+ * wrapper to \ref oauth_time_independent_equals_n 
  * which calls strlen() for each argument.
  *
  * @param a string to compare 
@@ -319,7 +324,12 @@ int oauth_time_indepenent_equals_n(const char* a, const char* b, size_t len_a, s
  *
  * returns 0 (false) if strings are not equal, and 1 (true) if strings are equal.
  */
-int oauth_time_indepenent_equals(const char* a, const char* b);
+int oauth_time_independent_equals(const char* a, const char* b);
+
+/**
+ * @deprecated Use oauth_time_independent_equals() instead.
+ */
+int oauth_time_indepenent_equals(const char* a, const char* b) attribute_deprecated;
 
 /**
  * calculate OAuth-signature for a given HTTP request URL, parameters and oauth-tokens.
@@ -643,7 +653,7 @@ char *oauth_http_post2 (const char *u, const char *p, const char *customheader);
  * Multiple header elements can be passed separating them with "\r\n"
  * @return returned HTTP reply or NULL on error
  */
-char *oauth_post_file (const char *u, const char *fn, size_t len, const char *customheader);
+char *oauth_post_file (const char *u, const char *fn, const size_t len, const char *customheader);
 
 /**
  * http post raw data

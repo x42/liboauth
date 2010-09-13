@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "7 Sep 2010" "Version 0.9.0" "OAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "13 Sep 2010" "Version 0.9.1" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -111,13 +111,19 @@ OAuth.net implementation in POSIX-C.
 .br
 .RI "\fIfree array args \fP"
 .ti -1c
-.RI "int \fBoauth_time_indepenent_equals_n\fP (const char *a, const char *b, size_t len_a, size_t len_b)"
+.RI "int \fBoauth_time_independent_equals_n\fP (const char *a, const char *b, size_t len_a, size_t len_b)"
 .br
 .RI "\fIcompare two strings in constant-time (as to not let an attacker guess how many leading chars are correct: http://rdist.root.org/2010/01/07/timing-independent-array-comparison/ ) \fP"
 .ti -1c
-.RI "int \fBoauth_time_indepenent_equals\fP (const char *a, const char *b)"
+.RI "int \fBoauth_time_indepenent_equals_n\fP (const char *a, const char *b, size_t len_a, size_t len_b) attribute_deprecated"
+.br
+.ti -1c
+.RI "int \fBoauth_time_independent_equals\fP (const char *a, const char *b)"
 .br
 .RI "\fIcompare two strings in constant-time. \fP"
+.ti -1c
+.RI "int \fBoauth_time_indepenent_equals\fP (const char *a, const char *b) attribute_deprecated"
+.br
 .ti -1c
 .RI "char * \fBoauth_sign_url2\fP (const char *url, char **postargs, \fBOAuthMethod\fP method, const char *http_method, const char *c_key, const char *c_secret, const char *t_key, const char *t_secret)"
 .br
@@ -169,7 +175,7 @@ OAuth.net implementation in POSIX-C.
 .br
 .RI "\fIdo a HTTP POST request, wait for it to finish and return the content of the reply. \fP"
 .ti -1c
-.RI "char * \fBoauth_post_file\fP (const char *u, const char *fn, size_t len, const char *customheader)"
+.RI "char * \fBoauth_post_file\fP (const char *u, const char *fn, const size_t len, const char *customheader)"
 .br
 .RI "\fIhttp post raw data from file. \fP"
 .ti -1c
@@ -568,7 +574,7 @@ returned HTTP reply or NULL on error
 .RE
 .PP
 
-.SS "char* oauth_post_file (const char * u, const char * fn, size_t len, const char * customheader)"
+.SS "char* oauth_post_file (const char * u, const char * fn, const size_t len, const char * customheader)"
 .PP
 http post raw data from file. the returned string needs to be freed by the caller (requires libcurl)
 .PP
@@ -942,9 +948,9 @@ number of parameter(s) in array.
 \fBExamples: \fP
 .in +1c
 \fBtests/oauthexample.c\fP, \fBtests/oauthtest.c\fP, and \fBtests/oauthtest2.c\fP.
-.SS "int oauth_time_indepenent_equals (const char * a, const char * b)"
+.SS "int oauth_time_independent_equals (const char * a, const char * b)"
 .PP
-compare two strings in constant-time. wrapper to \fBoauth_time_indepenent_equals_n\fP which calls strlen() for each argument.
+compare two strings in constant-time. wrapper to \fBoauth_time_independent_equals_n\fP which calls strlen() for each argument.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -954,7 +960,7 @@ compare two strings in constant-time. wrapper to \fBoauth_time_indepenent_equals
 .RE
 .PP
 returns 0 (false) if strings are not equal, and 1 (true) if strings are equal. 
-.SS "int oauth_time_indepenent_equals_n (const char * a, const char * b, size_t len_a, size_t len_b)"
+.SS "int oauth_time_independent_equals_n (const char * a, const char * b, size_t len_a, size_t len_b)"
 .PP
 compare two strings in constant-time (as to not let an attacker guess how many leading chars are correct: http://rdist.root.org/2010/01/07/timing-independent-array-comparison/ ) \fBParameters:\fP
 .RS 4
@@ -968,6 +974,18 @@ compare two strings in constant-time (as to not let an attacker guess how many l
 .RE
 .PP
 returns 0 (false) if strings are not equal, and 1 (true) if strings are equal. 
+.SS "int oauth_time_indepenent_equals (const char * a, const char * b)"\fBDeprecated\fP
+.RS 4
+Use \fBoauth_time_independent_equals()\fP instead. 
+.RE
+.PP
+
+.SS "int oauth_time_indepenent_equals_n (const char * a, const char * b, size_t len_a, size_t len_b)"\fBDeprecated\fP
+.RS 4
+Use \fBoauth_time_independent_equals_n()\fP instead. 
+.RE
+.PP
+
 .SS "char* oauth_url_escape (const char * string)"
 .PP
 Escape 'string' according to RFC3986 and http://oauth.net/core/1.0/#encoding_parameters. \fBParameters:\fP
