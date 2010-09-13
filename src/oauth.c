@@ -863,21 +863,29 @@ char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
  *
  * returns 0 (false) if strings are not equal, and 1 (true) if strings are equal.
  */
+int oauth_time_independent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b) {
+  int diff, i, j;
+  if (a == NULL) return (b == NULL);
+  else if (b == NULL) return 0;
+  else if (len_b == 0) return (len_a == 0);
+  diff = len_a ^ len_b;
+  j=0;
+  for (i=0; i<len_a; ++i) {
+    diff |= a[i] ^ b[j];
+    j = (j+1) % len_b;
+  }
+  return diff == 0;
+}
 int oauth_time_indepenent_equals_n(const char* a, const char* b, size_t len_a, size_t len_b) {
-	if (a == NULL) return (b == NULL);
-	else if (b == NULL) return 0;
-	else if (len_b == 0) return (len_a == 0);
-  int diff = len_a ^ len_b;
-	int i,j = 0;
-	for (i=0; i<len_a; ++i) {
-		diff |= a[i] ^ b[j];
-		j = (j+1) % len_b;
-	}
-	return diff == 0;
+  return oauth_time_independent_equals_n(a, b, len_a, len_b);
+}
+
+int oauth_time_independent_equals(const char* a, const char* b) {
+  return oauth_time_independent_equals_n (a, b, a?strlen(a):0, b?strlen(b):0);
 }
 
 int oauth_time_indepenent_equals(const char* a, const char* b) {
-	return oauth_time_indepenent_equals_n (a, b, a?strlen(a):0, b?strlen(b):0);
+  return oauth_time_independent_equals_n (a, b, a?strlen(a):0, b?strlen(b):0);
 }
 
 /**
