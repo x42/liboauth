@@ -30,3 +30,7 @@ Many thanks to Diego Elio Pettenò who sent patches for the build-system and
 packages liboauth for Gentoo. Likewise Tom Parker for Debian, as well as 
 Paul Wise who metorered Bilal Akhtar on debian-mentors. All of which provided
 valuable feedback.
+
+Last but not least, Jeff Squyres inspired the '-Wl,--as-needed' linker flags
+check.
+
