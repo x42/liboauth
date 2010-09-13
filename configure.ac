@@ -63,6 +63,8 @@ TEST_UNICODE=-DTEST_UNICODE
 
 dnl *** Target specific settings ***
 case $target_os in
+  *darwin*)
+  ;;
   *mingw32*|*win*)
     EXESUF=.exe
     TEST_UNICODE=
