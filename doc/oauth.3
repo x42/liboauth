@@ -1,4 +1,4 @@
-.TH "src/oauth.h" 3 "13 Sep 2010" "Version 0.9.1" "OAuth library functions" \" -*- nroff -*-
+.TH "src/oauth.h" 3 "Thu Jan 13 2011" "Version 0.9.2" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -714,7 +714,7 @@ url string needs to be freed by the caller.
 \fBtests/oauthtest2.c\fP.
 .SS "char* oauth_sign_array (int * argcp, char *** argvp, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"\fBDeprecated\fP
 .RS 4
-Use \fBoauth_sign_array2()\fP instead. 
+Use \fBoauth_sign_array2()\fP instead.
 .RE
 .PP
 
@@ -866,7 +866,7 @@ base64 encoded signature string.
 \fBtests/selftest_wiki.c\fP.
 .SS "char* oauth_sign_url (const char * url, char ** postargs, \fBOAuthMethod\fP method, const char * c_key, const char * c_secret, const char * t_key, const char * t_secret)"\fBDeprecated\fP
 .RS 4
-Use \fBoauth_sign_url2()\fP instead. 
+Use \fBoauth_sign_url2()\fP instead.
 .RE
 .PP
 
@@ -976,13 +976,13 @@ compare two strings in constant-time (as to not let an attacker guess how many l
 returns 0 (false) if strings are not equal, and 1 (true) if strings are equal. 
 .SS "int oauth_time_indepenent_equals (const char * a, const char * b)"\fBDeprecated\fP
 .RS 4
-Use \fBoauth_time_independent_equals()\fP instead. 
+Use \fBoauth_time_independent_equals()\fP instead.
 .RE
 .PP
 
 .SS "int oauth_time_indepenent_equals_n (const char * a, const char * b, size_t len_a, size_t len_b)"\fBDeprecated\fP
 .RS 4
-Use \fBoauth_time_independent_equals_n()\fP instead. 
+Use \fBoauth_time_independent_equals_n()\fP instead.
 .RE
 .PP
 
