@@ -117,7 +117,7 @@ fi
 
 dnl ** check for libcurl
 AS_IF([test "${enable_libcurl}" != "no"], [
-  PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ])
+  PKG_CHECK_MODULES(CURL, libcurl, [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB ${CURL_LIBS}" report_curl="libcurl" ])
 ])
 
 report_curltimeout="-"
@@ -151,7 +151,7 @@ AS_IF([test "${enable_nss}" == "yes"], [
   HASH_CFLAGS=""
   fi
   report_hash="OpenSSL"
-  PC_LIB="$PC_LIB -lcrypto"
+  PC_LIB="$PC_LIB ${HASH_LIBS}"
   PC_REQ="$PC_REQ libcrypto"
   AC_MSG_NOTICE([
 
