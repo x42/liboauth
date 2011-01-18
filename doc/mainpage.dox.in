@@ -12,7 +12,7 @@
  <a href="http://www.mozilla.org/projects/security/pki/nss/">NSS</a> (Mozilla's Network Security Services)
  , which are used for generating the hash/signature, and optionally <a href="http://curl.haxx.se/libcurl/c/">libcurl</a> for issuing HTTP requests. 
  
- The source includes example code and a self-tests based on <a href="http://wiki.oauth.net/TestCases">http://wiki.oauth.net/TestCases</a>. The library has been tested against the http://oauth-sandbox.mediamatic.nl and http://term.ie/oauth/example test servers using commandline-cURL, libcurl and a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and Mac/OSX.
+ The source includes example code and a self-tests based on <a href="http://wiki.oauth.net/TestCases">http://wiki.oauth.net/TestCases</a>. The library has been tested against the http://oauth-sandbox.mediamatic.nl (now offline) and http://term.ie/oauth/example test servers using commandline-cURL, libcurl and a QT4.3.2 QHttp C++ application on win32 (mingw), gnu/Linux and Mac/OSX.
 
 @section installation Installation
  The source is debianized. On Debian systems <tt>debian-buildpackage</tt> can be used to compile and <tt>dpkg -i</tt> to install <em>liboauth</em> and <em>liboauth-dev</em> packages.
@@ -37,7 +37,7 @@
 
 @section download Download
 
-  Download Source: <a href="http://liboauth.sourceforge.net/pool/liboauth-@VERSION@.tar.gz">liboauth-@VERSION@.tar.gz</a>
+  Download Source: <a href="http://sourceforge.net/projects/liboauth/files/liboauth-@VERSION@.tar.gz/download">liboauth-@VERSION@.tar.gz</a>
   &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
 
   liboauth is maintained at sourceforge subversion repositories:
