@@ -81,7 +81,7 @@ LIBOAUTH_LDFLAGS="${LIBOAUTH_CFLAGS} -export-symbols-regex '^oauth_.*'"
 #LIBOAUTH_CFLAGS="${LIBOAUTH_CFLAGS} -g -posix -std=c99 -pedantic"
 
 AC_MSG_CHECKING([if -Wl,--as-needed works])
-LFDLAGS_save=$LDFLAGS
+LDFLAGS_save=$LDFLAGS
 LDFLAGS="$LDFLAGS -Wl,--as-needed"
 AC_TRY_LINK([], [],
             [
