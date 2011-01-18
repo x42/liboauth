@@ -5,6 +5,7 @@ OAUTHDIR =../src
 INCLUDES = -I$(srcdir)/$(OAUTHDIR)
 MYCFLAGS = @LIBOAUTH_CFLAGS@ @HASH_CFLAGS@ @CURL_CFLAGS@ 
 MYLDADD  = $(OAUTHDIR)/liboauth.la
+LIBS     = @HASH_LIBS@ @CURL_LIBS@ @LIBS@
 
 tcwiki_SOURCES = selftest_wiki.c commontest.c commontest.h
 tcwiki_LDADD = $(MYLDADD)
