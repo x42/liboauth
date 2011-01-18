@@ -1,3 +1,8 @@
+version 0.9.3
+ - yet more build-system fixes:
+   - allow to override HASH_LIBS and CURL_LIBS using envoronment variables
+   - include them in .pc and tests/Makefile.am
+
 version 0.9.2
  - fixed typo in build-system (LDFLAGS, -Wl,--as-needed detection)
 
