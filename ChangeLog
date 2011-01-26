@@ -1,3 +1,7 @@
+version 0.9.4
+  - fixed possible memory corrution in oauth_curl_get
+	  thanks to Bruce Rosen for reporting this issue
+
 version 0.9.3
  - yet more build-system fixes:
    - allow to override HASH_LIBS and CURL_LIBS using envoronment variables
