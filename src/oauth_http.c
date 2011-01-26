@@ -155,7 +155,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
 
   if (q) {
     t1=(char*)xmalloc(sizeof(char)*(strlen(u)+strlen(q)+2));
-    strcat(t1,u); strcat(t1,"?"); strcat(t1,q);
+    strcpy(t1,u); strcat(t1,"?"); strcat(t1,q);
   }
 
   chunk.data=NULL;
@@ -539,7 +539,7 @@ char *oauth_exec_get (const char *u, const char *q) {
     char *e2;
     e2 = oauth_escape_shell(q);
     t1=(char*)xmalloc(sizeof(char)*(strlen(e1)+strlen(e2)+2));
-    strcat(t1,e1); strcat(t1,"?"); strcat(t1,e2);
+    strcpy(t1,e1); strcat(t1,"?"); strcat(t1,e2);
     free(e2);
   }
   snprintf(cmd, BUFSIZ, cmdtpl, q?t1:e1);
