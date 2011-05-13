@@ -54,6 +54,7 @@ AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
+AH_TEMPLATE([USE_BUILTIN_HASH], [Define to use neither NSS nor OpenSSL])
 AH_TEMPLATE([USE_NSS], [Define to use NSS instead of OpenSSL])
 AH_TEMPLATE([HAVE_SHELL_CURL], [Define if you can invoke curl via a shell command. This is only used if HAVE_CURL is not defined.])
 AH_TEMPLATE([OAUTH_CURL_TIMEOUT], [Define the number of seconds for the HTTP request to timeout; if not defined no timeout (or libcurl default) is used.])
@@ -100,8 +101,9 @@ PC_REQ=""
 PC_LIB=""
 
 dnl *** configuration options ***
-AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use curl]))
+AC_ARG_ENABLE(curl, AC_HELP_STRING([--disable-curl],[do not use (command-line) curl]))
 AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
+AC_ARG_ENABLE(builtinhash, AC_HELP_STRING([--enable-builtinhash],[do use neither NSS nor OpenSSL: only HMAC/SHA1 signatures - no RSA/PK11]))
 AC_ARG_ENABLE(nss, AC_HELP_STRING([--enable-nss],[use NSS instead of OpenSSL]))
 AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
 
@@ -145,35 +147,48 @@ AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
-AS_IF([test "${enable_nss}" == "yes"], [
-  PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
-  HASH_LIBS=${NSS_LIBS}
-  HASH_CFLAGS=${NSS_CFLAGS}
-  report_hash="NSS"
+AS_IF([test "${enable_builtinhash}" == "yes"], [
+    AC_DEFINE(USE_BUILTIN_HASH, 1) USE_BUILTIN_HASH=1
+    HASH_LIBS=""
+    HASH_CFLAGS=""
+    report_hash="built-in HMAC/SHA1 - no RSA"
+    AC_MSG_NOTICE([
+      using built-in HMAC/SHA1 hash algorithm without RSA/PK11 support.
+      This option is not recommended for general use and should only
+      be used on small devices (AVR, mircocontrollers) where neither
+      NSS nor OpenSSL is available.
+    ])
 ], [
-  AC_CHECK_HEADERS(openssl/hmac.h)
-  if test -z "${HASH_LIBS}"; then
-  HASH_LIBS="-lcrypto"
-  fi
-  if test -z "${HASH_CFLAGS}"; then
-  HASH_CFLAGS=""
-  fi
-  report_hash="OpenSSL"
-  PC_LIB="$PC_LIB ${HASH_LIBS}"
-  PC_REQ="$PC_REQ libcrypto"
-  AC_MSG_NOTICE([
+  AS_IF([test "${enable_nss}" == "yes"], [
+    PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
+    HASH_LIBS=${NSS_LIBS}
+    HASH_CFLAGS=${NSS_CFLAGS}
+    report_hash="NSS"
+  ], [
+    AC_CHECK_HEADERS(openssl/hmac.h)
+    if test -z "${HASH_LIBS}"; then
+    HASH_LIBS="-lcrypto"
+    fi
+    if test -z "${HASH_CFLAGS}"; then
+    HASH_CFLAGS=""
+    fi
+    report_hash="OpenSSL"
+    PC_LIB="$PC_LIB ${HASH_LIBS}"
+    PC_REQ="$PC_REQ libcrypto"
+    AC_MSG_NOTICE([
 
-  NOTE: OpenSSL is not compatible with GPL applications.
-  Even if only linked with GPL code you are not allowed to distibute your app.
-  However liboauth provides an exeption (to the GPL) to circumvent this issue
-  (see README, src/hash.c). Nevertheless, double-check your licensing.
- 
-  liboauth itself is licensed under MIT license and comatible with the GPL. 
-
-  Either way, you are probably better off using NSS (configure --enable-nss);
-  future versions of liboauth will default to the Mozilla NSS.
+    NOTE: OpenSSL is not compatible with GPL applications.
+    Even if only linked with GPL code you are not allowed to distibute your app.
+    However liboauth provides an exeption (to the GPL) to circumvent this issue
+    (see README, src/hash.c). Nevertheless, double-check your licensing.
    
-  see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
+    liboauth itself is licensed under MIT license and comatible with the GPL. 
+
+    Either way, you are probably better off using NSS (configure --enable-nss);
+    future versions of liboauth will default to the Mozilla NSS.
+     
+    see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
+    ])
   ])
 ])
 
