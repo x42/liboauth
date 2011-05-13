@@ -44,6 +44,23 @@
 #include <curl/curl.h>
 #include <sys/stat.h>
 
+# define GLOBAL_CURL_ENVIROMENT_OPTIONS \
+  if (getenv("CURLOPT_PROXYAUTH")){ \
+    curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY); \
+  } \
+  if (getenv("CURLOPT_SSL_VERIFYPEER")){ \
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, getenv("CURLOPT_SSL_VERIFYPEER") ); \
+  } \
+  if (getenv("CURLOPT_CAINFO")){ \
+    curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("CURLOPT_CAINFO") ); \
+  } \
+  if (getenv("CURLOPT_FOLLOWLOCATION")){ \
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, getenv("CURLOPT_FOLLOWLOCATION") ); \
+  } \
+  if (getenv("CURLOPT_FAILONERROR")){ \
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, getenv("CURLOPT_FAILONERROR") ); \
+  }
+
 struct MemoryStruct {
   char *data;
   size_t size; //< bytes remaining (r), bytes accumulated (w)
@@ -127,6 +144,7 @@ char *oauth_curl_post (const char *u, const char *p, const char *customheader) {
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
+  GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
   if (res) {
@@ -181,6 +199,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
+  GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
   if (q) free(t1);
@@ -240,6 +259,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
+  GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
   if (res) {
@@ -311,6 +331,7 @@ char *oauth_curl_send_data_with_callback (const char *u, const char *data, size_
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, OAUTH_CURL_TIMEOUT);
   curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 #endif
+  GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
   if (res) {
