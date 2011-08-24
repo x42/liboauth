@@ -49,16 +49,16 @@
     curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY); \
   } \
   if (getenv("CURLOPT_SSL_VERIFYPEER")){ \
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, getenv("CURLOPT_SSL_VERIFYPEER") ); \
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, (long) atol(getenv("CURLOPT_SSL_VERIFYPEER")) ); \
   } \
   if (getenv("CURLOPT_CAINFO")){ \
     curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("CURLOPT_CAINFO") ); \
   } \
   if (getenv("CURLOPT_FOLLOWLOCATION")){ \
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, getenv("CURLOPT_FOLLOWLOCATION") ); \
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, (long) atol(getenv("CURLOPT_FOLLOWLOCATION")) ); \
   } \
   if (getenv("CURLOPT_FAILONERROR")){ \
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, getenv("CURLOPT_FAILONERROR") ); \
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, (long) atol(getenv("CURLOPT_FAILONERROR")) ); \
   }
 
 struct MemoryStruct {
