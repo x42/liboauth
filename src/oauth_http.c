@@ -468,7 +468,7 @@ char *oauth_exec_shell (const char *cmd) {
   while (in && rcv > 0 && !feof(in)) {
     alloc +=1024;
     data = (char*)xrealloc(data, alloc * sizeof(char));
-    rcv = fread(data, sizeof(char), 1024, in);
+    rcv = fread(data + (alloc-1024), sizeof(char), 1024, in);
     len += rcv;
   }
   pclose(in);
