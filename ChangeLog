@@ -1,6 +1,9 @@
 version 0.9.5
   - added "built-in" hmac-sha1 hashing (no RSA).
   - added some CURL options available via enviroment variables
+  - fixed issue with decoding already encoded characters
+    in the base-URL (not parameters).
+    reported by L. Alberto Giménez
 
 version 0.9.4
   - fixed possible memory corrution in oauth_curl_get

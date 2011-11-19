@@ -1,7 +1,7 @@
 /*
  * OAuth string functions in POSIX-C.
  *
- * Copyright 2007-2010 Robin Gareus <robin@gareus.org>
+ * Copyright 2007-2011 Robin Gareus <robin@gareus.org>
  * 
  * The base64 functions are by Jan-Henrik Haukeland, <hauk@tildeslash.com>
  * and un/escape_url() was inspired by libcurl's curl_escape under ISC-license
@@ -363,7 +363,10 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
     if(!strncasecmp("oauth_signature=",token,16)) continue;
     (*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
     while (!(qesc&2) && (tmp=strchr(token,'\001'))) *tmp='&';
-    (*argv)[argc]=oauth_url_unescape(token, NULL);
+    if (argc>0 || (qesc&4)) 
+      (*argv)[argc]=oauth_url_unescape(token, NULL);
+    else
+      (*argv)[argc]=xstrdup(token);
     if (argc==0 && strstr(token, ":/")) {
       // HTTP does not allow empty absolute paths, so the URL 
       // 'http://example.com' is equivalent to 'http://example.com/' and should
@@ -443,6 +446,21 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int 
 
     if (i==start && i==0 && strstr(argv[i], ":/")) {
       tmp=xstrdup(argv[i]);
+#if 1 // encode white-space in the base-url
+      while ((t1=strchr(tmp,' '))) {
+# if 0
+        *t1='+';
+# else
+        size_t off = t1-tmp;
+        char *t2 = (char*) xmalloc(sizeof(char)*(3+strlen(tmp)));
+        strcpy(t2, tmp);
+        strcpy(t2+off+2, tmp+off);
+        *(t2+off)='%'; *(t2+off+1)='2'; *(t2+off+2)='0';
+        free(tmp);
+        tmp=t2;
+# endif
+#endif
+      }
       len+=strlen(tmp);
     } else if(!(t1=strchr(argv[i], '='))) {
     // see http://oauth.net/core/1.0/#anchor14

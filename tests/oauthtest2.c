@@ -62,6 +62,11 @@ void request_token_example_get(void) {
   char **argv = NULL;
 
   argc = oauth_split_url_parameters(request_token_uri, &argv);
+  if (1) {
+    int i;
+    for (i=0;i<argc; i++)
+      printf("%d:%s\n", i, argv[i]);
+  }
 
   oauth_sign_array2_process(&argc, &argv,
           NULL, //< postargs (unused)
