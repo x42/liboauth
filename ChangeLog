@@ -1,3 +1,7 @@
+version 0.9.6
+  - fixed typo, do not print a separator before first parameter
+	when serializing url for auth-header.
+
 version 0.9.5
   - added "built-in" hmac-sha1 hashing (no RSA).
   - added some CURL options available via enviroment variables
