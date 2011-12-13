@@ -433,7 +433,7 @@ char *oauth_serialize_url (int argc, int start, char **argv) {
 char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int mod) {
   char  *tmp, *t1;
   int i;
-  int  first=0;
+  int first=1;
   int seplen=strlen(sep);
   char *query = (char*) xmalloc(sizeof(char)); 
   *query='\0';
