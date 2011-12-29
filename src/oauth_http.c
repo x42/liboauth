@@ -203,12 +203,11 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
   if (q) free(t1);
+  curl_easy_cleanup(curl);
+
   if (res) {
-    curl_easy_cleanup(curl);
     return NULL;
   }
-
-  curl_easy_cleanup(curl);
   return (chunk.data);
 }
 
