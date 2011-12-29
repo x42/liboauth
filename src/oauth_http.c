@@ -204,6 +204,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   curl_slist_free_all(slist);
   if (q) free(t1);
   if (res) {
+    curl_easy_cleanup(curl);
     return NULL;
   }
 
