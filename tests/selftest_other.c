@@ -72,6 +72,17 @@ int main (int argc, char **argv) {
     fail|=1;
   }
 
+  if (loglevel) printf("\n *** Testing PLAINTEXT signature.\n");
+  fail |= test_sign_get(
+      "http://host.net/resource" "?" "name=value&name=value"
+      "&oauth_nonce=fake&&oauth_timestamp=1",
+      OA_PLAINTEXT,
+      "abcd", "&",
+      "1234", "&",
+      "http://host.net/resource?name=value&name=value&oauth_consumer_key=abcd&oauth_nonce=fake&oauth_signature_method=PLAINTEXT&oauth_timestamp=1&oauth_token=1234&oauth_version=1.0&oauth_signature=%2526%26%2526"
+      );
+
+
   // report
   if (fail) {
     printf("\n !!! One or more test cases failed.\n\n");
