@@ -285,7 +285,7 @@ char *oauth_url_unescape(const char *string, size_t *olen) {
  * @return signature string
  */
 char *oauth_sign_plaintext (const char *m, const char *k) {
-  return(oauth_url_escape(k));
+  return(strdup(k));
 }
 
 /**
