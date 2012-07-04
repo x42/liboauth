@@ -1,5 +1,6 @@
-version 0.9.7 (unreleased)
+version 0.9.7 
   - fixed tiny memory leak when oauth_curl_get() fails
+  - fixed double-encoding of plaintext signature
 
 version 0.9.6
   - fixed typo, do not print a separator before first parameter
