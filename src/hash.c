@@ -116,7 +116,7 @@ static const char NS_PRIV_TRAILER[] = "-----END PRIVATE KEY-----";
 
 void oauth_init_nss() {
   static short nss_initialized = 0;
-  if (!nss_initialized) { NSS_NoDB_Init("."); nss_initialized=1;}
+  if (!nss_initialized) { NSS_NoDB_Init(NULL); nss_initialized=1;}
 }
 
 /**
