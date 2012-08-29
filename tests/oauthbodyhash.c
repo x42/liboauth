@@ -43,7 +43,14 @@ int my_data_post(char *url, char *data) {
   char *sig_url;
 
   bh=oauth_body_hash_data(strlen(data), data);
-  uh = oauth_catenc(2, url, bh);
+  uh = (char*) malloc((strlen(url)+strlen(bh)+2) * sizeof(char));
+  if (!uh) return NULL;
+
+  strcat(uh, url);
+  strcat(uh, "?");
+  strcat(uh, bh);
+
+  printf("URL: %s\n", uh);
   req_url = oauth_sign_url2(uh, &postarg, OA_HMAC, NULL, c_key, c_secret, t_key, t_secret);
   printf("POST: %s?%s\n", req_url, postarg);
   if (uh) free(uh);
@@ -53,8 +60,12 @@ int my_data_post(char *url, char *data) {
   reply = oauth_post_data(sig_url, data, strlen(data), "Content-Type: application/json");
   if(sig_url) free(sig_url);
 
-  printf("REPLY: %s\n", reply);
-  if(reply) free(reply);
+  if (reply) {
+    printf("REPLY: %s\n", reply);
+    free(reply);
+  } else {
+    printf("Error performing the request\n");
+  }
   return 0;
 }
 
