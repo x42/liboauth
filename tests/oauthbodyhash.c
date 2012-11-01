@@ -44,7 +44,7 @@ int my_data_post(char *url, char *data) {
 
   bh=oauth_body_hash_data(strlen(data), data);
   uh = (char*) malloc((strlen(url)+strlen(bh)+2) * sizeof(char));
-  if (!uh) return NULL;
+  if (!uh) return -1;
 
   strcat(uh, url);
   strcat(uh, "?");
