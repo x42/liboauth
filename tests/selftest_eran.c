@@ -6,7 +6,7 @@
  * This code contains examples provided by Eran Hammer-Lahav 
  * on the oauth.net mailing list.
  *
- * Copyright 2008 Robin Gareus <robin@gareus.org>
+ * Copyright 2008, 2009 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

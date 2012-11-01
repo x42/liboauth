@@ -1,7 +1,7 @@
 /*
  * OAuth http functions in POSIX-C.
  *
- * Copyright 2007, 2008, 2009, 2010 Robin Gareus <robin@gareus.org>
+ * Copyright 2007-2011 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

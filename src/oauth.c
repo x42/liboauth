@@ -1,7 +1,7 @@
 /*
  * OAuth string functions in POSIX-C.
  *
- * Copyright 2007-2011 Robin Gareus <robin@gareus.org>
+ * Copyright 2007-2012 Robin Gareus <robin@gareus.org>
  * 
  * The base64 functions are by Jan-Henrik Haukeland, <hauk@tildeslash.com>
  * and un/escape_url() was inspired by libcurl's curl_escape under ISC-license

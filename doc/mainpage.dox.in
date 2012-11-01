@@ -75,7 +75,7 @@ Developers of applications using <tt>oauth_http.c</tt> are advised to simply cop
 
 MIT License (source-code):
 <pre>
-  Copyright 2007-2010 Robin Gareus
+  Copyright 2007-2012 Robin Gareus
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal

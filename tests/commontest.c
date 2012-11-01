@@ -3,7 +3,7 @@
  *  @file commontest.c
  *  @author Robin Gareus <robin@gareus.org>
  *
- * Copyright 2007, 2008 Robin Gareus <robin@gareus.org>
+ * Copyright 2007, 2008, 2012 Robin Gareus <robin@gareus.org>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
