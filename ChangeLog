@@ -1,3 +1,9 @@
+version 1.0.0
+  - fix body-hash example code
+  - mark all oauth_http functions a deprecated
+  - freeze interface defitions for good
+  - enter maintenance/bug-fix only cycle
+
 version 0.9.7 
   - fixed tiny memory leak when oauth_curl_get() fails
   - fixed double-encoding of plaintext signature
