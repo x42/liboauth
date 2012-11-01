@@ -30,7 +30,7 @@ MAINTAINERCLEANFILES = \
 
 dox: stamp-doxygen
 
-stamp-doxygen: src/oauth.h doc/mainpage.dox
+stamp-doxygen: src/oauth.h doc/mainpage.dox Doxyfile
 	$(DOXYGEN) Doxyfile && touch stamp-doxygen
 	cp doc/man/man3/oauth.h.3 doc/oauth.3
 	sed 's/ -\([qsdU]\)/ \\-\1/g' doc/man/man3/oauth.h.3 \
