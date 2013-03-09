@@ -784,14 +784,36 @@ void oauth_sign_array2_process (int *argcp, char***argvp,
   // serialize URL - base-url 
   query= oauth_serialize_url_parameters(*argcp, *argvp);
 
-  // generate signature
-  okey = oauth_catenc(2, c_secret, t_secret);
+  // prepare data to sign
+  if (method == OA_RSA) {
+    size_t len = 1;
+    if (c_secret) {
+      len += strlen(c_secret);
+    }
+    if (t_secret) {
+      len += strlen(t_secret);
+    }
+    okey = (char*)xmalloc(len * sizeof(char));
+    *okey = '\0';
+    if (c_secret) {
+      okey = strcat(okey, c_secret);
+    }
+    if (t_secret) {
+      okey = strcat(okey, t_secret);
+    }
+  } else {
+    okey = oauth_catenc(2, c_secret, t_secret);
+  }
+
   odat = oauth_catenc(3, http_request_method, (*argvp)[0], query); // base-string
   free(http_request_method);
+
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
   fprintf (stderr, "\nliboauth: key='%s'\n\n", okey);
 #endif
+
+  // generate signature
   switch(method) {
     case OA_RSA:
       sign = oauth_sign_rsa_sha1(odat,okey); // XXX okey needs to be RSA key!
