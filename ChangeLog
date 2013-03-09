@@ -1,3 +1,6 @@
+version 1.0.1
+  - do not url-escape RSA-key for signature
+
 version 1.0.0
   - fix body-hash example code
   - mark all oauth_http functions a deprecated
