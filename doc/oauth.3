@@ -1,4 +1,4 @@
-.TH "oauth.h" 3 "Sat Mar 9 2013" "Version 1.0.1" "OAuth library functions" \" -*- nroff -*-
+.TH "oauth.h" 3 "Fri Jun 21 2013" "Version 1.0.1" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -43,7 +43,7 @@ OAuth\&.net implementation in POSIX-C\&.
 .ti -1c
 .RI "char * \fBoauth_sign_hmac_sha1_raw\fP (const char *m, const size_t ml, const char *k, const size_t kl)"
 .br
-.RI "\fIsame as \fBoauth_sign_hmac_sha1\fP but allows to specify length of message and key (in case they contain null chars)\&. \fP"
+.RI "\fIsame as \fBoauth_sign_hmac_sha1\fP but allows one to specify length of message and key (in case they contain null chars)\&. \fP"
 .ti -1c
 .RI "char * \fBoauth_sign_plaintext\fP (const char *m, const char *k)"
 .br
@@ -426,7 +426,7 @@ use libcurl - http://curl.haxx.se/libcurl/c/
 .PP
 do a HTTP GET request, wait for it to finish and return the content of the reply\&. (requires libcurl)
 .PP
-This is equivalent to /ref oauth_http_get but allows to specifiy a custom HTTP header and has has no support for commandline-curl\&.
+This is equivalent to /ref oauth_http_get but allows one to specifiy a custom HTTP header andhas no support for commandline-curl\&.
 .PP
 If liboauth is compiled \fBwithout\fP libcurl this function always returns NULL\&.
 .PP
@@ -801,7 +801,7 @@ the signed url or NULL if an error occurred\&.
 .PP
 the back-end behind by /ref oauth_sign_array2\&. however it does not serialize the signed URL again\&. The user needs to call /ref oauth_serialize_url (oA) and /ref oauth_free_array to do so\&.
 .PP
-This allows to split parts of the URL to be used for OAuth HTTP Authorization header: see http://oauth.net/core/1.0a/#consumer_req_param the oauthtest2 example code does so\&.
+This allows one to split parts of the URL to be used for OAuth HTTP Authorization header: see http://oauth.net/core/1.0a/#consumer_req_param the oauthtest2 example code does so\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -861,7 +861,7 @@ signature string\&.
 .SS "char* oauth_sign_hmac_sha1_raw (const char * m, const size_t ml, const char * k, const size_t kl)"
 
 .PP
-same as \fBoauth_sign_hmac_sha1\fP but allows to specify length of message and key (in case they contain null chars)\&. \fBParameters:\fP
+same as \fBoauth_sign_hmac_sha1\fP but allows one to specify length of message and key (in case they contain null chars)\&. \fBParameters:\fP
 .RS 4
 \fIm\fP message to be signed 
 .br

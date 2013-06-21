@@ -1,3 +1,6 @@
+unreleased
+  - fix typos in documentation
+
 version 1.0.1
   - do not url-escape RSA-key for signature
 

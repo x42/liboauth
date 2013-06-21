@@ -126,7 +126,7 @@ char *oauth_url_unescape(const char *string, size_t *olen);
 char *oauth_sign_hmac_sha1 (const char *m, const char *k);
 
 /**
- * same as \ref oauth_sign_hmac_sha1 but allows
+ * same as \ref oauth_sign_hmac_sha1 but allows one
  * to specify length of message and key (in case they contain null chars).
  *
  * @param m message to be signed
@@ -395,7 +395,7 @@ char *oauth_sign_url (const char *url, char **postargs,
  * The user needs to call /ref oauth_serialize_url (oA)
  * and /ref oauth_free_array to do so.
  *
- * This allows to split parts of the URL to be used for
+ * This allows one to split parts of the URL to be used for
  * OAuth HTTP Authorization header:
  * see http://oauth.net/core/1.0a/#consumer_req_param
  * the oauthtest2 example code does so.
@@ -577,9 +577,8 @@ char *oauth_http_get (const char *u, const char *q) attribute_deprecated;
  *
  * (requires libcurl)
  *
- * This is equivalent to /ref oauth_http_get but allows to
- * specifiy a custom HTTP header and has
- * has no support for commandline-curl.
+ * This is equivalent to /ref oauth_http_get but allows one
+ * to specifiy a custom HTTP header andhas no support for commandline-curl.
  *
  * If liboauth is compiled <b>without</b> libcurl this function
  * always returns NULL.
