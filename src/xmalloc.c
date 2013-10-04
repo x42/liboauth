@@ -57,4 +57,7 @@ char *xstrdup (const char *s) {
   return (char*) ptr;
 }
 
+void xfree(void *ptr) {
+	return free(ptr);
+}
 // vi: sts=2 sw=2 ts=2

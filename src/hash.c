@@ -219,7 +219,7 @@ char *oauth_sign_rsa_sha1 (const char *m, const char *k) {
 looser:
   if (pkey) SECKEY_DestroyPrivateKey(pkey);
   if (slot) PK11_FreeSlot(slot);
-  free(key);
+  xfree(key);
   return rv;
 }
 
@@ -259,7 +259,7 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *sig) {
 looser:
   if (pkey) SECKEY_DestroyPublicKey(pkey);
   if (slot) PK11_FreeSlot(slot);
-  free(key);
+  xfree(key);
   return rv;
 }
 
@@ -445,7 +445,7 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s) {
   err = EVP_VerifyFinal(&md_ctx, b64d, slen, pkey);
   EVP_MD_CTX_cleanup(&md_ctx);
   EVP_PKEY_free(pkey);
-  free(b64d);
+  xfree(b64d);
   return (err);
 }
 

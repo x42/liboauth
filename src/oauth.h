@@ -180,7 +180,7 @@ int oauth_verify_rsa_sha1 (const char *m, const char *c, const char *s);
  * @param len the number of arguments to follow this parameter
  *
  * @return pointer to memory holding the concatenated 
- * strings - needs to be free(d) by the caller. or NULL
+ * strings - needs to be xfree(d) by the caller. or NULL
  * in case we ran out of memory.
  */
 char *oauth_catenc(int len, ...);
@@ -296,7 +296,7 @@ void oauth_add_param_to_array(int *argcp, char ***argvp, const char *addparam);
  * free array args
  *
  * @param argcp pointer to array length int
- * @param argvp pointer to array values to be free()d
+ * @param argvp pointer to array values to be xfree()d
  */
 void oauth_free_array(int *argcp, char ***argvp);
 

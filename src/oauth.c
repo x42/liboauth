@@ -30,7 +30,7 @@
 # include <config.h>
 #endif
 
-#define WIPE_MEMORY ///< overwrite sensitve data before free()ing it.
+#define WIPE_MEMORY ///< overwrite sensitve data before xfree()ing it.
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -167,7 +167,7 @@ int oauth_decode_base64(unsigned char *dest, const char *src) {
       if(c3 != '=') *p++=(((b2&0xf)<<4)|(b3>>2) );
       if(c4 != '=') *p++=(((b3&0x3)<<6)|b4 );
     }
-    free(buf);
+    xfree(buf);
     dest[p-dest]='\0';
     return(p-dest);
   }
@@ -298,7 +298,7 @@ char *oauth_sign_plaintext (const char *m, const char *k) {
  * @param ... string to escape and added (may be NULL)
  *
  * @return pointer to memory holding the concatenated 
- * strings - needs to be free(d) by the caller. or NULL
+ * strings - needs to be xfree(d) by the caller. or NULL
  * in case we ran out of memory.
  */
 char *oauth_catenc(int len, ...) {
@@ -319,7 +319,7 @@ char *oauth_catenc(int len, ...) {
 
     if(i>0) strcat(rv, "&");
     strcat(rv, enc);
-    free(enc);
+    xfree(enc);
   }
   va_end(va);
   return(rv);
@@ -383,7 +383,7 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
 #ifdef DEBUG_OAUTH
         fprintf(stderr, "\nliboauth: added trailing slash to URL: '%s'\n\n", token);
 #endif
-        free((*argv)[argc]);
+        xfree((*argv)[argc]);
         (*argv)[argc]= (char*) xmalloc(sizeof(char)*(2+strlen(token))); 
         strcpy((*argv)[argc],token);
         strcat((*argv)[argc],"/");
@@ -396,7 +396,7 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
     argc++;
   }
 
-  free(t1);
+  xfree(t1);
   return argc;
 }
 
@@ -456,7 +456,7 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int 
         strcpy(t2, tmp);
         strcpy(t2+off+2, tmp+off);
         *(t2+off)='%'; *(t2+off+1)='2'; *(t2+off+2)='0';
-        free(tmp);
+        xfree(tmp);
         tmp=t2;
 # endif
 #endif
@@ -479,7 +479,7 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int 
       if (mod&4) strcat(tmp,"\"");
       strcat(tmp,t1);
       if (mod&4) strcat(tmp,"\"");
-      free(t1);
+      xfree(t1);
       len+=strlen(tmp);
     }
     len+=seplen+1;
@@ -491,7 +491,7 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int 
       strcat(query, "?");
       first=1;
     }
-    free(tmp);
+    xfree(tmp);
   }
   return (query);
 }
@@ -604,8 +604,8 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   // compare parameter names
   rv=strcmp(v1,v2);
   if (rv!=0) {
-    if (v1) free(v1);
-    if (v2) free(v2);
+    if (v1) xfree(v1);
+    if (v2) xfree(v2);
     return rv;
   }
 
@@ -617,8 +617,8 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   else if (!t1)        rv=-1;
   else                 rv=1;
 
-  if (v1) free(v1);
-  if (v2) free(v2);
+  if (v1) xfree(v1);
+  if (v2) xfree(v2);
   return rv;
 }
 
@@ -665,7 +665,7 @@ void oauth_add_protocol(int *argcp, char ***argvp,
     char *tmp;
     snprintf(oarg, 1024, "oauth_nonce=%s", (tmp=oauth_gen_nonce()));
     oauth_add_param_to_array(argcp, argvp, oarg);
-    free(tmp);
+    xfree(tmp);
   }
 
   if (!oauth_param_exists(*argvp,*argcp,"oauth_timestamp")) {
@@ -806,7 +806,7 @@ void oauth_sign_array2_process (int *argcp, char***argvp,
   }
 
   odat = oauth_catenc(3, http_request_method, (*argvp)[0], query); // base-string
-  free(http_request_method);
+  xfree(http_request_method);
 
 #ifdef DEBUG_OAUTH
   fprintf (stderr, "\nliboauth: data to sign='%s'\n\n", odat);
@@ -828,14 +828,14 @@ void oauth_sign_array2_process (int *argcp, char***argvp,
   memset(okey,0, strlen(okey));
   memset(odat,0, strlen(odat));
 #endif
-  free(odat); 
-  free(okey);
+  xfree(odat);
+  xfree(okey);
 
   // append signature to query args.
   snprintf(oarg, 1024, "oauth_signature=%s",sign);
   oauth_add_param_to_array(argcp, argvp, oarg);
-  free(sign);
-  if(query) free(query);
+  xfree(sign);
+  if(query) xfree(query);
 }
 
 char *oauth_sign_array2 (int *argcp, char***argvp,
@@ -867,14 +867,14 @@ char *oauth_sign_array2 (int *argcp, char***argvp,
  * free array args
  *
  * @param argcp pointer to array length int
- * @param argvp pointer to array values to be free()d
+ * @param argvp pointer to array values to be xfree()d
  */
 void oauth_free_array(int *argcp, char ***argvp) {
   int i;
   for (i=0;i<(*argcp);i++) {
-    free((*argvp)[i]);
+    xfree((*argvp)[i]);
   }
-  if(*argvp) free(*argvp);
+  if(*argvp) xfree(*argvp);
 }
 
 /**
@@ -885,8 +885,8 @@ char *oauth_body_hash_encode(size_t len, unsigned char *digest) {
   char *sign=oauth_encode_base64(len,digest);
   char *sig_url = (char*)xmalloc(17+strlen(sign));
   sprintf(sig_url,"oauth_body_hash=%s", sign);
-  free(sign);
-  free(digest);
+  xfree(sign);
+  xfree(digest);
   return sig_url;
 }
 

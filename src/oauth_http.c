@@ -202,7 +202,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
-  if (q) free(t1);
+  if (q) xfree(t1);
   curl_easy_cleanup(curl);
 
   if (res) {
@@ -409,7 +409,7 @@ char *oauth_curl_post_data_with_callback (const char *u, const char *data, size_
 
 /**
  *  escape URL for use in String Quotes (aka shell single quotes).
- *  the returned string needs to be free()d by the calling function
+ *  the returned string needs to be xfree()d by the calling function
  *
  * WARNING: this function only escapes single-quotes (')
  *
@@ -518,8 +518,8 @@ char *oauth_exec_post (const char *u, const char *p) {
     t2=oauth_escape_shell(u);
   }
   snprintf(cmd, BUFSIZ, cmdtpl, t1, t2);
-  free(cmdtpl);
-  free(t1); free(t2);
+  xfree(cmdtpl);
+  xfree(t1); xfree(t2);
   return oauth_exec_shell(cmd);
 }
 
@@ -561,12 +561,12 @@ char *oauth_exec_get (const char *u, const char *q) {
     e2 = oauth_escape_shell(q);
     t1=(char*)xmalloc(sizeof(char)*(strlen(e1)+strlen(e2)+2));
     strcpy(t1,e1); strcat(t1,"?"); strcat(t1,e2);
-    free(e2);
+    xfree(e2);
   }
   snprintf(cmd, BUFSIZ, cmdtpl, q?t1:e1);
-  free(cmdtpl);
-  free(e1);
-  if (q) free(t1);
+  xfree(cmdtpl);
+  xfree(e1);
+  if (q) xfree(t1);
   return oauth_exec_shell(cmd);
 }
 #endif // command-line curl.
