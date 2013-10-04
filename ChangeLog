@@ -1,5 +1,7 @@
 unreleased
   - fix typos in documentation
+  - add xfree patch from Kedar Sovani
+  - prepare repository migration to github
 
 version 1.0.1
   - do not url-escape RSA-key for signature
