@@ -47,10 +47,10 @@ Developers of applications using <tt>oauth_http.c</tt> are advised to simply cop
 @section download Download
 
   Download Source: <a href="http://sourceforge.net/projects/liboauth/files/liboauth-@VERSION@.tar.gz/download">liboauth-@VERSION@.tar.gz</a>
-  &nbsp;<a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/trunk/ChangeLog?revision=HEAD&view=markup">Changelog</a>.
+  &nbsp;<a href="https://raw.github.com/x42/liboauth/master/ChangeLog">Changelog</a>.
 
-  liboauth is maintained at sourceforge subversion repositories:
-  <a href="http://liboauth.svn.sourceforge.net/viewvc/liboauth/">Browse Web SVN</a> URL: <tt>https://liboauth.svn.sourceforge.net/svnroot/liboauth/</tt>, and mirrored at the <a href="http://oauth.googlecode.com/svn/code/c/liboauth/">OAuth googlecode repository</a>.
+  liboauth is maintained at github:
+  <a href="https://github.com/x42/liboauth">liboauth repository</a> and mirrored at the <a href="http://oauth.googlecode.com/svn/code/c/liboauth/">OAuth googlecode SVN repository</a>.
 
   <!--
   The development branch is available from <tt>git://gareus.org/liboauth</tt> or download a <a href="http://gareus.org/gitweb/?p=liboauth.git;a=snapshot;h=head">snapshot</a>.
