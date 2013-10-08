@@ -1,6 +1,6 @@
 unreleased
   - fix typos in documentation
-  - add xfree patch from Kedar Sovani
+  - add xfree, xstrdup patch from Kedar Sovani
   - prepare repository migration to github
 
 version 1.0.1
