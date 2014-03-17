@@ -6,11 +6,22 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifndef BIG_ENDIAN
+
+#ifdef __BIG_ENDIAN__
+# define SHA_BIG_ENDIAN
+#elif defined __LITTLE_ENDIAN__
+/* override */
+#elif defined __BYTE_ORDER
 # if __BYTE_ORDER__ ==  __ORDER_BIG_ENDIAN__
-# define BIG_ENDIAN
+# define SHA_BIG_ENDIAN
+# endif
+#else // ! defined __LITTLE_ENDIAN__
+# include <endian.h> // machine/endian.h
+# if __BYTE_ORDER__ ==  __ORDER_BIG_ENDIAN__
+#  define SHA_BIG_ENDIAN
 # endif
 #endif
+
 
 /* header */
 
@@ -107,7 +118,7 @@ void sha1_hashBlock(sha1nfo *s) {
 
 void sha1_addUncounted(sha1nfo *s, uint8_t data) {
 	uint8_t * const b = (uint8_t*) s->buffer;
-#ifdef BIG_ENDIAN
+#ifdef SHA_BIG_ENDIAN
 	b[s->bufferOffset] = data;
 #else
 	b[s->bufferOffset ^ 3] = data;
@@ -150,17 +161,15 @@ uint8_t* sha1_result(sha1nfo *s) {
 	// Pad to complete the last block
 	sha1_pad(s);
 
-#ifndef BIG_ENDIAN
+#ifndef SHA_BIG_ENDIAN
 	// Swap byte order back
 	int i;
 	for (i=0; i<5; i++) {
-		uint32_t a,b;
-		a=s->state[i];
-		b=a<<24;
-		b|=(a<<8) & 0x00ff0000;
-		b|=(a>>8) & 0x0000ff00;
-		b|=a>>24;
-		s->state[i]=b;
+		s->state[i]=
+			  (((s->state[i])<<24)& 0xff000000)
+			| (((s->state[i])<<8) & 0x00ff0000)
+			| (((s->state[i])>>8) & 0x0000ff00)
+			| (((s->state[i])>>24)& 0x000000ff);
 	}
 #endif
 
