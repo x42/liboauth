@@ -1,4 +1,4 @@
-.TH "oauth.h" 3 "Fri Jun 21 2013" "Version 1.0.1" "OAuth library functions" \" -*- nroff -*-
+.TH "oauth.h" 3 "Mon Mar 17 2014" "Version 1.0.2" "OAuth library functions" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -314,7 +314,7 @@ url-escape strings and concatenate with '&' separator\&. The number of strings t
 .PP
 \fBReturns:\fP
 .RS 4
-pointer to memory holding the concatenated strings - needs to be free(d) by the caller\&. or NULL in case we ran out of memory\&. 
+pointer to memory holding the concatenated strings - needs to be xfree(d) by the caller\&. or NULL in case we ran out of memory\&. 
 .RE
 .PP
 
@@ -367,7 +367,7 @@ free array args \fBParameters:\fP
 .RS 4
 \fIargcp\fP pointer to array length int 
 .br
-\fIargvp\fP pointer to array values to be free()d 
+\fIargvp\fP pointer to array values to be xfree()d 
 .RE
 .PP
 

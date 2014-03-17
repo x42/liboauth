@@ -3,7 +3,7 @@
  *  @file oauth.h
  *  @author Robin Gareus <robin@gareus.org>
  *
- * Copyright 2007-2012 Robin Gareus <robin@gareus.org>
+ * Copyright 2007-2014 Robin Gareus <robin@gareus.org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,15 @@
 
 #ifndef DOXYGEN_IGNORE
 // liboauth version
-#define LIBOAUTH_VERSION "1.0.1"
+#define LIBOAUTH_VERSION "1.0.2"
 #define LIBOAUTH_VERSION_MAJOR  1
 #define LIBOAUTH_VERSION_MINOR  0
-#define LIBOAUTH_VERSION_MICRO  1
+#define LIBOAUTH_VERSION_MICRO  2
 
 //interface revision number
 //http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 #define LIBOAUTH_CUR  8
-#define LIBOAUTH_REV  5
+#define LIBOAUTH_REV  6
 #define LIBOAUTH_AGE  8
 
 #ifdef __GNUC__

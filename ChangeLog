@@ -1,7 +1,9 @@
-unreleased
+version 1.0.2
   - fix typos in documentation
   - add xfree, xstrdup patch from Kedar Sovani
   - prepare repository migration to github
+  - built-in sha1 support big&little endian
+  - (no changes to the actual library API or ABI)
 
 version 1.0.1
   - do not url-escape RSA-key for signature
