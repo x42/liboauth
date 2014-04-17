@@ -180,7 +180,10 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   chunk.size = 0;
 
   curl = curl_easy_init();
-  if(!curl) return NULL;
+  if(!curl) {
+    xfree(t1);
+    return NULL;
+  }
   curl_easy_setopt(curl, CURLOPT_URL, q?t1:u);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -202,7 +205,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
   GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
-  if (q) xfree(t1);
+  xfree(t1);
   curl_easy_cleanup(curl);
 
   if (res) {
@@ -246,7 +249,10 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   if (!f) return NULL;
 
   curl = curl_easy_init();
-  if(!curl) return NULL;
+  if(!curl) {
+    fclose(f);
+    return NULL;
+  }
   curl_easy_setopt(curl, CURLOPT_URL, u);
   curl_easy_setopt(curl, CURLOPT_POST, 1);
   curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, len);
@@ -262,11 +268,11 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   GLOBAL_CURL_ENVIROMENT_OPTIONS;
   res = curl_easy_perform(curl);
   curl_slist_free_all(slist);
+  fclose(f);
   if (res) {
     // error
     return NULL;
   }
-  fclose(f);
 
   curl_easy_cleanup(curl);
   return (chunk.data);
@@ -551,6 +557,7 @@ char *oauth_exec_get (const char *u, const char *q) {
   t1=strstr(cmdtpl, "%u");
   if (!t1) {
     fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environment variable.\n\n",_OAUTH_ENV_HTTPGET);
+    xfree(cmdtpl);
     return(NULL);
   }
   *(++t1)= 's';
