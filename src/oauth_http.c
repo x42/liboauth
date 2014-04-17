@@ -221,6 +221,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
  * @param fn filename of the file to post along (max 2GB)
  * @param len length of the file in bytes. set to '0' for autodetection
  * @param customheader specify custom HTTP header (or NULL for default)
+ *        the default header adds "Content-Type: image/jpeg;"
  * @return returned HTTP or NULL on error
  */
 char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const char *customheader) {
@@ -237,7 +238,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   if (customheader)
     slist = curl_slist_append(slist, customheader);
   else
-    slist = curl_slist_append(slist, "Content-Type: image/jpeg;");
+    slist = curl_slist_append(slist, "Content-Type: image/jpeg;"); // good guess :)
 
   f = fopen(fn,"r");
   if (!f) return NULL;
@@ -290,6 +291,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
  * @param data data to post along
  * @param len length of the file in bytes. set to '0' for autodetection
  * @param customheader specify custom HTTP header (or NULL for default)
+ *        the default header adds "Content-Type: image/jpeg;"
  * @param callback specify the callback function
  * @param callback_data specify data to pass to the callback function
  * @return returned HTTP reply or NULL on error
