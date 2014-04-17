@@ -42,7 +42,6 @@
 
 #ifdef HAVE_CURL /* HTTP requests via libcurl */
 #include <curl/curl.h>
-#include <sys/stat.h>
 
 # define GLOBAL_CURL_ENVIROMENT_OPTIONS \
   if (getenv("CURLOPT_PROXYAUTH")){ \
@@ -219,7 +218,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
  * the returned string needs to be freed by the caller
  *
  * @param u url to retrieve
- * @param fn filename of the file to post along
+ * @param fn filename of the file to post along (max 2GB)
  * @param len length of the file in bytes. set to '0' for autodetection
  * @param customheader specify custom HTTP header (or NULL for default)
  * @return returned HTTP or NULL on error
@@ -230,6 +229,7 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   struct curl_slist *slist=NULL;
   struct MemoryStruct chunk;
   FILE *f;
+  long filelen;
 
   chunk.data=NULL;
   chunk.size=0;
@@ -239,14 +239,16 @@ char *oauth_curl_post_file (const char *u, const char *fn, size_t len, const cha
   else
     slist = curl_slist_append(slist, "Content-Type: image/jpeg;");
 
-  if (!len) {
-    struct stat statbuf;
-    if (stat(fn, &statbuf) == -1) return(NULL);
-    len = statbuf.st_size;
-  }
-
   f = fopen(fn,"r");
   if (!f) return NULL;
+
+  fseek(f, 0L, SEEK_END);
+  filelen = ftell(f);
+  fseek(f, 0L, SEEK_SET);
+
+  if (!len || len > filelen) {
+    len = filelen;
+  }
 
   curl = curl_easy_init();
   if(!curl) {
