@@ -588,6 +588,7 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   char *v1,*v2;
   char *t1,*t2;
   int rv;
+  if (!p1 || !p2) return 0;
   // TODO: this is not fast - we should escape the 
   // array elements (once) before sorting.
   v1=oauth_url_escape(* (char * const *)p1);
