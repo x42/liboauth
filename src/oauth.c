@@ -604,9 +604,9 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
 
   // compare parameter names
   rv=strcmp(v1,v2);
-  if (rv!=0) {
-    if (v1) xfree(v1);
-    if (v2) xfree(v2);
+  if (rv != 0) {
+    xfree(v1);
+    xfree(v2);
     return rv;
   }
 
@@ -618,8 +618,8 @@ int oauth_cmpstringp(const void *p1, const void *p2) {
   else if (!t1)        rv=-1;
   else                 rv=1;
 
-  if (v1) xfree(v1);
-  if (v2) xfree(v2);
+  xfree(v1);
+  xfree(v2);
   return rv;
 }
 
