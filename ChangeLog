@@ -1,3 +1,8 @@
+version 1.0.3
+  - clarify documentation of oauth_curl
+  - fix possible memleak in oauth_curl (only relevant if an error occurs)
+  - fix TOCTOU in oauth_curl_post_file: the file may change between stat() and fopen()
+
 version 1.0.2
   - fix typos in documentation
   - add xfree, xstrdup patch from Kedar Sovani
