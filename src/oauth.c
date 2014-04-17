@@ -314,7 +314,7 @@ char *oauth_catenc(int len, ...) {
     enc = oauth_url_escape(arg);
     if(!enc) break;
     len = strlen(enc) + 1 + ((i>0)?1:0);
-    if(rv) len+=strlen(rv);
+    len+=strlen(rv);
     rv=(char*) xrealloc(rv,len*sizeof(char));
 
     if(i>0) strcat(rv, "&");
@@ -442,7 +442,7 @@ char *oauth_serialize_url_sep (int argc, int start, char **argv, char *sep, int 
     if ((mod&1)==1 && (strncmp(argv[i],"oauth_",6) == 0 || strncmp(argv[i],"x_oauth_",8) == 0) ) continue;
     if ((mod&2)==2 && (strncmp(argv[i],"oauth_",6) != 0 && strncmp(argv[i],"x_oauth_",8) != 0) && i!=0) continue;
 
-    if (query) len+=strlen(query);
+    len+=strlen(query);
 
     if (i==start && i==0 && strstr(argv[i], ":/")) {
       tmp=xstrdup(argv[i]);
