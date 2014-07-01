@@ -48,12 +48,13 @@ char *oauth_sign_hmac_sha1 (const char *m, const char *k) {
 }
 
 char *oauth_body_hash_file(char *filename) {
-  FILE *F= fopen(filename, "r");
-  if (!F) return NULL;
-
   size_t len=0;
   char fb[BUFSIZ];
 	sha1nfo s;
+
+  FILE *F= fopen(filename, "r");
+
+  if (!F) return NULL;
 	sha1_init(&s);
 
   while (!feof(F) && (len=fread(fb,sizeof(char),BUFSIZ, F))>0) {
@@ -271,7 +272,8 @@ char *oauth_body_hash_file(char *filename) {
   SECStatus      s;
   char          *rv=NULL;
   size_t         bl;
-  unsigned char  fb[BUFSIZ];
+	unsigned char  fb[BUFSIZ];
+	unsigned char *dgst;
 
   FILE *F= fopen(filename, "r");
   if (!F) return NULL;
@@ -292,7 +294,7 @@ char *oauth_body_hash_file(char *filename) {
   s = PK11_DigestFinal(context, digest, &len, sizeof digest);
   if (s != SECSuccess) goto looser;
 
-  unsigned char *dgst = xmalloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
+  dgst = xmalloc(len*sizeof(char)); // oauth_body_hash_encode frees the digest..
   memcpy(dgst, digest, len);
   rv=oauth_body_hash_encode(len, dgst);
 
