@@ -132,7 +132,7 @@ AS_IF([test "${enable_libcurl}" != "no"], [
 
 report_curltimeout="-"
 if test -n "${with_curltimeout}"; then
-  if test "${with_curltimeout}" == "yes"; then
+  if test "${with_curltimeout}" = "yes"; then
     AC_DEFINE(OAUTH_CURL_TIMEOUT, 60)
     report_curltimeout="60"
   else 
@@ -147,7 +147,7 @@ AC_SUBST(CURL_CFLAGS)
 AC_SUBST(CURL_LIBS)
 
 dnl ** crypto/hash lib (OpenSSL or NSS)
-AS_IF([test "${enable_builtinhash}" == "yes"], [
+AS_IF([test "${enable_builtinhash}" = "yes"], [
     AC_DEFINE(USE_BUILTIN_HASH, 1) USE_BUILTIN_HASH=1
     HASH_LIBS=""
     HASH_CFLAGS=""
@@ -159,7 +159,7 @@ AS_IF([test "${enable_builtinhash}" == "yes"], [
       NSS nor OpenSSL is available.
     ])
 ], [
-  AS_IF([test "${enable_nss}" == "yes"], [
+  AS_IF([test "${enable_nss}" = "yes"], [
     PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
     HASH_LIBS=${NSS_LIBS}
     HASH_CFLAGS=${NSS_CFLAGS}
@@ -221,7 +221,7 @@ dnl *** perl ***
 dnl (needed for Doxyfile.in)
 AC_ARG_VAR(PERL, Perl)
 AC_PATH_PROG(PERL, perl, no)
-if test "$PERL" == "no"; then
+if test "$PERL" = "no"; then
   AC_MSG_WARN([dude, where's your perl? doxygen will not like this!)])
 fi
 
