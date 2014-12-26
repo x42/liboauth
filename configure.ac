@@ -53,6 +53,7 @@ AC_STRUCT_TM
 AC_STRUCT_ST_BLOCKS
 AC_FUNC_CLOSEDIR_VOID
 
+AH_TEMPLATE([HAVE_STRTOK_R], [Define as 1 if the c library provides strtok_r])
 AH_TEMPLATE([HAVE_CURL], [Define as 1 if you have libcurl])
 AH_TEMPLATE([USE_BUILTIN_HASH], [Define to use neither NSS nor OpenSSL])
 AH_TEMPLATE([USE_NSS], [Define to use NSS instead of OpenSSL])
@@ -106,6 +107,8 @@ AC_ARG_ENABLE(libcurl, AC_HELP_STRING([--disable-libcurl],[do not use libcurl]))
 AC_ARG_ENABLE(builtinhash, AC_HELP_STRING([--enable-builtinhash],[do use neither NSS nor OpenSSL: only HMAC/SHA1 signatures - no RSA/PK11]))
 AC_ARG_ENABLE(nss, AC_HELP_STRING([--enable-nss],[use NSS instead of OpenSSL]))
 AC_ARG_WITH([curltimeout], AC_HELP_STRING([--with-curltimeout@<:@=<int>@:>@],[use CURLOPT_TIMEOUT with libcurl HTTP requests. Timeout is given in seconds (default=60). Note: using this option also sets CURLOPT_NOSIGNAL. see http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTTIMEOUT]))
+
+AC_CHECK_FUNC(strtok_r, [AC_DEFINE(HAVE_STRTOK_R, 1)], [])
 
 report_curl="no"
 dnl ** check for commandline executable curl 

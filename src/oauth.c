@@ -351,6 +351,9 @@ char *oauth_catenc(int len, ...) {
 int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
 	int argc=0;
 	char *token, *tmp, *t1;
+#ifdef HAVE_STRTOK_R
+	char *tok_buf;
+#endif
 	if (!argv) return 0;
 	if (!url) return 0;
 	t1=xstrdup(url);
@@ -359,7 +362,12 @@ int oauth_split_post_paramters(const char *url, char ***argv, short qesc) {
 	while ((qesc&1) && (tmp=strchr(t1,'+'))) *tmp=' ';
 
 	tmp=t1;
-	while((token=strtok(tmp,"&?"))) {
+#ifdef HAVE_STRTOK_R
+	while((token=strtok_r(tmp, "&?", &tok_buf)))
+#else
+	while((token=strtok(tmp, "&?")))
+#endif
+	{
 		if(!strncasecmp("oauth_signature=",token,16)) continue;
 		(*argv)=(char**) xrealloc(*argv,sizeof(char*)*(argc+1));
 		while (!(qesc&2) && (tmp=strchr(token,'\001'))) *tmp='&';
