@@ -1,0 +1,6 @@
+FILE(GLOB src "*.c")
+FILE(GLOB hdr "*.h")
+ADD_LIBRARY(oauth ${src} ${hdr})
+TARGET_LINK_LIBRARIES(oauth ${OPENSSL_LIBRARIES})
+INSTALL(TARGETS oauth DESTINATION lib)
+INSTALL(FILES ${hdr} DESTINATION include/oauth)
