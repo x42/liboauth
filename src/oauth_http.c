@@ -74,7 +74,7 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
 	size_t realsize = size * nmemb;
 	struct MemoryStruct *mem = (struct MemoryStruct *)data;
 
-	mem->data = (char *)xrealloc(mem->data, mem->size + realsize + 1);
+	mem->data = xrealloc(mem->data, mem->size + realsize + 1);
 	if (mem->data) {
 		memcpy(&(mem->data[mem->size]), ptr, realsize);
 		mem->size += realsize;
@@ -171,7 +171,7 @@ char *oauth_curl_get (const char *u, const char *q, const char *customheader) {
 	struct MemoryStruct chunk;
 
 	if (q) {
-		t1=(char*)xmalloc(sizeof(char)*(strlen(u)+strlen(q)+2));
+		t1=xmalloc(sizeof(char)*(strlen(u)+strlen(q)+2));
 		strcpy(t1,u); strcat(t1,"?"); strcat(t1,q);
 	}
 
@@ -447,7 +447,7 @@ char *oauth_escape_shell (const char *cmd) {
 	int idx;
 	while ((tmp=strchr(tmp,'\''))) {
 		idx = tmp-esc;
-		esc=(char*)xrealloc(esc,(strlen(esc)+5)*sizeof(char));
+		esc=xrealloc(esc,(strlen(esc)+5)*sizeof(char));
 		memmove(esc+idx+4,esc+idx+1, strlen(esc+idx));
 		esc[idx+1]='\\'; esc[idx+2]='\''; esc[idx+3]='\'';
 		tmp=esc+(idx+4);
@@ -477,7 +477,7 @@ char *oauth_exec_shell (const char *cmd) {
 	int rcv = 1;
 	while (in && rcv > 0 && !feof(in)) {
 		alloc +=1024;
-		data = (char*)xrealloc(data, alloc * sizeof(char));
+		data = xrealloc(data, alloc * sizeof(char));
 		rcv = fread(data + (alloc-1024), sizeof(char), 1024, in);
 		len += rcv;
 	}
@@ -570,7 +570,7 @@ char *oauth_exec_get (const char *u, const char *q) {
 	if (q) {
 		char *e2;
 		e2 = oauth_escape_shell(q);
-		t1=(char*)xmalloc(sizeof(char)*(strlen(e1)+strlen(e2)+2));
+		t1=xmalloc(sizeof(char)*(strlen(e1)+strlen(e2)+2));
 		strcpy(t1,e1); strcat(t1,"?"); strcat(t1,e2);
 		xfree(e2);
 	}
