@@ -5,4 +5,4 @@ compiler:
 os: linux
 
 before_script: aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy && ./configure
-script: make
+script: make && make check
