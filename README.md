@@ -1,3 +1,6 @@
+liboauth
+========
+
 liboauth is a collection of c functions implementing the http://oauth.net API.
 
 liboauth provides functions to escape and encode stings according to
@@ -5,13 +8,16 @@ OAuth specifications and offers high-level functionality built on top to sign
 requests or verify signatures using either NSS or OpenSSL for calculating
 the hash/signatures.
 
-The included documentation in the doc/ folder and example code from tests/ 
+The included documentation in the `doc/` folder and example code from `tests/`
 can also be found online at http://liboauth.sourceforge.net/
 
 Send bug-reports, patches or suggestions to robin@gareus.org.
 or inquire information at http://groups.google.com/group/oauth/
 
- == License and Notes ==
+[![Build Status](https://travis-ci.org/x42/liboauth.svg)](https://travis-ci.org/x42/liboauth)
+
+License and Notes
+-----------------
 
 The source-code of liboauth can be distributed under MIT License,
 or at your option: in terms of the the GNU General Public License.
@@ -29,7 +35,8 @@ configure with '--enable-nss'.
 The Debian packaging that comes with the source-code is licensed under
 the GNU General Public License.
 
- == Test and Example Code ==
+Test and Example Code
+---------------------
 
 After compilation `make check` can be used to perform a off-line self-test.
 
@@ -37,27 +44,26 @@ There is also example code to perform and verify OAuth requests online,
 but they are not run automatically.
 
 
- tests/oauthexample.c  - CONNECTS TO INTERNET
+*   `tests/oauthexample.c`  - CONNECTS TO INTERNET
      walk-though http://term.ie/oauth/example
 
- tests/oauthtest.c     - CONNECTS TO INTERNET
+*   `tests/oauthtest.c`     - CONNECTS TO INTERNET
      gets a request-token from http://term.ie test-server
-   
- tests/oauthtest2.c    - CONNECTS TO INTERNET
+
+*   `tests/oauthtest2.c`    - CONNECTS TO INTERNET
      gets a request-token from http://term.ie test-server
      using OAuth HTTP Authorization header:
      see http://oauth.net/core/1.0a/#auth_header
      and http://oauth.net/core/1.0a/#consumer_req_param
 
- tests/selftest_wiki.c
- tests/selftest_eran.c
+*   `tests/selftest_wiki.c`
+*   `tests/selftest_eran.c`
      Test-Cases for parameter encoding, signatures, etc
 
- tests/commontest.c
+*   `tests/commontest.c`
      Common Test-Case functions exercising the low-level API used by self-tests.
 
- tests/oauthdatapost.c - CONNECTS TO INTERNET
+*   `tests/oauthdatapost.c` - CONNECTS TO INTERNET
      Experimental code to sign data uploads
      Note: The example keys have since been deleted from the test-server.
      Code remains for inspiration/example purposes.
-     
