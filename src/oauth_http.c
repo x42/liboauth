@@ -475,7 +475,8 @@ char *oauth_exec_shell (const char *cmd) {
 	size_t alloc = 0;
 	char *data = NULL;
 	int rcv = 1;
-	while (in && rcv > 0 && !feof(in)) {
+	if (!in) return NULL;
+	while (rcv > 0 && !feof(in)) {
 		alloc +=1024;
 		data = (char*)xrealloc(data, alloc * sizeof(char));
 		rcv = fread(data + (alloc-1024), sizeof(char), 1024, in);
