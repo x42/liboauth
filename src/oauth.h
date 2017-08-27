@@ -578,7 +578,7 @@ char *oauth_http_get (const char *u, const char *q) attribute_deprecated;
  * (requires libcurl)
  *
  * This is equivalent to /ref oauth_http_get but allows one
- * to specifiy a custom HTTP header andhas no support for commandline-curl.
+ * to specify a custom HTTP header and has no support for commandline-curl.
  *
  * If liboauth is compiled <b>without</b> libcurl this function
  * always returns NULL.
@@ -656,7 +656,7 @@ char *oauth_http_post2 (const char *u, const char *p, const char *customheader) 
  * the returned string needs to be freed by the caller
  * (requires libcurl)
  *
- * see dislaimer: /ref oauth_http_post
+ * see disclaimer: /ref oauth_http_post
  *
  * @param u url to retrieve
  * @param fn filename of the file to post along
@@ -674,7 +674,7 @@ char *oauth_post_file (const char *u, const char *fn, const size_t len, const ch
  * the returned string needs to be freed by the caller
  * (requires libcurl)
  *
- * see dislaimer: /ref oauth_http_post
+ * see disclaimer: /ref oauth_http_post
  *
  * @param u url to retrieve
  * @param data data to post
@@ -724,7 +724,7 @@ char *oauth_post_data_with_callback      (const char *u,
  * the returned string needs to be freed by the caller
  * (requires libcurl)
  *
- * see dislaimer: /ref oauth_http_post
+ * see disclaimer: /ref oauth_http_post
  *
  * @param u url to retrieve
  * @param data data to post
