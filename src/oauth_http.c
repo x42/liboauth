@@ -461,7 +461,7 @@ char *oauth_escape_shell (const char *cmd) {
 /**
  * execute command via shell and return it's output.
  * This is used to call 'curl' or 'wget'.
- * the command is uses <em>as is</em> and needs to be propery escaped.
+ * the command is used <em>as is</em> and needs to be properly escaped.
  *
  * @param cmd the commandline to execute
  * @return stdout string that needs to be freed or NULL if there's no output

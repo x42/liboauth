@@ -426,7 +426,7 @@ use libcurl - http://curl.haxx.se/libcurl/c/
 .PP
 do a HTTP GET request, wait for it to finish and return the content of the reply\&. (requires libcurl)
 .PP
-This is equivalent to /ref oauth_http_get but allows one to specifiy a custom HTTP header andhas no support for commandline-curl\&.
+This is equivalent to /ref oauth_http_get but allows one to specify a custom HTTP header and has no support for commandline-curl\&.
 .PP
 If liboauth is compiled \fBwithout\fP libcurl this function always returns NULL\&.
 .PP
@@ -539,7 +539,7 @@ FALSE (0) if array does not contain a parameter with given key, TRUE (1) otherwi
 .SS "char* oauth_post_data (const char * u, const char * data, size_t len, const char * customheader)"
 
 .PP
-http post raw data the returned string needs to be freed by the caller (requires libcurl) see dislaimer: /ref oauth_http_post
+http post raw data the returned string needs to be freed by the caller (requires libcurl) see disclaimer: /ref oauth_http_post
 .PP
 \fBParameters:\fP
 .RS 4
@@ -605,7 +605,7 @@ use libcurl - http://curl.haxx.se/libcurl/c/
 .PP
 http post raw data from file\&. the returned string needs to be freed by the caller (requires libcurl)
 .PP
-see dislaimer: /ref oauth_http_post
+see disclaimer: /ref oauth_http_post
 .PP
 \fBParameters:\fP
 .RS 4
@@ -636,7 +636,7 @@ http send raw data\&. similar to /ref oauth_http_post but provides for specifyin
 .PP
 the returned string needs to be freed by the caller (requires libcurl)
 .PP
-see dislaimer: /ref oauth_http_post
+see disclaimer: /ref oauth_http_post
 .PP
 \fBParameters:\fP
 .RS 4

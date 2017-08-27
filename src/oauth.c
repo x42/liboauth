@@ -552,7 +552,7 @@ char *oauth_gen_nonce() {
 }
 #else // OpenSSL or NSS random number generator
 #ifdef USE_NSS
-void oauth_init_nss(); //decladed in hash.c
+void oauth_init_nss(); //declared in hash.c
 #  include "pk11pub.h"
 #  define MY_RAND PK11_GenerateRandom
 #  define MY_SRAND  oauth_init_nss();
