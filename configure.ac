@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT([liboauth], [-], [robin AT gareus DOT org], [], [http://liboauth.sourceforge.net/])
+AC_INIT([liboauth], m4_esyscmd_s([sed -ne 's/^#define LIBOAUTH_VERSION "\(.*\)"/\1/p' src/oauth.h]), [robin AT gareus DOT org], [], [http://liboauth.sourceforge.net/])
 #AM_MAINTAINER_MODE
 
 AC_PATH_PROG(SED, sed, "", $PATH:/bin:/usr/bin:/usr/local/bin)
@@ -23,7 +23,7 @@ AC_CONFIG_SRCDIR([src/oauth.c])
 AC_CONFIG_TESTDIR([tests])
 AC_CANONICAL_TARGET([])
 AC_COPYRIGHT([Copyright (C) Robin Gareus 2007-2012])
-AM_INIT_AUTOMAKE(liboauth,$VERSION)
+AM_INIT_AUTOMAKE
 
 AM_CONFIG_HEADER(src/config.h)
 
