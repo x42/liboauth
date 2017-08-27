@@ -2,7 +2,7 @@ check_PROGRAMS = oauthexample oauthdatapost tcwiki tceran tcother oauthtest oaut
 ACLOCAL_AMFLAGS= -I m4
 
 OAUTHDIR =../src
-INCLUDES = -I$(srcdir)/$(OAUTHDIR)
+AM_CPPFLAGS = -I$(srcdir)/$(OAUTHDIR)
 MYCFLAGS = @LIBOAUTH_CFLAGS@ @HASH_CFLAGS@ @CURL_CFLAGS@ 
 MYLDADD  = $(OAUTHDIR)/liboauth.la
 LIBS     = -lm @HASH_LIBS@ @CURL_LIBS@ @LIBS@
