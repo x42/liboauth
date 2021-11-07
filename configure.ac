@@ -98,7 +98,6 @@ AC_SUBST(LIBOAUTH_LDFLAGS)
 
 
 dnl *** PKGconfig oauth.pc.in ***
-PC_REQ=""
 PC_LIB=""
 
 dnl *** configuration options ***
@@ -123,11 +122,11 @@ fi
 dnl ** check for libcurl
 AS_IF([test "${enable_libcurl}" != "no"], [
   PKG_CHECK_MODULES(CURL, libcurl,
-    [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB ${CURL_LIBS}" report_curl="libcurl" ] , 
+    [ AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_LIB="$PC_LIB`$PKG_CONFIG --static --libs libcurl` " report_curl="libcurl" ] ,
     [
       AC_CHECK_HEADERS(curl/curl.h)
       AC_CHECK_LIB([curl], [curl_global_init], 
-        [AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_REQ="$PC_REQ libcurl" PC_LIB="$PC_LIB -lcurl" report_curl="libcurl" ]
+        [AC_DEFINE(HAVE_CURL, 1) HAVE_CURL=1 PC_LIB="$PC_LIB-lcurl " report_curl="libcurl" ]
       )
     ]
   )
@@ -163,22 +162,28 @@ AS_IF([test "${enable_builtinhash}" = "yes"], [
     ])
 ], [
   AS_IF([test "${enable_nss}" = "yes"], [
-    PKG_CHECK_MODULES(NSS, nss, [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_REQ="$PC_REQ nss" ])
-    HASH_LIBS=${NSS_LIBS}
-    HASH_CFLAGS=${NSS_CFLAGS}
-    report_hash="NSS"
+    PKG_CHECK_MODULES(NSS, nss,
+      [ AC_DEFINE(USE_NSS, 1) USE_NSS=1 PC_LIB="$PC_LIB`$PKG_CONFIG --static --libs nss` "
+        HASH_LIBS=${NSS_LIBS}
+        HASH_CFLAGS=${NSS_CFLAGS}
+        report_hash="NSS" ])
   ], [
-    AC_CHECK_HEADERS(openssl/hmac.h)
-    if test -z "${HASH_LIBS}"; then
-    HASH_LIBS="-lcrypto"
-    fi
-    if test -z "${HASH_CFLAGS}"; then
-    HASH_CFLAGS=""
-    fi
-    report_hash="OpenSSL"
-    PC_LIB="$PC_LIB ${HASH_LIBS}"
-    PC_REQ="$PC_REQ libcrypto"
-    AC_MSG_NOTICE([
+    PKG_CHECK_MODULES(OPENSSL, libcrypto,
+      [ PC_LIB="$PC_LIB`$PKG_CONFIG --static --libs libcrypto` "
+        HASH_LIBS=${OPENSSL_LIBS}
+        HASH_CFLAGS=${OPENSSL_CFLAGS}
+        report_hash="OpenSSL" ] ,
+      [
+        AC_CHECK_HEADERS(openssl/hmac.h)
+        if test -z "${HASH_LIBS}"; then
+          HASH_LIBS="-lcrypto"
+        fi
+        if test -z "${HASH_CFLAGS}"; then
+          HASH_CFLAGS=""
+        fi
+        report_hash="OpenSSL"
+        PC_LIB="$PC_LIB${HASH_LIBS} "
+        AC_MSG_NOTICE([
 
     NOTE: OpenSSL is not compatible with GPL applications.
     Even if only linked with GPL code you are not allowed to distibute your app.
@@ -191,7 +196,9 @@ AS_IF([test "${enable_builtinhash}" = "yes"], [
     future versions of liboauth will default to the Mozilla NSS.
      
     see http://people.gnome.org/~markmc/openssl-and-the-gpl.html
-    ])
+        ])
+      ]
+    )
   ])
 ])
 
@@ -229,7 +236,6 @@ if test "$PERL" = "no"; then
 fi
 
 # PKGconfig oauth.pc.in
-AC_SUBST(PC_REQ)
 AC_SUBST(PC_LIB)
 
 
