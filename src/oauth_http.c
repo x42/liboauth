@@ -517,6 +517,7 @@ char *oauth_exec_post (const char *u, const char *p) {
 	t2=strstr(cmdtpl, "%u");
 	if (!t1 || !t2) {
 		fprintf(stderr, "\nliboauth: invalid HTTP command. set the '%s' environment variable.\n\n",_OAUTH_ENV_HTTPCMD);
+		xfree(cmdtpl);
 		return(NULL);
 	}
 	// TODO: check if there are exactly two '%' in cmdtpl
